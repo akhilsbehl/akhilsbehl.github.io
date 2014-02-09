@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Recreating the history of a stock index's membership in R"
+title: "R: Recreating the history of a stock index's membership"
 date: 2013-07-15 01:40
 comments: true
 publish: false

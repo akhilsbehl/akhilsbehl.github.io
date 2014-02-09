@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Deprecate logical subsetting in R"
+title: "R: Deprecate logical subsetting?"
 date: 2013-07-16 21:09
 comments: true
 categories: R
