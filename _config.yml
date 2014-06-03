@@ -2,21 +2,12 @@
 #      Main Configs       #
 # ----------------------- #
 
-<<<<<<< HEAD
 url: http://akhilsbehl.github.io
 title: head /dev/brain > /dev/www
 subtitle: My home, musings, and wanderings on the world wide web.
 author: Akhil S. Behl
 simple_search: http://google.com/search
 description: Akhil S. Behl, asb, R, finance, statistics, mathematics, python, lisp, programming, coding
-=======
-url: http://yoursite.com
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
-simple_search: https://www.google.com/search
-description:
->>>>>>> 9bc4bb02ee3318d07b6b1ecd838a09461eff627b
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
