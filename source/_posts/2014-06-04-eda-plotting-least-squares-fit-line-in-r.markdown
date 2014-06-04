@@ -54,7 +54,7 @@ library(ISLR)
 data(mtcars)
 plotLeastSqFit(df = mtcars, responseVar = "mpg")
 ```
-![plot of chunk For the mtcars dataset](../images/_rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png) 
+![plot of chunk For the mtcars dataset](../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png) 
 
 
 
@@ -64,7 +64,7 @@ Advertising[["X"]] = NULL
 Advertising[["random"]] = runif(nrow(Advertising))
 plotLeastSqFit(df = Advertising, responseVar = "Sales")
 ```
-![plot of chunk For the Advertising dataset, Ch. 2, ISLR](../images/_rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_Advertising_dataset__Ch__2__ISLR.png) 
+![plot of chunk For the Advertising dataset, Ch. 2, ISLR](../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_Advertising_dataset__Ch__2__ISLR.png) 
 
 
 <!--links-->

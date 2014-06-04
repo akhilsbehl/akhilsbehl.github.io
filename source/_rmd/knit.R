@@ -35,7 +35,7 @@ renderOcto = function (extra="") {
 }
 
 knit2octo = function (rmd, octoPostDir="../_posts",
-                      rmdImageDir="../images/_rmdimages",
+                      rmdImageDir="../images/rmdimages",
                       octoPost=paste0(octoPostDir, "/",
                                       rmdName, ".markdown")) {
   rmdName = tools::file_path_sans_ext(basename(rmd))
