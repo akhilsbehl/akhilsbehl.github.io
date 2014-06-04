@@ -31,7 +31,7 @@ plotLeastSqFit = function(df, responseVar) {
     if (length(areNumeric) <= 3) {
         mfRow = c(1, length(areNumeric))
     } else {
-        mfRow = c(2, ceiling(length(areNumeric)/2))
+        mfRow = c(ceiling(length(areNumeric)/2), 2)
     }
     par(mfrow = mfRow)
     lapply(X = areNumeric, FUN = function(x) {
@@ -52,7 +52,8 @@ Here are sample plots from this function for a couple of the ISLR datasets.
 library(ISLR)
 
 data(mtcars)
-plotLeastSqFit(df = mtcars, responseVar = "mpg")
+## Choose only a few columns.
+plotLeastSqFit(df = mtcars[c("mpg", "cyl", "hp", "wt")], responseVar = "mpg")
 ```
 ![plot of chunk For the mtcars dataset](../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png) 
 
@@ -61,6 +62,7 @@ plotLeastSqFit(df = mtcars, responseVar = "mpg")
 ```r For the Advertising dataset, Ch. 2, ISLR
 Advertising = read.csv("http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv")
 Advertising[["X"]] = NULL
+set.seed(pi)
 Advertising[["random"]] = runif(nrow(Advertising))
 plotLeastSqFit(df = Advertising, responseVar = "Sales")
 ```

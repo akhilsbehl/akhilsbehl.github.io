@@ -33,7 +33,7 @@ plotLeastSqFit = function (df, responseVar) {
   if (length(areNumeric) <= 3) {
     mfRow = c(1, length(areNumeric))
   } else {
-    mfRow = c(2, ceiling(length(areNumeric) / 2))
+    mfRow = c(ceiling(length(areNumeric) / 2), 2)
   }
   par(mfrow=mfRow)
   lapply(X=areNumeric,
@@ -49,16 +49,19 @@ plotLeastSqFit = function (df, responseVar) {
 
 Here are sample plots from this function for a couple of the ISLR datasets.
 
-```{r "For the mtcars dataset", results="hide"}
+```{r "For the mtcars dataset", results="hide", fig.height=3, fig.width=8}
 library(ISLR)
 
 data(mtcars)
-plotLeastSqFit(df = mtcars, responseVar = "mpg")
+## Choose only a few columns.
+plotLeastSqFit(df = mtcars[c("mpg", "cyl", "hp", "wt")],
+               responseVar = "mpg")
 ```
 
 ```{r "For the Advertising dataset, Ch. 2, ISLR", results="hide"}
 Advertising = read.csv("http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv")
 Advertising[["X"]] = NULL
+set.seed(pi)
 Advertising[["random"]] = runif(nrow(Advertising))
 plotLeastSqFit(df = Advertising, responseVar = "Sales")
 ```
