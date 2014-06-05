@@ -3,7 +3,10 @@ layout: post
 title: "ISLR: Notes, Chapter 2"
 date: 2014-06-05 10:56:30 +0530
 comments: true
-categories: ISLR, notes, machine-learning
+categories:
+- ISLR
+- notes
+- machine-learning
 published: true
 ---
 

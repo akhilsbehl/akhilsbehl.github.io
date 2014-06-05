@@ -3,7 +3,12 @@ layout: post
 title: "EDA: Plotting least squares fit line in R"
 date: 2014-06-04 12:22
 comments: true
-categories: EDA, R, OLS, plot, ISLR
+categories:
+  - EDA
+  - R
+  - OLS
+  - plot
+  - ISLR
 published: true
 ---
 

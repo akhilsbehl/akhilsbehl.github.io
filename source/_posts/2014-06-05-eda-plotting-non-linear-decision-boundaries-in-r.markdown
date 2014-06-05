@@ -3,7 +3,11 @@ layout: post
 title: "EDA: Plotting non linear decision boundaries in R"
 date: 2014-06-05 13:22:53 +0530
 comments: true
-categories: EDA, R, plot, ISLR
+categories:
+- EDA
+- R
+- plot
+- ISLR
 ---
 
 {% img center http://i.stack.imgur.com/UCJol.png 'Figure 2.13, ISLR' %}
