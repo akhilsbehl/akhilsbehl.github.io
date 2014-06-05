@@ -103,3 +103,14 @@ published: true
 
   _The Bayes error rate is analogous to the irreducible error and is greater
   than zero when the categories overlap in the true population._
+
+* Question 1d) A relatively inflexible model would be better to model a process
+  which is inherently too noisy, i.e. $\mathrm{Var}(\epsilon)$ is high. This is
+  because a model with fewer degrees of freedom would be less susceptible to
+  overfitting.
+
+* Question 7d) If the Bayes decision boundary in a problem is highly non-linear
+  one would expect a smaller value of K to be optimal for KNN. This is because
+  a highly non-linear decision boundary implies weak global regularities in the
+  data and stronger local regularities. Therefore, a very high value of k would
+  ignore these local regularities.
