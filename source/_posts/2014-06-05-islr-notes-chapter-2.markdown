@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "ISLR: Notes, Chapter 2"
+title: "ISLR: Notes - Chapter 2"
 date: 2014-06-05 10:56:30 +0530
 comments: true
 categories:
