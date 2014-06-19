@@ -18,7 +18,6 @@ Solution to the [99 LISP Problems][99prob] #3:
       (car alist)
       (element-at (cdr alist) (1- n)))))
 ```
-
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 
 <!--links-->

@@ -425,3 +425,35 @@ task :new_rmd, :title do |t, args|
     post.puts "---"
   end
 end
+
+desc "Begin a new 99 lisp problems post in #{source_dir}/#{posts_dir}"
+task :new_99lisp, :title do |t, args|
+  title = args.title
+  filename = "#{source_dir}/#{posts_dir}/#{Time.now.strftime('%Y-%m-%d')}-99-lisp-problems-problem-number-#{title}.#{new_post_ext}"
+  if File.exist?(filename)
+    abort("rake aborted!") if ask("#{filename} already exists. Do you want to overwrite?", ['y', 'n']) == 'n'
+  end
+  puts "Creating new post: #{filename}"
+  open(filename, 'w') do |post|
+    post.puts "---"
+    post.puts "layout: post"
+    post.puts "title: \"99 LISP problems: Problem ##{title}\""
+    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M:%S %z')}"
+    post.puts "comments: true"
+    post.puts "categories: "
+    post.puts "- LISP"
+    post.puts "- 99-problems"
+    post.puts "---"
+    post.puts ""
+    post.puts "Solution to the [99 LISP Problems][99prob] ##{title}"
+    post.puts ""
+    post.puts "```cl"
+    post.puts "```"
+    post.puts ""
+    post.puts "Lisp dialect: [Steel Bank Common Lisp][sbcl]"
+    post.puts ""
+    post.puts "<!--links-->"
+    post.puts "[99prob]: http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html"
+    post.puts "[sbcl]: http://www.sbcl.org/"
+  end
+end
