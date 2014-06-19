@@ -103,8 +103,6 @@ of significance of our test, say $\alpha$.
 
 ### t-tables and p-value
 
-<!--$$ p(x_n) = P\[\] $$-->
-
 Here, Fisher developed two different mechanisms to evaluate the results of his
 tests, which are conceptually exactly the same but differed due to practical
 consideration of the time. These are the t-tables and the p-value. The p-value
@@ -130,12 +128,14 @@ now that calculation of exact p-values is cheaply available using computers,
 one should always rely on reporting these exact values instead of only
 reporting the legacy, arbitrary, and redundant significance stars.
 
-### Post data statistic
+### Post data test
 
 The p-value is a _post-data statistic_ since it can only be computed post the
-collection of data. This is a concept that becomes useful when contrasting test
-of statistical significance with hypothesis testing framework à la Neyman and
-Pearson.
+collection of data. The significance test is therefore a post data test, the
+test (and resulting inference) is incomplete untill the data has been
+collected. This is a concept that becomes useful when contrasting test of
+statistical significance with [hypothesis testing framework][nptest] à la
+Neyman and Pearson.
 
 <!--links-->
 [spanos]: http://errorstatistics.files.wordpress.com/2014/05/spanos_recurring-controversies-about-p-values-and-confidence-intervals-revisited.pdf
@@ -148,3 +148,5 @@ Pearson.
 [gill]: www.nyu.edu/classes/nbeck/q2/gill.pdf
 [wiki]: http://en.wikipedia.org/wiki/Statistical_significance_test
 [tables]: http://faculty.ksu.edu.sa/salghamdi/Statistical%20Tables/T%20Table.jpg
+[nptest]: http://akhilsbehl.github.io/blog/2014/06/19/neyman-pearson-hypothesis-testing/
+
