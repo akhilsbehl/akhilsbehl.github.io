@@ -11,6 +11,13 @@ categories:
 Solution to the [99 LISP Problems][99prob] #6
 
 ```cl
+(defun my-reverse (alist)
+  (if (null alist)
+    nil
+    (append
+      (my-reverse (cdr alist))
+      (list (car alist)))))
+
 (defun my-palindromep (alist)
   (equalp alist (my-reverse alist)))
 ```

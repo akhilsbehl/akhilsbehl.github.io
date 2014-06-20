@@ -11,6 +11,24 @@ categories:
 Solution to the [99 LISP Problems][99prob] #11
 
 ```cl
+(defun pack-first (alist)
+  (if (null alist)
+    nil
+    (if (equalp
+          (car alist)
+          (cadr alist))
+      (append (list (car alist)) (pack-first (cdr alist)))
+      (list (car alist)))))
+
+(defun trim-first (alist)
+  (if (null alist)
+    nil
+    (if (not (equalp
+               (car alist)
+               (cadr alist)))
+      (cdr alist)
+      (trim-first (cdr alist)))))
+
 (defun encode-modified (alist)
   (if (null alist)
     nil
