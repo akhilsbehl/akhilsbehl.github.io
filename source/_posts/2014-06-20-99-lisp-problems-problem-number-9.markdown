@@ -25,8 +25,9 @@ problem.
 <!--more-->
 
 A couple more points of note:
-* I learnt that I can use `(cadr alist)` instead of `(car (cdr alist))`. I find
-* it wasteful to wrap everything in a list to use append; e.g.
+
+* I learnt that I can use `(cadr alist)` instead of `(car (cdr alist))`.
+* I find it wasteful to wrap everything in a list to use append; e.g.
   `(append (list 'a) (list 'b))` in my functions (see the previous few
   solutions). I wonder if I just don't know a more elegant verb for situations
   like these.
