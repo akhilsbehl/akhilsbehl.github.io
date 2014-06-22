@@ -11,6 +11,7 @@ categories:
 Solution to the [99 LISP Problems][99prob] #17
 
 I solved #18 first and am using the solution to that to do this.
+
 ```cl
 (defun slice (alist from to)
   (let ((i 1))
