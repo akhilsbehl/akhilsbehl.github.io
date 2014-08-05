@@ -13,12 +13,12 @@ Solution to the [99 LISP Problems][99prob] #34
 ```cl
 (defun range (lo hi)
     (cond ((> lo hi) nil)
-                  (t (cons lo (range (1+ lo) hi)))))
+    (t (cons lo (range (1+ lo) hi)))))
 
 (defun eucgcd (m n)
     (let ((p (abs m)) (q (abs n)))
-          (cond ((= m n) m)
-                          (t (gcd (- (max m n) (min m n)) (min m n))))))
+        (cond ((= m n) m)
+        (t (gcd (- (max m n) (min m n)) (min m n))))))
 
 (defun coprimep (m n)
     (= (eucgcd m n) 1))
