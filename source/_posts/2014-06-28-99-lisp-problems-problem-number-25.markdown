@@ -35,11 +35,6 @@ Solution to the [99 LISP Problems][99prob] #25
         (list (element-at alist k))
         (rnd-select (remove-at alist k) (1- n))))))
 
-(defun lotto-select (n m)
-  (if (< m n)
-    nil
-    (rnd-select (range 1 m) n)))
-
 (defun rnd-permu (alist)
   (rnd-select alist (length alist)))
 ```
