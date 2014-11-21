@@ -18,6 +18,8 @@ function! PreviewMarkdown()
   let outFile = expand('%:r') . '.html'
   silent execute '!cd %:p:h'
   silent execute '!python -m markdown % >' . outFile
+  " The screen will need to be redrawn. Dunno why! :\
+  silent execute 'redraw!'
 endfunction
 
 augroup markdown
