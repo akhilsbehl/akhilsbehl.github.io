@@ -4,7 +4,7 @@ title: "99 LISP problems: Problem #13"
 date: 2014-06-20 15:24:56 +0530
 comments: true
 categories: 
-- LISP
+- lisp
 - 99-problems
 ---
 

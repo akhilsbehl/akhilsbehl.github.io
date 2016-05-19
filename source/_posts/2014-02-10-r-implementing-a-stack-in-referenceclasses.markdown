@@ -5,11 +5,11 @@ date: 2014-02-10 10:13:35 +0530
 comments: true
 publish: true
 categories: 
-- R
-- ReferenceClasses
-- R5
+- r
+- reference-classes
+- r5
 - stack
-- OOP
+- oop
 ---
 
 R has had a perverse but technically valid model(s) of Object Oriented

@@ -4,10 +4,8 @@ title: "`timeit` macro for SBCL"
 date: 2014-12-25 05:23:28 +0530
 comments: true
 categories:
-- SBCL
-- CommonLisp
-- Lisp
-- Profiling
+- lisp
+- profiling
 - macro
 ---
 
