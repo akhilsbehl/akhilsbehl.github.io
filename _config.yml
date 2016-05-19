@@ -3,7 +3,7 @@
 # ----------------------- #
 
 url: http://akhilsbehl.github.io
-title: head /dev/brain > /dev/www
+title: "asb: head /dev/brain > /dev/www"
 subtitle: My home, musings, and wanderings on the world wide web.
 author: Akhil S. Behl
 simple_search: http://google.com/search
@@ -33,7 +33,7 @@ destination: public
 plugins: plugins
 code_dir: downloads/code
 category_dir: blog/categories
-category_title_prefix: "More of me on: "
+category_title_prefix: "Read more on: "
 markdown: kramdown
 rdiscount:
   extensions:
@@ -42,17 +42,17 @@ rdiscount:
     - smart
 highlighter: pygments # default python pygments have been replaced by pygments.rb
 
-paginate: 10          # Posts per page on the blog index
+paginate: 5          # Posts per page on the blog index
 paginate_path: "posts/:num"  # Directory base for pagination URLs eg. /posts/2/
 recent_posts: 5       # Posts in the sidebar Recent Posts section
-excerpt_link: "Read on &rarr;"  # "Continue reading" link text at the bottom of excerpted articles
+excerpt_link: "Read full post &rarr;"  # "Continue reading" link text at the bottom of excerpted articles
 excerpt_separator: "<!--more-->"
 
 titlecase: false       # Converts page and post titles to titlecase
 
 # list each of the sidebar modules you want to include, in the order you want them to appear.
 # To add custom asides, create files in /source/_includes/custom/asides/ and add them to the list like 'custom/asides/custom_aside_name.html'
-default_asides: [custom/asides/about.html, asides/recent_posts.html, asides/github.html, asides/googleplus.html, custom/asides/category_list.html]
+# default_asides: [custom/asides/about.html, asides/recent_posts.html, asides/github.html, asides/googleplus.html, custom/asides/category_list.html]
 
 # Each layout uses the default asides, but they can have their own asides instead. Simply uncomment the lines below
 # and add an array with the asides you want to use.
@@ -70,10 +70,6 @@ github_repo_count: 5
 github_show_profile_link: true
 github_skip_forks: true
 
-# Twitter
-twitter_user:
-twitter_tweet_button: true
-
 # Google +1
 google_plus_one: true
 google_plus_one_size: medium
@@ -83,20 +79,12 @@ google_plus_one_size: medium
 googleplus_user: u/0/101609335408319028285
 googleplus_hidden: false
 
-# Pinboard
-pinboard_user:
-pinboard_count: 3
-
-# Delicious
-delicious_user:
-delicious_count: 3
-
-# Disqus Comments
-#disqus_short_name: akhilsbehlgithubio
-#disqus_show_comment_count: false
-
 # Google Analytics
 google_analytics_tracking_id: UA-42442765-1
 
-# Facebook Like
-facebook_like: true
+# Stack overflow
+stackoverflow_user_id: 1533691
+
+# LinkedIn
+# linkedin_user: https://in.linkedin.com/in/akhilsbehl
+linkedin_user: akhilsbehl
