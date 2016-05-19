@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #28
 
+
 ```cl
+
 ;;; Part a)
 (defun lsort (alist)
   (sort
@@ -32,7 +34,9 @@ Solution to the [99 LISP Problems][99prob] #28
     (sort
       alist #'<
       :key (lambda (x) (count-elem lengths (length x))))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #15
 
+
 ```cl
+
 (defun repli-one (elem n)
   (if (<= n 0)
     nil
@@ -24,7 +26,9 @@ Solution to the [99 LISP Problems][99prob] #15
       (lambda (elem)
         (repli-one elem n))
       alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

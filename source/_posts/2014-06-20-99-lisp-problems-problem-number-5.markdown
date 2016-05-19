@@ -10,14 +10,18 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #5
 
+
 ```cl
+
 (defun my-reverse (alist)
   (if (null alist)
     nil
     (append
       (my-reverse (cdr alist))
       (list (car alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

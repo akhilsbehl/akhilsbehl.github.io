@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #25
 
+
 ```cl
+
 (defun element-at (alist n)
   (if (< (length alist) n)
     nil
@@ -37,7 +39,9 @@ Solution to the [99 LISP Problems][99prob] #25
 
 (defun rnd-permu (alist)
   (rnd-select alist (length alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #8
 
+
 ```cl
+
 (defun compress (alist)
   (if (null alist)
     nil
@@ -21,7 +23,9 @@ Solution to the [99 LISP Problems][99prob] #8
         nil
         (list (car alist)))
       (compress (cdr alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

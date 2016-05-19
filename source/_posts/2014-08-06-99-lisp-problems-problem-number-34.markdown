@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #34
 
+
 ```cl
+
 (defun range (lo hi)
     (cond ((> lo hi) nil)
     (t (cons lo (range (1+ lo) hi)))))
@@ -28,7 +30,9 @@ Solution to the [99 LISP Problems][99prob] #34
         (t (apply #'+ (mapcar
                         (lambda (x) (if (coprimep m x) 1 0))
                         (range 1 (1- m)))))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

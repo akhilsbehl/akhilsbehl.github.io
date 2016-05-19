@@ -12,7 +12,9 @@ Solution to the [99 LISP Problems][99prob] #19
 
 Uses the two previous solutions.
 
+
 ```cl
+
 (defun slice (alist from to)
   (let ((i 1))
     (mapcan
@@ -32,7 +34,9 @@ Uses the two previous solutions.
   (let* ((m (if (>= n 0) n (+ (length alist) n)))
          (pieces (split alist m)))
     (append (cadr pieces) (car pieces))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

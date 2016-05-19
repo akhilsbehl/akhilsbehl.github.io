@@ -12,7 +12,9 @@ Solution to the [99 LISP Problems][99prob] #18
 
 Very similar to the solution for #16 eariler.
 
+
 ```cl
+
 (defun slice (alist from to)
   (let ((i 1))
     (mapcan
@@ -22,7 +24,9 @@ Very similar to the solution for #16 eariler.
           (if (and (>= j from) (<= j to))
             (list x) nil)))
       alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

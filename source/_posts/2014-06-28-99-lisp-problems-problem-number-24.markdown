@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #24
 
+
 ```cl
+
 (defun element-at (alist n)
   (if (< (length alist) n)
     nil
@@ -39,7 +41,9 @@ Solution to the [99 LISP Problems][99prob] #24
   (if (< m n)
     nil
     (rnd-select (range 1 m) n)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

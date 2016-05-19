@@ -11,11 +11,15 @@ categories:
 If you spot the bug in the following piece of code, never mind reading further.
 Otherwise, go on.
 
+
 ```sh
+
 list_of_archives=$(find ./archives -type f \
   -name '*.lzo' -or -name '*.gz' -or -name '*.bz2')
 list_of_gzips=$(echo $list_of_archives | grep "*.gz$")
+
 ```
+
 
 <!--more-->
 
@@ -29,7 +33,9 @@ options around quoting your variables:
 
 Let's see a brief demo of each:
 
+
 ```sh
+
 $ variable="foo bar baz"
 
 $ echo This is a strongly quoted variable '$variable'
@@ -40,7 +46,9 @@ This is a weakly quoted foo bar baz
 
 $ echo This is an unquoted $variable
 This is an unquoted foo bar baz
+
 ```
+
 
 {% pullquote %}
 {"The seeming lack of difference between the partial quoting and lack of
@@ -69,7 +77,9 @@ separated) token in the string as a (splatted?) array of arguments.
 
 Here is a concocted example to demonstrate the difference. The output is omitted.
 
+
 ```sh
+
 $ mkdir /tmp/tmp
 $ touch /tmp/tmp/file.{gz,bz2,lzo}
 $ list_of_archives=$(find /tmp/tmp -type f -name file.*z*)
@@ -87,11 +97,15 @@ $ list_of_lzos=$(echo $list_of_archives | grep "*.lzo$")
 $ echo $list_of_gzips
 $ echo $list_of_bzips
 $ echo $list_of_lzos
+
 ```
+
 
 A much simpler way of visualizing this difference is to use the -e flag to echo:
 
+
 ```sh
+
 $ echo -e $list_of_archives
 /tmp/tmp/file.lzo /tmp/tmp/file.bz2 /tmp/tmp/file.gz
 
@@ -99,7 +113,9 @@ $ echo -e "$list_of_archives"
 /tmp/tmp/file.lzo
 /tmp/tmp/file.bz2
 /tmp/tmp/file.gz
+
 ```
+
 
 <!--links-->
 [tldp]: http://tldp.org/LDP/abs/html

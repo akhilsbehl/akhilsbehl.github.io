@@ -23,7 +23,9 @@ However, I **don't** use any of that fancy stuff. I tend to think of myself as a
 
 Here is the chunk from my [`.vimrc`][vimrc] that is relevant for this plugin. Even if you are not as minimalistic as I am, you may yet find the ideas in these snippets useful:
 
+
 ```vim
+
 " Custom commands.
 map <LocalLeader>nr :call RAction("rownames")<CR>
 map <LocalLeader>nc :call RAction("colnames")<CR>
@@ -39,7 +41,9 @@ map <LocalLeader>ne :call SendCmdToR("system('traceback()')")<CR>
 map <LocalLeader>sb :call SendCmdToR("system.time({")<CR>
 map <LocalLeader>se :call SendCmdToR("})")<CR>
 map <LocalLeader>tt :call SendCmdToR("tt = ")<CR>
+
 ```
+
 
 The `RAction` commands work this way: vim will inspect the word under the cursor and call the specified command with that argument. For example, `,nr` (my `LocalLeader` gets mapped to `,`) gives me the `rownames` of whichever object I happen to be sitting at and so on.
 
@@ -55,7 +59,9 @@ The [Screen][screen] plugin is a mighty lightweight and simple plugin (something
 
 This is the first time I wrote any serious VimScript. I know this is kludgy but please bear with me.
 
+
 ```vim
+
 " ervandew/screen configuration to send commands to ipython.
 
 let g:ScreenImpl = "Tmux"
@@ -130,7 +136,9 @@ function GetLen()
 endfunction
 autocmd FileType python map <LocalLeader>l :call GetLen()<CR>
 
+
 ```
+
 
 The `,,a` command to send just a carriage return is to complete an indented block when python expects an empty line, e.g. at the end of a `for` loop.
 

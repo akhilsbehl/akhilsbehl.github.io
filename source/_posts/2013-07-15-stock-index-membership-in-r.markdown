@@ -22,7 +22,9 @@ In this post I am going to present a general method to recreate a time series of
 
 There are a few subtle points to it that we'll discuss shortly. But first let's start with a very simple example.
 
+
 ```r
+
 # Let's have three time periods.
 periods <- 3
 
@@ -58,11 +60,15 @@ $`t-3`
 
 attr(,"index")
 [1] "t-1" "t-2" "t-3"
+
 ```
+
 
 And here is what our [wishes][wishful] brought us:
 
+
 ```r
+
 create_mem_ts <- function (ctime, added, removed, current) {
 
   stopifnot(is.atomic(ctime),
@@ -96,7 +102,9 @@ create_mem_ts <- function (ctime, added, removed, current) {
   out
 
 }
+
 ```
+
 
 The function is much more powerful than the simple example quoted above. Here is the [gist][gist-cmt] including this code, documentation and a few examples.
 
@@ -104,7 +112,9 @@ The function is much more powerful than the simple example quoted above. Here is
 
 Let's take the example of the Nifty index on the [National Stock Exchange][nse] of India.[^example] Nifty is the most important Indian stock index comprised of fifty stocks. The membership is typically shuffled twice a year. The following is the list of NSE symbols for the current members of Nifty:
 
+
 ```r
+
 current_nifty
 
  [1] "ACC"        "AMBUJACEM"  "ASIANPAINT" "AXISBANK"   "BAJAJ-AUTO"
@@ -117,11 +127,15 @@ current_nifty
 [36] "NTPC"       "ONGC"       "POWERGRID"  "PNB"        "RANBAXY"   
 [41] "RELIANCE"   "RELINFRA"   "SESAGOA"    "SBIN"       "SUNPHARMA" 
 [46] "TCS"        "TATAMOTORS" "TATAPOWER"  "TATASTEEL"  "ULTRACEMCO"
+
 ```
+
 
 And here are the recent changes in Nifty:
 
+
 ```r
+
 head(changes_in_nifty)
 
        ctime      added removed
@@ -131,7 +145,9 @@ head(changes_in_nifty)
 4 2012-09-28 ULTRACEMCO    STER
 5 2012-04-27 ASIANPAINT    RCOM
 6 2012-04-27 BANKBARODA  RPOWER
+
 ```
+
 
 There are two important differences between this example and the last:
 
@@ -142,7 +158,9 @@ The function `create_mem_ts` has been designed to handle such changes (and other
 
 For now, let's see how our function performs in this case:
 
+
 ```r
+
 ans <- create_mem_ts(ctime=changes_in_nifty[["ctime"]],
                      added=changes_in_nifty[["added"]],
                      removed=changes_in_nifty[["removed"]]
@@ -185,7 +203,9 @@ $`2012-09-28`
 [36] "PNB"        "RANBAXY"    "RELIANCE"   "RELINFRA"   "SESAGOA"   
 [41] "SBIN"       "SUNPHARMA"  "TCS"        "TATAMOTORS" "TATAPOWER" 
 [46] "TATASTEEL"  "SIEMENS"    "WIPRO"      "SAIL"       "STER"      
+
 ```
+
 
 It is easy (but boring) to check that the answer is correct. The nice part is to have a tool ready for you now, whenever you want to do this again.
 
@@ -195,7 +215,9 @@ Feeling sharp, eh Sherlock?! Drat, I wish I could create a regular time-series f
 
 Wait a second... I can! Using this:
 
+
 ```r
+
 memship_at <- function (mem_ts, at) {
 
   stopifnot(inherits(at, class(attr(mem_ts, "index"))))
@@ -208,7 +230,9 @@ memship_at <- function (mem_ts, at) {
     mem_ts[[1]]
 
 }
+
 ```
+
 
 **Why another function? Why not just create the whole series at once?**
 
@@ -226,7 +250,9 @@ Use a loop or an `apply` variant to find out the membership on the dates that yo
 
 I first create a sequence of desired dates like so:
 
+
 ```r
+
 my_dates <- seq.POSIXt(from=as.POSIXct("2012-01-01"),
                        to=as.POSIXct("2012-03-31"),
                        by="7 day")
@@ -234,11 +260,15 @@ my_dates <- seq.POSIXt(from=as.POSIXct("2012-01-01"),
  [5] "2012-01-29 IST" "2012-02-05 IST" "2012-02-12 IST" "2012-02-19 IST"
  [9] "2012-02-26 IST" "2012-03-04 IST" "2012-03-11 IST" "2012-03-18 IST"
 [13] "2012-03-25 IST"
+
 ```
+
 
 Now I can use the `memship_at` function to generate membership at each of these dates like so:
 
+
 ```r
+
 memship_dates <- setNames(lapply(X=my_dates, FUN=memship_at, mem_ts=ans),
                           my_dates)
 head(memship_dates)
@@ -274,7 +304,9 @@ $`2012-01-15`
 [37] "RANBAXY"    "RELIANCE"   "RELINFRA"   "SESAGOA"    "SBIN"       "SUNPHARMA" 
 [43] "TCS"        "TATAMOTORS" "TATAPOWER"  "TATASTEEL"  "SIEMENS"    "WIPRO"     
 [49] "SAIL"       "STER"      
+
 ```
+
 
 And there we have it.
 

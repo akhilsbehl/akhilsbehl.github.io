@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #7
 
+
 ```cl
+
 (defun my-flatten (alist)
   (if (null alist)
     nil
@@ -19,7 +21,9 @@ Solution to the [99 LISP Problems][99prob] #7
         (my-flatten (car alist))
         (list (car alist)))
       (my-flatten (cdr alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

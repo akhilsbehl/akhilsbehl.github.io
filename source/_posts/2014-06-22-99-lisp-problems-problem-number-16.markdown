@@ -16,7 +16,9 @@ solution. Therefore, carrying the state around (in this case, the position of
 the current in the list) is slightly tough. I knew I should be using closures.
 I have used some sort of `let` + `lambda`. Not sure if this is elegant.
 
+
 ```cl
+
 (defun drop (alist n)
   (let ((i 1))
     (mapcan
@@ -25,7 +27,9 @@ I have used some sort of `let` + `lambda`. Not sure if this is elegant.
           (setf i (1+ i))
           (if (= (mod j n) 0) nil (list x))))
       alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

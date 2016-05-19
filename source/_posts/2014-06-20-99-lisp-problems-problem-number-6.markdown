@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #6
 
+
 ```cl
+
 (defun my-reverse (alist)
   (if (null alist)
     nil
@@ -20,7 +22,9 @@ Solution to the [99 LISP Problems][99prob] #6
 
 (defun my-palindromep (alist)
   (equalp alist (my-reverse alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

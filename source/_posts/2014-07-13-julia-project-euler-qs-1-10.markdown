@@ -12,7 +12,9 @@ So, today I decided to take Julia for a spin because, _finally_, it has a stable
 
 <!--more-->
 
+
 ```julia
+
 ########
 #  Q1  #
 ########
@@ -196,4 +198,6 @@ prod([25 * i for i in [8, 15, 17]])
 #########
 
 sum(primesupto(2000000 - 1))
+
 ```
+

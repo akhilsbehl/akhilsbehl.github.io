@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #33
 
+
 ```cl
+
 (defun eucgcd (m n)
   (let ((p (abs m)) (q (abs n)))
     (cond ((= m n) m)
@@ -18,7 +20,9 @@ Solution to the [99 LISP Problems][99prob] #33
 
 (defun coprimep (m n)
   (= (eucgcd m n) 1))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

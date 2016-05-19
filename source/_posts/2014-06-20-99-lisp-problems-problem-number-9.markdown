@@ -32,7 +32,9 @@ A couple more points of note:
   solutions). I wonder if I just don't know a more elegant verb for situations
   like these.
 
+
 ```cl
+
 (defun pack-first (alist)
   (if (null alist)
     nil
@@ -57,7 +59,9 @@ A couple more points of note:
     (append
       (list (pack-first alist))
       (pack (trim-first alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

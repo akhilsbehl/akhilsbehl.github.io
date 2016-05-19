@@ -10,12 +10,16 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #4
 
+
 ```cl
+
 (defun my-len (alist)
   (if (null alist)
     0
     (1+ (my-len (cdr alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

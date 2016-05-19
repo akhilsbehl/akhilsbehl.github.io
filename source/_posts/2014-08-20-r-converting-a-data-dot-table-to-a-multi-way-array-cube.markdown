@@ -19,7 +19,9 @@ Dislcaimer: A constraint (I see it as essentially the functionality being implem
 
 Following is the implemenation with an example:
 
+
 ```r
+
 dt2array = function (x, facts, dims) {
   stopifnot(is.data.table(x))
   setkeyv(x, rev(dims))
@@ -52,6 +54,8 @@ dat = data.table(f1=runif(10),
 dt2array(dat, "f1", c("d1", "d2", "d3"))
 dt2array(dat, c("f1", "f2"), c("d1", "d2", "d3"))
 dt2array(dat, c("f1", "f2", "f3"), c("d1", "d2", "d3"))
+
 ```
+
 
 The implementation is very fast, if I say so myself, since almost all manipulations being used here are fairly low-level in R implemented in C. Hopefully, this will be useful.

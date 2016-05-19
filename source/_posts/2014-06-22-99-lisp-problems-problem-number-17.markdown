@@ -12,7 +12,9 @@ Solution to the [99 LISP Problems][99prob] #17
 
 I solved #18 first and am using the solution to that to do this.
 
+
 ```cl
+
 (defun slice (alist from to)
   (let ((i 1))
     (mapcan
@@ -27,7 +29,9 @@ I solved #18 first and am using the solution to that to do this.
   (list
     (slice alist 1 n)
     (slice alist (1+ n) (length alist))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

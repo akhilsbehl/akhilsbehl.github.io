@@ -10,14 +10,18 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #3:
 
+
 ```cl
+
 (defun element-at (alist n)
   (if (< (length alist) n)
     nil
     (if (= n 1)
       (car alist)
       (element-at (cdr alist) (1- n)))))
+
 ```
+
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 
 <!--links-->

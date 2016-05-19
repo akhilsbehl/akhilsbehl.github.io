@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #1:
 
+
 ```cl
+
 (defun my-last (alist)
   (if
     (equalp (length alist) 0)
@@ -19,7 +21,9 @@ Solution to the [99 LISP Problems][99prob] #1:
       (equalp (length alist) 1)
       alist
       (my-last (cdr alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

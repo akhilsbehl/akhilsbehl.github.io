@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #12
 
+
 ```cl
+
 (defun decompress-one (n elem)
   (if (<= n 0)
     nil
@@ -26,7 +28,9 @@ Solution to the [99 LISP Problems][99prob] #12
         (decompress-one (caar encoding) (second (car encoding)))
         (list (car encoding)))
       (decode-rle (cdr encoding)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

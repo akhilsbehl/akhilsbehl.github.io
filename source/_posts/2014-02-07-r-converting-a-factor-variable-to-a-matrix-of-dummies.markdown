@@ -17,7 +17,9 @@ We all know that this is _easily_ done using `model.matrix`. I do too. And yet, 
 
 So here is the function:
 
+
 ```r
+
 createDummiesFromFactor = function (f, df=data.frame(), ...) {
   # createDummiesFromFactor:
   #
@@ -54,13 +56,17 @@ createDummiesFromFactor = function (f, df=data.frame(), ...) {
   retVal[] = lapply(X=retVal, FUN=factor)
   return(retVal)
 }
+
 ```
+
 
 The command above works with any atomic vector which can be coerced to a factor or is already a factor. This variable may exist in the global environment or in a data.frame in which case one must use the `df` argument to the function. If `f` is not a factor already, one may use the `...` argument to pass variables to the `factor` call used inside the function.
 
 Following are a few examples of the function in action (output omitted):
 
+
 ```r
+
 set.seed(pi)
 x = sample.int(10, 100, TRUE)
 x = factor(x)
@@ -76,7 +82,9 @@ createDummiesFromFactor(foo, df=x, labels=LETTERS[1:10])
 createDummiesFromFactor(foo, df=x, levels=1:9, labels=LETTERS[1:9])
 createDummiesFromFactor(foo, df=x[1:20, "foo", drop=FALSE],
                         levels=1:9, labels=LETTERS[1:9])
+
 ```
+
 
 This work is also available in a [gist][thisgist] for people to download and start working off of. I'd be happy to consider any alternatives, improvements or disucssion on this.
 

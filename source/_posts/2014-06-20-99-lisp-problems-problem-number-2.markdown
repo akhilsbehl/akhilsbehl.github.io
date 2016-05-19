@@ -10,13 +10,17 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #2:
 
+
 ```cl
+
 (defun my-but-last (alist)
   (if
     (<= (length alist) 2)
     alist
     (my-but-last (cdr alist))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

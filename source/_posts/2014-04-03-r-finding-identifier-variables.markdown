@@ -18,7 +18,9 @@ valid identifier for the observations in the dataset.
 
 Following is a generic with methods for `matrix`, `data.frame`, and `data.table`.
 
+
 ```r Implementations of isId & findId
+
 isId = function (x, candidate, ...) UseMethod("isId", x)
 
 isId.default = function (x, candidate, ...)
@@ -37,11 +39,15 @@ findId = function (x, candidateVars, minCombn=2L,
   print("Failed. Try other variables.")
   return(invisible(NULL))
 }
+
 ```
+
 
 Here are some tests for the implemenation above.
 
+
 ```r Testing the functions
+
 ############
 #  Test 1  #
 ############
@@ -74,7 +80,9 @@ findId(iris, names(iris), 1)
 iris[["id"]] = 1:nrow(iris)
 findId(iris, names(iris), 1)
 #[1] "id"
+
 ```
+
 
 The `minCombn` and `maxCombn` variables are used to specify how many candidate
 columns must be considered together to find an identifier. `...` can be used to
@@ -88,7 +96,9 @@ The `data.table` method for this function was implemented after [this discussion
 at StackOverflow. Therefore, I use a similar example to show the efficiency of
 the two methods here:
 
+
 ```r Benchmarking data.frame vs. data.table
+
 library(data.table)
 library(microbenchmark)
 
@@ -113,7 +123,9 @@ microbenchmark(system.time(isId(df, "id")),
 #      system.time(isId(dt, c("a", "id")))  4013.6891  4017.2014  4020.7137   4027.9836  4035.2535     3
 # system.time(isId(df, c("a", "b", "id"))) 39915.0490 48370.9638 56826.8785  70350.0956 83873.3127     3
 # system.time(isId(dt, c("a", "b", "id")))  6993.5077  7642.8285  8292.1493   8342.6799  8393.2105     3
+
 ```
+
 
 We can see that the `default` method is faster when evaluating a single column
 as id. However, that is the only case where it does better. It scales poorly;

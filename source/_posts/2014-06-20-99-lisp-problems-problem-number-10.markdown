@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #10
 
+
 ```cl
+
 (defun pack-first (alist)
   (if (null alist)
     nil
@@ -35,7 +37,9 @@ Solution to the [99 LISP Problems][99prob] #10
     (append
       (list (list (length (pack-first alist)) (car alist)))
       (encode (trim-first alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

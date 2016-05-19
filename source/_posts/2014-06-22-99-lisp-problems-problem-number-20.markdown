@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #20
 
+
 ```cl
+
 (defun remove-at (alist n)
   (let ((i 1))
     (mapcan
@@ -19,7 +21,9 @@ Solution to the [99 LISP Problems][99prob] #20
           (setf i (1+ i))
           (if (= j n) nil (list x))))
       alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

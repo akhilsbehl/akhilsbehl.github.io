@@ -14,7 +14,9 @@ I didn't enjoy this problem very much. The solution is very similar to that for
 #9. But sticks to the requirements of the problem (count directly without
 making sublists).
 
+
 ```cl
+
 (defun count-first (alist)
   (if (null alist) 0
     (if (equalp (car alist) (cadr alist))
@@ -37,7 +39,9 @@ making sublists).
         (list (car alist))
         (list (list (count-first alist) (car alist))))
       (encode-direct (trim-first alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

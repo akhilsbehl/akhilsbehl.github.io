@@ -10,14 +10,18 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #14
 
+
 ```cl
+
 (defun dupli (alist)
   (if (null alist)
     nil
     (append
       (list (car alist) (car alist))
       (dupli (cdr alist)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

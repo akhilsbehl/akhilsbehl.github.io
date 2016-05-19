@@ -13,7 +13,9 @@ First of all, there is this [question][soq] on stackoverflow which proves that s
 
 I know this may not be a good enough reason for some of you. It wasn't for me either till I found this **bug**.[^1] It's a subtle, and therefore, the sinister kind. See the code snippet below to reproduce the bug.
 
+
 ```r
+
 ## Suppose you get an empty data.frame from somewhere. Probably from
 ## logical subsetting itself. For example:
 R> xx <- data.frame("u"=runif(10), "n"=rnorm(10))
@@ -56,7 +58,9 @@ Error in FUN(X[[1L]], ...) :
 Calls: Summary.data.frame -> lapply -> FUN
 
 ## What the #@$*@ !!!
+
 ```
+
 
 And you are left wondering where you called `summary` in your code.
 

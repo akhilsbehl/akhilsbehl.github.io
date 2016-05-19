@@ -23,7 +23,9 @@ In this post I add another data point to the set of benchmarks of the two packag
 
 Because both `dplyr` and `data.table` have been written with efficiency for big datasets in mind, we must consider at least a moderately sized dataset for the benchmarks. Based on memory and patience I had available while writing the benchmarks, I created this synthetic dataset for the benchmarking.
 
+
 ```r Creating a synthetic sample
+
 R> set.seed(pi)
 R> sampSize = 1e7
 R> samp = data.frame(x=runif(sampSize, 2, 4),
@@ -31,7 +33,9 @@ R> samp = data.frame(x=runif(sampSize, 2, 4),
 +                    z=letters[sample.int(26, sampSize, TRUE)],
 +                    w=LETTERS[sample.int(26, sampSize, TRUE)],
 +                    stringsAsFactors=FALSE)
+
 ```
+
 The following is the number of steps we want to perform to transform this sample into a (not-so-much) useful summary.
 
   1. Filter the samp to include only the first twenty of `letters` and the last twenty of `LETTERS`.
@@ -44,7 +48,9 @@ The following is the number of steps we want to perform to transform this sample
 
 ## Expression
 
+
 ```r Base R
+
 R> baseR = samp[samp[["z"]] %in% letters[1:20] &
 +               samp[["w"]] %in% LETTERS[7:26],
 +               c("x", "y", "z")]
@@ -77,9 +83,13 @@ q 1.690664e-07 -0.0008938230
 r 1.689304e-07 -0.0001913007
 s 1.689704e-07 -0.0020868491
 t 1.689081e-07 -0.0001515275
+
 ```
 
+
+
 ```r dplyr
+
 R> dply =
 +    samp %.%
 +    filter(z %in% letters[1:20], w %in% LETTERS[7:26]) %.%
@@ -111,9 +121,13 @@ R> dply
 18 r 1.689304e-07 -0.0001913007
 19 s 1.689704e-07 -0.0020868491
 20 t 1.689081e-07 -0.0001515275
+
 ```
 
+
+
 ```r data.table
+
 R> dtSamp = data.table(samp)
 R> dt = dtSamp[z %in% letters[1:20] & w %in% LETTERS[7:26], list(x, y, z)]
 R> dt = dt[ , list(xProp=(x / sum(x)), yScale=(y - mean(y)) / sd(y), z)]
@@ -141,17 +155,23 @@ R> dt
 18: r 1.689304e-07 -0.0001913007
 19: s 1.689704e-07 -0.0020868491
 20: t 1.689081e-07 -0.0001515275
+
 ```
+
 
 IMHO, the syntax for both `data.table` and `dplyr` is cleaner and more consistent for the kind of operations considered. But this is unsurprising because both are Domain Specific Languages (DSLs) built specificlly for this limited functionality. It is also annoying that both syntaxes confuse Vim and demand manual formatting.
 
 Both `dplyr` and `data.table` also accept column names as free variables in expressions. Of the following three expressions,
 
+
 ```r
+
 x[z %in% letters[1:20]]
 x[x[["z"]] %in% letters[1:20]]
 with(x, x[z %in% letters[1:20]])
+
 ```
+
 
 I find the second form more elegant than the first. Although, personally, I also find the third _most correct in intent_.
 
@@ -161,7 +181,9 @@ If I were to judge these three on syntax, I'd probably choose `dplyr` for it's d
 
 Here is the code used to benchmark the three ways of expressing the desired data manipulation:
 
+
 ```r
+
 R> set.seed(pi)
 R> samp = data.frame(x=runif(1e7, 2, 4),
 +                      y=rnorm(1e7, mean=runif(1), sd=runif(1, 1, 2)),
@@ -208,7 +230,9 @@ R> print(mbc) # Ignoring the expressions:
 7.444853 7.688928 7.735172 7.801475 7.932713    10
 2.217018 2.293009 2.330963 2.425163 2.506184    10
 2.847840 2.926100 2.944250 3.025527 3.071644    10
+
 ```
+
 
 On a moderately big dataset and a realistic computation, both `data.table` and `dplyr` are pretty efficient and pretty similar. However, base R is not orders of magnitude worse. Tight code in base R is still quite competitive; the rub is that it takes significant effort to write tight R code.
 

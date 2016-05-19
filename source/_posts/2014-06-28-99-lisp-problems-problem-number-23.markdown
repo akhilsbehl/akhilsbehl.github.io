@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #23
 
+
 ```cl
+
 (defun element-at (alist n)
   (if (< (length alist) n)
     nil
@@ -34,7 +36,9 @@ Solution to the [99 LISP Problems][99prob] #23
       (append
         (list (element-at alist k))
         (rnd-select (remove-at alist k) (1- n))))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

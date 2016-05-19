@@ -10,12 +10,16 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #32
 
+
 ```cl
+
 (defun eucgcd (m n)
   (cond ((or (<= m 1) (<= n 1)) nil)
         ((= m n) m)
         (t (gcd (- (max m n) (min m n)) (min m n)))))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

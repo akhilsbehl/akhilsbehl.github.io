@@ -18,7 +18,9 @@ I've used `textConnection` in R for reading from strings. Only recently, I reali
 
 Probably the most common places we use a text connection for input is when using the `scan` command. In fact, `scan` provides a simple optional argument to handle this special case. The fact that `read.table` (and derivatives) rely on `scan` under the hood makes this usable there as well.
 
+
 ```r
+
 R> myString = "1 2 3 4 5 6 7 8 9 10"
 R> scan(text=myString, what=1L)
 Read 10 items
@@ -29,7 +31,9 @@ R> read.table(text=myString, sep=" ")
   V1 V2 V3 V4 V5
 1  1  2  3  4  5
 2  6  7  8  9 10
+
 ```
+
 
 I can't think of any other cases where I have used this functionality personally. If you have any other common (or even exotic) use-cases where this was useful, let me know in the comments.
 
@@ -39,17 +43,23 @@ Consider the case where one may want to collect all output from the R console as
 
 Here is an example:
 
+
 ```r
+
 R> textSink = ""
 R> sinkCon = textConnection("textSink", open="w")
 R> sinkCon
      description            class             mode             text           opened         can read        can write 
       "textSink" "textConnection"              "w"           "text"         "opened"             "no"            "yes"
+
 ```
+
 
 Look at the `mode` and `can write` parts of the description above. Now let's try actually writing to it.
 
+
 ```r
+
 R> sink(sinkCon)
 R> summary(lm(runif(1e3) ~ rnorm(1e3))) # There will be no output on the console.
 R> close(sinkCon) # Make sure to close the sink.
@@ -66,7 +76,9 @@ R> textSink
 [15] ""                                                               "Residual standard error: 0.292 on 998 degrees of freedom"      
 [17] "Multiple R-squared:  0.006471,\tAdjusted R-squared:  0.005475 " "F-statistic:   6.5 on 1 and 998 DF,  p-value: 0.01094"         
 [19] ""                                                              
+
 ```
+
 
 ## Epilogue
 

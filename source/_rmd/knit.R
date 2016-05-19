@@ -16,14 +16,14 @@ renderOcto = function (extra="") {
   render_markdown(TRUE)
   # The hook for a code chunk
   codeHook = function (x, options) {
-    paste(paste("\n```r", options[["label"]]),
+    paste(paste("\n```r\n", options[["label"]]),
           paste0(x, collapse="\n"),
-          "```\n", sep="\n")
+          "\n```\n", sep="\n")
   }
   # The hook for an output chunk
   outputHook = function (x, options) {
     if (knitr:::output_asis(x, options)) return(x)
-    else gsub("## {1,2}", "", str_c("\n```\n", x, "```\n"))
+    else gsub("## {1,2}", "", str_c("\n```\n", x, "\n```\n"))
   }
 
   knit_hooks$set(source=codeHook,

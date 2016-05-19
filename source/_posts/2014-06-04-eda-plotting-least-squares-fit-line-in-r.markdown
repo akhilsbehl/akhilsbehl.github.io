@@ -29,7 +29,9 @@ of predictors.
 <!--more-->
 
 
+
 ```r Plotting OLS fit of features against the response
+
 plotLeastSqFit = function(df, responseVar) {
     stopifnot(is.data.frame(df), responseVar %in% colnames(df), is.numeric(df[[responseVar]]))
     areNumeric = setdiff(colnames(df)[sapply(df, is.numeric)], responseVar)
@@ -47,30 +49,40 @@ plotLeastSqFit = function(df, responseVar) {
             lwd = 2)
     })
 }
+
 ```
+
 
 
 Here are sample plots from this function for a couple of the ISLR datasets.
 
 
+
 ```r For the mtcars dataset
+
 library(ISLR)
 
 data(mtcars)
 ## Choose only a few columns.
 plotLeastSqFit(df = mtcars[c("mpg", "cyl", "hp", "wt")], responseVar = "mpg")
+
 ```
+
 ![plot of chunk For the mtcars dataset](../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png) 
 
 
 
+
 ```r For the Advertising dataset, Ch. 2, ISLR
+
 Advertising = read.csv("http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv")
 Advertising[["X"]] = NULL
 set.seed(pi)
 Advertising[["random"]] = runif(nrow(Advertising))
 plotLeastSqFit(df = Advertising, responseVar = "Sales")
+
 ```
+
 ![plot of chunk For the Advertising dataset, Ch. 2, ISLR](../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_Advertising_dataset__Ch__2__ISLR.png) 
 
 

@@ -22,7 +22,9 @@ OOP.
 
 ## The implementation
 
+
 ```r
+
 stack = setRefClass(
   Class="stack",
   fields=c(
@@ -101,7 +103,9 @@ stack = setRefClass(
 
   )
 )
+
 ```
+
 
 There! The implementation does look a lot like one would write in any pure OOP
 language. The only primary difference is the use of `<<-` operator to assign
@@ -151,7 +155,9 @@ Here is some code (output omitted) to take our freshly minted stack class for a
 spin. I am no wiser why the contains method is not working for raw bytes.
 Perhaps someone can offer an explanation in the comments.
 
+
 ```r
+
 myStack = stack$new(vec=list(1L, 2L, 3L,
                              "a", "b", "c",
                              0.25, 0.5, 0.75,
@@ -185,7 +191,9 @@ myStack$size()
 myStack$clear()
 myStack$poll()
 myStack$size()
+
 ```
+
 
 As always, all the code has been added as a [gist][gist] to github.
 

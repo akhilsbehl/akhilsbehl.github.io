@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #21
 
+
 ```cl
+
 (defun insert-at (new-elem alist n)
   (let ((i 1))
     (mapcan
@@ -19,7 +21,9 @@ Solution to the [99 LISP Problems][99prob] #21
           (setf i (1+ i))
           (if (= j n) (list new-elem x) (list x))))
       alist)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

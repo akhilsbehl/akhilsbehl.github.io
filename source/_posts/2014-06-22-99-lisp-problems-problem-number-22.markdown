@@ -10,7 +10,9 @@ categories:
 
 Solution to the [99 LISP Problems][99prob] #22
 
+
 ```cl
+
 (defun range-inner (lo hi)
   (if (> lo hi)
     nil
@@ -22,7 +24,9 @@ Solution to the [99 LISP Problems][99prob] #22
   (if (< right left)
     (reverse (range-inner right left))
     (range-inner left right)))
+
 ```
+
 
 Lisp dialect: [Steel Bank Common Lisp][sbcl]
 

@@ -15,7 +15,9 @@ I am the sort of person who really likes to know how much time code I have writt
 
 Since, writing macros in lisp is so easy and timing code is just the sort of thing macros are really useful for, I decided to practice some macro writing to write a `timeit` macro. Similar [attempts][attempt] have been made in the past but I wanted to roll my own. After some [struggle and a little nudge][rainerhelp] I was able to write something satisfactory:
 
+
 ```cl
+
 (defmacro timeit ((&key
                     (to-stream *standard-output*)
                     (with-runs 1))
@@ -45,7 +47,9 @@ Since, writing macros in lisp is so easy and timing code is just the sort of thi
                (/ ,elapsed-time ,with-runs)
                #\linefeed)
        ,retval)))
+
 ```
+
 
 Hopefully, this is useful for someone not in the mood to write their own code to do this. This was definitely useful for me to write.
 
