@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: bash | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/bash/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[bash: quoting variables - to be or not to be]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/03/03/bash-quoting-variables-to-be-or-not-to-be/"/>
+    <updated>2014-03-03T14:44:16+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/03/03/bash-quoting-variables-to-be-or-not-to-be</id>
+    <content type="html"><![CDATA[<p>If you spot the bug in the following piece of code, never mind reading further.
+Otherwise, go on.</p>
+
+<p>```sh</p>
+
+<p>list_of_archives=$(find ./archives -type f \
+  -name ‘<em>.lzo’ -or -name ‘</em>.gz’ -or -name ‘<em>.bz2’)
+list_of_gzips=$(echo $list_of_archives | grep “</em>.gz$”)</p>
+
+<p>```</p>
+
+<!--more-->
+
+<p>Bash has a very intricate, yet IMHO, beautiful set of quoting rules that a
+programmer needs to keep in mind. Writing a bash script, you always have three
+options around quoting your variables:</p>
+
+<ul>
+  <li>Full (strong) quoting:</li>
+  <li>Partial (weak) quoting:</li>
+  <li>No quoting:</li>
+</ul>
+
+<p>Let’s see a brief demo of each:</p>
+
+<p>```sh</p>
+
+<p>$ variable=”foo bar baz”</p>
+
+<p>$ echo This is a strongly quoted variable ‘$variable’
+This is a strongly quoted $variable</p>
+
+<p>$ echo This is a weakly quoted “$variable”
+This is a weakly quoted foo bar baz</p>
+
+<p>$ echo This is an unquoted $variable
+This is an unquoted foo bar baz</p>
+
+<p>```</p>
+
+<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<p>Essentially, these minor differences force a programmer to burn coffee at a
+faster rate; learn to pay more attention; exercise anger-management etc.
+improving her capability for attention to detail and concentrating on multiple
+things at once.</p>
+
+<p>After having been bit with this difference once again while doing something
+similar to what is shown in the first snippet, I decided to exercise character
+some more. My preferred reference for bash on the internet is <a href="http://tldp.org/LDP/abs/html">here</a>.
+This is what it has to say on <a href="http://tldp.org/LDP/abs/html/quotingvar.html">quoting variables</a>.</p>
+
+<p>The primary difference between partially quoted and unquoted variables in bash
+is that the partial quoting <code>"$variable"</code> treates the variable as a single
+string preserving all whitespace information between the tokens in the string.
+Presenting a bash variable unquoted on the other hand treats each (whitespace
+separated) token in the string as a (splatted?) array of arguments.</p>
+
+<p>Here is a concocted example to demonstrate the difference. The output is omitted.</p>
+
+<p>```sh</p>
+
+<p>$ mkdir /tmp/tmp
+$ touch /tmp/tmp/file.{gz,bz2,lzo}
+$ list_of_archives=$(find /tmp/tmp -type f -name file.<em>z</em>)</p>
+
+<p>$ list_of_gzips=$(echo “$list_of_archives” | grep “<em>.gz$”)
+$ list_of_bzips=$(echo “$list_of_archives” | grep “</em>.bz2$”)
+$ list_of_lzos=$(echo “$list_of_archives” | grep “*.lzo$”)
+$ echo $list_of_gzips
+$ echo $list_of_bzips
+$ echo $list_of_lzos</p>
+
+<p>$ list_of_gzips=$(echo $list_of_archives | grep “<em>.gz$”)
+$ list_of_bzips=$(echo $list_of_archives | grep “</em>.bz2$”)
+$ list_of_lzos=$(echo $list_of_archives | grep “*.lzo$”)
+$ echo $list_of_gzips
+$ echo $list_of_bzips
+$ echo $list_of_lzos</p>
+
+<p>```</p>
+
+<p>A much simpler way of visualizing this difference is to use the -e flag to echo:</p>
+
+<p>```sh</p>
+
+<p>$ echo -e $list_of_archives
+/tmp/tmp/file.lzo /tmp/tmp/file.bz2 /tmp/tmp/file.gz</p>
+
+<p>$ echo -e “$list_of_archives”
+/tmp/tmp/file.lzo
+/tmp/tmp/file.bz2
+/tmp/tmp/file.gz</p>
+
+<p>```</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

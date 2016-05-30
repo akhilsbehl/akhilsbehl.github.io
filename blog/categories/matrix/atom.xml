@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: matrix | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/matrix/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting simple_triplet_matrix to other sparse matrix formats.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats/"/>
+    <updated>2014-11-21T14:17:11+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats</id>
+    <content type="html"><![CDATA[<p>When working with the <code>tm</code> package in R, it produces a <code>DocumentTermMatrix</code> or <code>TermDocumentMatrix</code> as an S3 object of class <code>simple_triplet_matrix</code> from the package <code>slam</code>. Now R has various different packages for creating sparse matrices, each of which have packages depending upon themselves. Long back when working with text data I had created two functions to convert a <code>simple_triplet_matrix</code> to a matrix of class <code>sparseMatrix</code> (package: <code>Matrix</code>) and that to a matrix of class <code>matrix.csr</code> (package: <code>SparseM</code>). The conversions are simple enough once you have read through the documentation of the three packages but hopefully this will save someone some time.</p>
+
+<p>```r</p>
+
+<p>asSparseMatrix = function (simpleTripletMatrix) {
+  retVal = sparseMatrix(i=simpleTripletMatrix[[“i”]],
+                        j=simpleTripletMatrix[[“j”]],
+                        x=simpleTripletMatrix[[“v”]],
+                        dims=c(simpleTripletMatrix[[“nrow”]],
+                               simpleTripletMatrix[[“ncol”]]))
+  if (!is.null(simpleTripletMatrix[[“dimnames”]]))
+    dimnames(retVal) = simpleTripletMatrix[[“dimnames”]]
+  return(retVal)
+}</p>
+
+<p>asMatrixCSR = function (sparseMatrix) {
+  warning(“Will lose dimnames!”)
+  as.matrix.csr(new(“matrix.csc”,
+                    ra=sparseMatrix@x,
+                    ja=sparseMatrix@i + 1L,
+                    ia=sparseMatrix@p + 1L,
+                    dimension=sparseMatrix@Dim))
+}</p>
+
+<p>```</p>
+
+]]></content>
+  </entry>
+  
+</feed>

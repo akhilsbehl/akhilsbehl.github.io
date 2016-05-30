@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: stackoverflow | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/stackoverflow/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Mixed thoughts about Stack Overflow]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2013/07/17/mixed-feelings-stack-overflow/"/>
+    <updated>2013-07-17T05:59:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2013/07/17/mixed-feelings-stack-overflow</id>
+    <content type="html"><![CDATA[<p>I used to love stackoverflow when it was a read-only site for me. Since I have
+started participating to answer questions I have been having some mixed
+feelings about the site. Here are my thoughts in no relevant order.</p>
+
+<!--more-->
+
+<ul>
+  <li>The site reeks too much of <em>gamification</em>. Even <a href="http://en.wikipedia.org/wiki/Gamification">Wikipedia</a> lists the
+site as an example of the new phenomenon (<em>fad?</em>). The site’s founder
+<a href="http://www.codinghorror.com/blog/">Jeff</a> has confessed to it in his <a href="www.codinghorror.com/blog/2011/10/the-gamification.html">blog</a> and in public
+<a href="http://fora.tv/2012/06/21/Stack_Overflow__Stack_Exchange_Programming_Programmers">fora</a> albeit distancing himself from the terminology.</li>
+  <li>The gamification is very efficient. Even while I don’t feel great about it,
+it is addictive.</li>
+  <li>Is the gamification a better incentive, <strong>in the long run</strong> than organic
+online communities, e.g. R-help, or Archlinux Fora? In the long run are
+<strong>incentives</strong> at all a good idea for fostering <em>online</em> &amp; <em>open</em>
+communities <a href="http://www.youtube.com/watch?v=u6XAPnuFjJc">given the surprising truth about motivations</a>?</li>
+  <li>The <a href="http://programmers.stackexchange.com/questions/20407/will-high-reputation-in-stack-overflow-help-to-get-a-good-job">talk</a> about getting better job offers by the other <a href="http://www.joelonsoftware.com/">founder</a>
+Joel<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup> are suspect.</li>
+  <li>Niche languages like <a href="http://www.r-project.org">R</a> and projects provide much lesser opportunity to garner higher
+scores because of fewer users.</li>
+  <li>There is some <a href="http://meta.stackoverflow.com/questions/12468/top-users-on-stackoverflow-slackers-or-superstars">doubt</a> about whether the top users are slackers, really smart
+slackers no doubt, or stars. There is some doubt in my mind whether it will
+make me a slacker.</li>
+  <li>Fluff questions or simple questions or hot-off-the-oven questions are the
+only ones that earn majority eyeballs and answers. One of the questions I
+scored highly on myself was one where I had just mentioned to a user to use
+the <code>names</code> function in R to get names of a list. Some other answers that I
+personally felt were more challenging were left in the cold.
+Surround your pullquote like this {" text to be quoted "}</li>
+</ul>
+
+<p>This is a nebulous mess of ideas in my head. I have not been able to decide if
+I want to keep participating. Time will tell. Meanwhile, I will be more
+conscious (and <em>cautious</em>) of the perils of being <em>gamified</em> and hitting a
+<em>plateau</em>. There is so much more still to learn on <a href="http://redsquirrel.com/dave/work/a2j/patterns/TheLongRoad.html">the long road</a>.</p>
+
+<p>Must stop talking about it then. But must sleep first.</p>
+
+<p>Adieu.</p>
+
+<hr />
+<!-- Footnotes -->
+
+<!-- Links -->
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>whose blog I’m a big fan of by the way. <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
+  
+</feed>

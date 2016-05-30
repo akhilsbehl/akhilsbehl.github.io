@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: r | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/r/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Inspecting objects at point with ESS]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess/"/>
+    <updated>2016-05-30T13:34:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess</id>
+    <content type="html"><![CDATA[<p>Somewhere in the second half of last year I switched my primary text editor from <a href="http://www.vim.org/">Vim</a> to <a href="https://www.gnu.org/software/emacs/">Emacs</a>. Calm down! I use <a href="https://www.emacswiki.org/emacs/Evil">Evil</a>. So, one of my primary languages is R and I was in love with this <a href="https://github.com/vim-scripts/Vim-R-plugin">plugin</a> in Vim. A snippet of my vim config that I used to rely heavily on in Vim was:</p>
+
+<p>``` vim</p>
+
+<p>map <LocalLeader>nr :call RAction("rownames")<CR>
+map <LocalLeader>nc :call RAction("colnames")<CR>
+map <LocalLeader>n2 :call RAction("names")<CR>
+map <LocalLeader>nn :call RAction("dimnames")<CR>
+map <LocalLeader>nd :call RAction("dim")<CR>
+map <LocalLeader>nh :call RAction("head")<CR>
+map <LocalLeader>nt :call RAction("tail")<CR>
+map <LocalLeader>nl :call RAction("length")<CR>
+map <LocalLeader>cc :call RAction("class")<CR></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></p>
+
+<p>```</p>
+
+<p>These commands were invented by me after looking at a similar usage pattern in the plugin’s manuals. Being able to inspect objects at point without switching from my editor to the R prompt made me much more productive than when I could not do this. After I switched to Emacs and the mighty <a href="http://ess.r-project.org/">ESS</a> for programming in R, replicating this was an explicit TODO in my ESS configuration. Ladies &amp; gentlemen, today I bring you the solution. <em>Drumroll!</em></p>
+
+<!--more-->
+
+<p>The primary idea — <code>ess-command</code> wrapped with <code>popup-tip</code> — came from <a href="https://blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/">this blog post</a> of yore and was wielded to magnificent effect by yours truly. (<em>Yes, I’m a megalomaniac, thank you very much.</em>)</p>
+
+<p>Lemme show you <em>teh codez</em>.</p>
+
+<p>``` lisp</p>
+
+<p>;;; Show a popup by executing arbitrary commands on object at point.
+;;; Inspiration:
+;;; blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/</p>
+
+<p>;; emacs.stackexchange.com/questions/696/get-content-of-a-buffer
+(defun asb-read-into-string (buffer)
+  (with-current-buffer buffer
+    (buffer-string)))</p>
+
+<p>(defun asb-ess-R-object-popup (r-func)
+  “R-FUNC: The R function to use on the object.
+Run R-FUN for object at point, and display results in a popup.”
+  (let ((objname (current-word))
+        (tmpbuf (get-buffer-create “<strong>ess-R-object-popup</strong>”)))
+    (if objname
+        (progn
+          (ess-command (concat “class(“ objname “)\n”) tmpbuf)
+          (let ((bs (asb-read-into-string tmpbuf)))
+            (if (not(string-match “(object .* not found)|unexpected” bs))
+                (progn
+                  (ess-command (concat r-func “(“ objname “)\n”) tmpbuf)
+                  (let ((bs (asb-read-into-string tmpbuf)))
+                    (popup-tip bs)))))))
+  (kill-buffer tmpbuf)))</p>
+
+<p>(defun asb-ess-R-object-popup-str ()
+  (interactive)
+  (asb-ess-R-object-popup “str”))</p>
+
+<p>(defun asb-ess-R-object-popup-interactive (r-func)
+  (interactive “sR function to execute: “)
+  (asb-ess-R-object-popup r-func))</p>
+
+<p>(evil-leader/set-key-for-mode ‘ess-mode “ei” ‘asb-ess-R-object-popup-str)
+(evil-leader/set-key-for-mode ‘ess-mode “eI”
+  ‘asb-ess-R-object-popup-interactive)</p>
+
+<p>```</p>
+
+<p>The function <code>asb-ess-R-object-popup</code> allows us to yank the word at point and execute an arbitrary function on it (without arguments) and display the output as a popup-tip. This function is wrapped into <code>asb-ess-R-object-popup-str</code> mapped to <code>&lt;leader&gt;ei</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nspect) to inspect the <code>str</code> of the object interactively because this is what I use the most. Another function called <code>asb-ess-R-object-popup-interactive</code> mapped to <code>&lt;leader&gt;eI</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nteractive-<strong>i</strong>nspect) asks the user what R function to inspect the object with. Common suspects will be <code>head</code>, <code>tail</code>, <code>names</code>, etc. You know the drill. Have a look at the <a href="https://www.youtube.com/watch?v=JwFjWHThIy4">video</a> and pay attention to the minibuffer.</p>
+
+<p>PS: Actually, don’t bother watching the video; I don’t know why youtube insists on downgrading the video quality.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting simple_triplet_matrix to other sparse matrix formats.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats/"/>
+    <updated>2014-11-21T14:17:11+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats</id>
+    <content type="html"><![CDATA[<p>When working with the <code>tm</code> package in R, it produces a <code>DocumentTermMatrix</code> or <code>TermDocumentMatrix</code> as an S3 object of class <code>simple_triplet_matrix</code> from the package <code>slam</code>. Now R has various different packages for creating sparse matrices, each of which have packages depending upon themselves. Long back when working with text data I had created two functions to convert a <code>simple_triplet_matrix</code> to a matrix of class <code>sparseMatrix</code> (package: <code>Matrix</code>) and that to a matrix of class <code>matrix.csr</code> (package: <code>SparseM</code>). The conversions are simple enough once you have read through the documentation of the three packages but hopefully this will save someone some time.</p>
+
+<p>```r</p>
+
+<p>asSparseMatrix = function (simpleTripletMatrix) {
+  retVal = sparseMatrix(i=simpleTripletMatrix[[“i”]],
+                        j=simpleTripletMatrix[[“j”]],
+                        x=simpleTripletMatrix[[“v”]],
+                        dims=c(simpleTripletMatrix[[“nrow”]],
+                               simpleTripletMatrix[[“ncol”]]))
+  if (!is.null(simpleTripletMatrix[[“dimnames”]]))
+    dimnames(retVal) = simpleTripletMatrix[[“dimnames”]]
+  return(retVal)
+}</p>
+
+<p>asMatrixCSR = function (sparseMatrix) {
+  warning(“Will lose dimnames!”)
+  as.matrix.csr(new(“matrix.csc”,
+                    ra=sparseMatrix@x,
+                    ja=sparseMatrix@i + 1L,
+                    ia=sparseMatrix@p + 1L,
+                    dimension=sparseMatrix@Dim))
+}</p>
+
+<p>```</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting a data.table to a multi way array (cube)]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube/"/>
+    <updated>2014-08-20T15:42:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube</id>
+    <content type="html"><![CDATA[<p>This post discusses the problem of converting a <code>data.table</code> to the <code>array</code> data structure in R. The idea is analogous to converting a denormalized dataset that presents both dimensions and facts in a table as columns of the table to a completely normalized fact cube along the dimensions of the dataset.</p>
+
+<p>The problem can be solved in multiple ways in R with attending constraints of these approaches – e.g. <code>plyr::daply</code>, <code>xtabs</code>, <code>by</code> or a manual home-brewn set of split and lapply routine. Without discussing the constraints I observed with the existing techniques, I am presenting an alternative approach here that depends on unrolling the rectangular data structure into a linear structure and then reshaping it by manually counting the facts and dimension sizes (think strides). The choice of using a <code>data.table</code> was purely for efficiency reasons but the same idea can be implemented with a <code>data.frame</code> with little changes to the code.</p>
+
+<!--more-->
+
+<p>Dislcaimer: A constraint (I see it as essentially the functionality being implemented here) that all rows should be unique along the chosen dimensions. Since a cube must have all dimensions perfectly normalized.</p>
+
+<p>Following is the implemenation with an example:</p>
+
+<p>```r</p>
+
+<p>dt2array = function (x, facts, dims) {
+  stopifnot(is.data.table(x))
+  setkeyv(x, rev(dims))
+  stopifnot(!any(duplicated(x)))
+  dimensions = lapply(x[ , rev(dims), with=FALSE],
+                      function (x) sort(unique(x)))
+  xFull = data.table(expand.grid(dimensions, stringsAsFactors=FALSE))
+  setkeyv(xFull, rev(dims))
+  x = data.table:::merge.data.table(xFull, x, by=dims, all=TRUE)
+  factsVec = unlist(x[ , facts, with=FALSE], recursive=FALSE, use.names=FALSE)
+  nFacts = length(facts)
+  nDims = length(dims)
+  if (nFacts &gt; 1) {
+    dim(factsVec) = c(sapply(dimensions, length), nFacts)
+    dimnames(factsVec) = c(dimensions, “facts”=list(facts))
+    return(aperm(factsVec, perm=c(nDims:1, nDims + 1)))
+  } else {
+    dim(factsVec) = sapply(dimensions, length)
+    dimnames(factsVec) = dimensions
+    return(aperm(factsVec))
+  }
+}</p>
+
+<p>dat = data.table(f1=runif(10),
+                 f2=runif(10),
+                 f3=runif(10),
+                 d1=letters[1:5],
+                 d2=rep(letters[3:4], each=5),
+                 d3=LETTERS[1:2])
+dt2array(dat, “f1”, c(“d1”, “d2”, “d3”))
+dt2array(dat, c(“f1”, “f2”), c(“d1”, “d2”, “d3”))
+dt2array(dat, c(“f1”, “f2”, “f3”), c(“d1”, “d2”, “d3”))</p>
+
+<p>```</p>
+
+<p>The implementation is very fast, if I say so myself, since almost all manipulations being used here are fairly low-level in R implemented in C. Hopefully, this will be useful.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[EDA: Plotting non linear decision boundaries in R]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r/"/>
+    <updated>2014-06-05T13:22:53+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://i.stack.imgur.com/UCJol.png" title="‘Figure 2.13, ISLR’" ></p>
+
+<p>So continuing with the beautiful plots in ISLR, <a href="http://stackoverflow.com/questions/24052643/r-how-to-plot-non-linear-decision-boundaries-with-a-grid-in-r">here</a> is a
+discussion I had on SO today about hot to plot decision boundaries or arbitrary
+non-linear curves. The <a href="http://stats.stackexchange.com/questions/21572/how-to-plot-decision-boundary-of-a-k-nearest-neighbor-classifier-from-elements-o">discussion</a> on SE that was linked to in
+the answer was even more useful. Plus, I picked up two new functions today:
+<code>curve</code> and <code>contour</code>.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[EDA: Plotting least squares fit line in R]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/04/eda-plotting-least-squares-fit-line-in-r/"/>
+    <updated>2014-06-04T12:22:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/04/eda-plotting-least-squares-fit-line-in-r</id>
+    <content type="html"><![CDATA[<p>I have recently started reading <a href="http://www-bcf.usc.edu/~gareth/ISL/">ISLR</a> and am finding the plots in the
+book very useful.</p>
+
+<p>A visualization aid one often uses for exploratory data analysis is a scatter
+plot of the response variable against a potential predictor. Overlaying the
+ordinary least squares fit line on this scatter provides a readily accessible
+visual representation of the effect of the predictor on the response (if any).</p>
+
+<p>Following is a simple snippet that I wrote in R to plot such graphs for any
+arbitrary dataset with some numeric response variable. Note that the function
+only attempts the plots for predictors which are numeric (or integer). It also
+attempts a crude adjustment of the layout of the plot according to the number
+of predictors.</p>
+
+<!--more-->
+
+<p>```r Plotting OLS fit of features against the response</p>
+
+<p>plotLeastSqFit = function(df, responseVar) {
+    stopifnot(is.data.frame(df), responseVar %in% colnames(df), is.numeric(df[[responseVar]]))
+    areNumeric = setdiff(colnames(df)[sapply(df, is.numeric)], responseVar)
+    if (length(areNumeric) &lt;= 3) {
+        mfRow = c(1, length(areNumeric))
+    } else {
+        mfRow = c(ceiling(length(areNumeric)/2), 2)
+    }
+    par(mfrow = mfRow)
+    lapply(X = areNumeric, FUN = function(x) {
+        plot(y = df[[responseVar]], x = df[[x]], col = “red”, lwd = 1.5, ylab = responseVar, 
+            xlab = x, main = sprintf(“LS fit of %s against %s”, responseVar, 
+                x))
+        abline(lm(as.formula(paste(responseVar, “~”, x)), data = df), col = “blue”, 
+            lwd = 2)
+    })
+}</p>
+
+<p>```</p>
+
+<p>Here are sample plots from this function for a couple of the ISLR datasets.</p>
+
+<p>```r For the mtcars dataset</p>
+
+<p>library(ISLR)</p>
+
+<p>data(mtcars)
+## Choose only a few columns.
+plotLeastSqFit(df = mtcars[c(“mpg”, “cyl”, “hp”, “wt”)], responseVar = “mpg”)</p>
+
+<p>```</p>
+
+<p><img src="../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png" alt="plot of chunk For the mtcars dataset" /></p>
+
+<p>```r For the Advertising dataset, Ch. 2, ISLR</p>
+
+<p>Advertising = read.csv(“http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv”)
+Advertising[[“X”]] = NULL
+set.seed(pi)
+Advertising[[“random”]] = runif(nrow(Advertising))
+plotLeastSqFit(df = Advertising, responseVar = “Sales”)</p>
+
+<p>```</p>
+
+<p><img src="../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_Advertising_dataset__Ch__2__ISLR.png" alt="plot of chunk For the Advertising dataset, Ch. 2, ISLR" /></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

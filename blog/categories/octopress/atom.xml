@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: octopress | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Thank you, Octopress!]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2013/07/14/thank-you-octopress/"/>
+    <updated>2013-07-14T18:08:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2013/07/14/thank-you-octopress</id>
+    <content type="html"><![CDATA[<p><a href="http://octopress.org">Octopress</a> is a blogging framework for hackers!</p>
+
+<p>This is yet another post from an Octopress starter in praise of the platform. For me, it is an ode to the <em>minimalism</em> and <em>simplicity</em> of this tool that I feel compelled to proclaim the happiness I derive from it.<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup></p>
+
+<!--more-->
+
+<h3 id="simplicity-and-minimalism">Simplicity and Minimalism</h3>
+
+<p>This is a ‘hello, world!’ post and I <strong>really</strong> wanted it to be about Octopress. Why, you ask? Let me give you a few other times when using a technological tool has filled me up with so much love.</p>
+
+<ul>
+  <li>Switching from Internet Explorer to Firefox.</li>
+  <li>Switching from Windows to Linux.</li>
+  <li>Switching from Ubuntu to ArchLinux.</li>
+  <li>Switching from foobar to Vim.</li>
+  <li>Switching from foobar to Git.</li>
+</ul>
+
+<p>Each of those transitions, at least for me, were transitions from <em>complexity</em> and <em>opaqueness</em> into <em>simplicity</em> and <em>minimalism</em>, and, therefore, the ensuing transparency. Now, I am aware that these moves may seem to be in the absolute opposite direction to may people. To them, I can only say that I am, perhaps, a biased <a href="http://www.paulgraham.com/avg.html">blub programmer</a>.</p>
+
+<h3 id="feels-like-home">Feels like home!</h3>
+
+<p>In the past I’ve used blogger, a google site, and a weebly site but nothing ever felt like home (perhaps only ASCII feels like home to me!).<sup id="fnref:3"><a href="#fn:3" class="footnote">2</a></sup> It was always the Windows-y (GUI?) feeling where I kept fighting against the tools which kept taking away from the happiness in <em>doing</em>.</p>
+
+<p>But, what do I feel right now as I write this? I feel calm like I have found my <a href="http://www.joelonsoftware.com/articles/fog0000000043.html">zone</a> where I can use a tool-chain (my markup language, my editor, my operating system, …) each element of which I have curated after trial and experience and which makes me productive. I am writing a <em>markdown</em> file in <em>(G)Vim</em> and watching this build up in <em>Chromium</em>. After I am done, I will push this out using <em>git</em> to be published via <em>github</em> pages. It is all <em>pure text</em> and a <em>version controlled</em> copy sits on my <em><a href="https://www.archlinux.org/">Archbox</a></em> where I can use my favorite <em>gnu utilities</em> to tinker with it. What can I say? It feels like <strong>home</strong>!</p>
+
+<h3 id="foolproof-and-futureproof">Foolproof and futureproof</h3>
+
+<p>I’m a fool and the future is harsh. But what do I care?</p>
+
+<p>Let Octopress and / or <a href="http://jekyllrb.com/">Jekyll</a> disappear tomorrow. Let people make newer, crazier, and fancier tools. I can rest assured that markdown and pure HTML will always be good enough to serve my publishing needs. And I can be sure that someone will keep writing good software on top of these primitives. At least, I can be sure that I can write it for myself if and when the need arises. If github shuts down tomorrow, I will take my pages wherever I can afford to publish them eventually.</p>
+
+<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<h3 id="how-to-get-one-for-yourself">How to get one for yourself</h3>
+
+<p>There are many good tutorials out there. Therefore, I am not going to do one myself. Primarily, because I am still learning myself. But the following links may help. Godspeed!</p>
+
+<p><strong>The meta discussion:</strong></p>
+
+<ul>
+  <li><a href="http://alblue.bandlem.com/2012/02/advantages-of-octopress.html">Alblue’s list of advantages of Octopress</a></li>
+  <li><a href="http://alblue.bandlem.com/2012/02/disadvantages-of-octopress.html">Alblue’s list of disadvantages of Octopress</a></li>
+  <li><a href="http://thepaulrayner.com/blog/2013/02/04/blogging-with-octopress-and-github-pages/">Another interesting take on Octopress</a></li>
+  <li><a href="http://shinysparkly.com/blog/2013/06/02/And-now-its-on-Jekyll/">Perhaps eventually we’ll all move to Jekyll</a></li>
+</ul>
+
+<p><strong>Tutorials:</strong></p>
+
+<ul>
+  <li><a href="http://octopress.org/docs/">The official documentation</a></li>
+  <li><a href="http://webdesign.tutsplus.com/tutorials/applications/getting-started-with-octopress/">A full walkthrough from webdesign-tuts+</a></li>
+</ul>
+
+<!--Footnotes-->
+
+<!--Links-->
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>Let’s assume we are not all <em>fanboys</em> even if only for the sake of discussion. <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p>Yesterday I was so upset with my failing attempts at adding <em>code snippets</em> to my weebly site that I deleted all content I have ever published on the web in frustration because I decided I was giving up on blogging altogether. Like the fool that I am, I did not backup and lost much material. <a href="#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
+  
+</feed>

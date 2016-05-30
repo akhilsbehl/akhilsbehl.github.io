@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: goto | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/goto/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[goto fail;]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/03/03/goto-fail/"/>
+    <updated>2014-03-03T13:59:04+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/03/03/goto-fail</id>
+    <content type="html"><![CDATA[<p>Just ran across <a href="https://www.imperialviolet.org/2014/02/22/applebug.html">this</a> and was marveling at how aptly the idiom is
+named. People have already put this on a <a href="http://teespring.com/goto-fail-goto-fail">tshirt</a>.</p>
+
+<!--more-->
+
+<p>Learnings and affirmations from this episode:</p>
+
+<ul>
+  <li>Clang does have <code>-Wunreachable-code</code> to warn about this, but it’s not in
+<code>-Wall</code>. (One of these days I need to learn all <code>-Wflag</code> I should be keeping
+on when compiling my software. I always thought that <code>-Wall</code> was enough.)</li>
+  <li><em>Open source is good. Amen!</em>.</li>
+  <li><strong>Test. Test. Test.</strong> As <a href="http://www.slate.com/articles/technology/bitwise/2014/02/apple_security_bug_a_critical_flaw_was_extraordinarily_simple.html">Auerbach</a> concludes:</li>
+</ul>
+
+<p><blockquote><p></p></p><p><p>The people who wrote it knew what they were doing. The bug is indeed the result<br/>of negligence, but the sad and scary thing is that, for software developers,<br/>this is not a ‘What were they thinking?’ moment. It’s an ‘Oh my God, that could<br/>have been me’ moment.</p></p><p><p></p></blockquote></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

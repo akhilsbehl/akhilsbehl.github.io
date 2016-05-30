@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: reference-classes | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/reference-classes/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: Implementing a stack in ReferenceClasses]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/02/10/r-implementing-a-stack-in-referenceclasses/"/>
+    <updated>2014-02-10T10:13:35+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/02/10/r-implementing-a-stack-in-referenceclasses</id>
+    <content type="html"><![CDATA[<p>R has had a perverse but technically valid model(s) of Object Oriented
+Programming (OOP) for a long time. <a href="https://stat.ethz.ch/R-manual/R-devel/library/methods/html/refClass.html">ReferenceClasses</a>, introduced by
+<a href="http://en.wikipedia.org/wiki/John_Chambers_%28statistician%29">John Chambers</a> are the new promise of traditional OOP in R. This post
+implements a stack (&amp; queue) in R as an exercise in <code>ReferenceClasses</code> based
+OOP.</p>
+
+<!--more-->
+
+<h2 id="the-implementation">The implementation</h2>
+
+<p>```r</p>
+
+<p>stack = setRefClass(
+  Class=”stack”,
+  fields=c(
+    “vec”
+  ),
+  methods=list(</p>
+
+<pre><code>clear=function () {
+  'Generic help string' # How come this does not work for S3?
+  vec &lt;&lt;- vec[FALSE]
+},
+
+contains=function(values) {
+  'Generic help string'
+  return(values %in% vec)
+},
+
+initialize=function (vec=list(), ...) {
+  vec &lt;&lt;- vec
+  callSuper(...)
+},
+
+peek=function (n=1) {
+  'Generic help string'
+  if (n &gt; length(vec))
+    message("More elements requested than in stack.")
+  return(tail(vec, n))
+},
+
+peekleft=function (n=1) {
+  'Generic help string'
+  if (n &gt; length(vec))
+    message("More elements requested than in stack.")
+  return(head(vec, n))
+},
+
+poll = function (left=FALSE) {
+  'Generic help string'
+  if (length(vec) == 0L) return(NULL)
+  if (left) return(popleft())
+  else return(pop())
+},
+
+pop=function (n=1) {
+  'Generic help string'
+  if (n &gt; length(vec))
+    stop("More elements requested than in stack.")
+  retVal = tail(vec, n)
+  vec &lt;&lt;- head(vec, length(vec) - n)
+  return(retVal)
+},
+
+popleft=function (n=1) {
+  'Generic help string'
+  if (n &gt; length(vec))
+    stop("More elements requested than in stack.")
+  retVal = head(vec, n)
+  vec &lt;&lt;- tail(vec, length(vec) - n)
+  return(retVal)
+},
+
+push=function (value) {
+  'Generic help string'
+  vec &lt;&lt;- c(vec, value)
+},
+
+pushleft=function (value) {
+  'Generic help string'
+  vec &lt;&lt;- c(value, vec)
+},
+
+size = function () {
+  'Generic help string'
+  return(length(vec))
+}
+</code></pre>
+
+<p>)
+)</p>
+
+<p>```</p>
+
+<p>There! The implementation does look a lot like one would write in any pure OOP
+language. The only primary difference is the use of <code>&lt;&lt;-</code> operator to assign
+in the parent frame. There is some very interesting magic with references
+going on under the hood which (to the best of my knowledge) is the only way of
+obtaining pure <em>references</em> in R. Perhaps, I will follow up with more detailed
+notes on the implementation of <code>ReferenceClasses</code> using environments once I
+can wrap my head around them.</p>
+
+<h2 id="some-considerations">Some considerations</h2>
+
+<p>There are a few points that I am still chewing on at the moment:</p>
+
+<ul>
+  <li>
+    <p>All members of an RC object are public members. This violates some basic
+safety contracts in OOP and may be problematic downstream with user code if
+appropriate hygiene is not practiced.</p>
+  </li>
+  <li>
+    <p>The use of <code>&lt;&lt;-</code> with its associated search method may be dangerous if a
+package dev is sloppy.</p>
+  </li>
+  <li>
+    <p><code>ReferenceClasses</code> pass objects by reference which is orthogonal to S3 and S4
+copy-on-write semantics. The lack of widespread understanding of RC coupled
+with inability to hide implementation noted above can create nasty surprises
+for unsuspecting users. In some way, this goes with the tradition of R
+providing another loaded gun for users to <em>shoot-themselves-in-the-foot</em>. ;)</p>
+  </li>
+  <li>
+    <p>I was quite pleased to discover Python style docstrings provided within the
+methods. However, I was equally surprised to see them. I double checked that
+this is not, in fact, some hidden R gem that I was unaware of. (I tried using
+docstrings with S3 classes.) I would like to learn how the parser handles
+these docstrings and if (and at what cost) can we make them pervasive for all
+functions and closures regardless of the object system they exist in.</p>
+  </li>
+  <li>
+    <p>I will probably open up <code>lme4</code> to understand how a complete package based on
+<code>ReferenceClasses</code> is implemented and what hygiene is required to use these
+in downstream code. Will post here on whatever I discover.</p>
+  </li>
+  <li>
+    <p>There has been discussion about the space required for <code>ReferenceClasses</code>
+when they touch the disk during Serialization/Deserialization. See
+<a href="http://r.789695.n4.nabble.com/Reference-classes-and-memory-consumption-td4633836.html">here</a> and <a href="https://stat.ethz.ch/pipermail/r-devel/2012-September/064776.html">here</a>. None of the discussions conclude anything
+of substance. This may be another thing that I may blog about as my
+experience grows.</p>
+  </li>
+</ul>
+
+<h2 id="using-the-freshly-minted-stack">Using the freshly minted stack</h2>
+
+<p>Here is some code (output omitted) to take our freshly minted stack class for a
+spin. I am no wiser why the contains method is not working for raw bytes.
+Perhaps someone can offer an explanation in the comments.</p>
+
+<p>```r</p>
+
+<p>myStack = stack$new(vec=list(1L, 2L, 3L,
+                             “a”, “b”, “c”,
+                             0.25, 0.5, 0.75,
+                             as.raw(0L), as.raw(1L), as.raw(2L)))</p>
+
+<p>str(myStack)</p>
+
+<p>myStack$contains(1L)
+myStack$contains(“d”)
+myStack$contains(0.5)
+myStack$contains(as.raw(seq.int(1:2))) # No clue why this shouldn’t work.</p>
+
+<p>myStack$peek()
+myStack$peek(2)</p>
+
+<p>myStack$peekleft()
+myStack$peekleft(2)</p>
+
+<p>myStack$pop()
+myStack$pop(2)</p>
+
+<p>myStack$popleft()
+myStack$popleft(2)</p>
+
+<p>myStack$push(as.raw(4L))
+myStack$pushleft(as.raw(255L))</p>
+
+<p>myStack$poll()
+myStack$size()</p>
+
+<p>myStack$clear()
+myStack$poll()
+myStack$size()</p>
+
+<p>```</p>
+
+<p>As always, all the code has been added as a <a href="https://gist.github.com/akhilsbehl/8911837">gist</a> to github.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

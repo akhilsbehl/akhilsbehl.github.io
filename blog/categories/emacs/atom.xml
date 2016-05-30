@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: emacs | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/emacs/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Inspecting objects at point with ESS]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess/"/>
+    <updated>2016-05-30T13:34:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess</id>
+    <content type="html"><![CDATA[<p>Somewhere in the second half of last year I switched my primary text editor from <a href="http://www.vim.org/">Vim</a> to <a href="https://www.gnu.org/software/emacs/">Emacs</a>. Calm down! I use <a href="https://www.emacswiki.org/emacs/Evil">Evil</a>. So, one of my primary languages is R and I was in love with this <a href="https://github.com/vim-scripts/Vim-R-plugin">plugin</a> in Vim. A snippet of my vim config that I used to rely heavily on in Vim was:</p>
+
+<p>``` vim</p>
+
+<p>map <LocalLeader>nr :call RAction("rownames")<CR>
+map <LocalLeader>nc :call RAction("colnames")<CR>
+map <LocalLeader>n2 :call RAction("names")<CR>
+map <LocalLeader>nn :call RAction("dimnames")<CR>
+map <LocalLeader>nd :call RAction("dim")<CR>
+map <LocalLeader>nh :call RAction("head")<CR>
+map <LocalLeader>nt :call RAction("tail")<CR>
+map <LocalLeader>nl :call RAction("length")<CR>
+map <LocalLeader>cc :call RAction("class")<CR></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></p>
+
+<p>```</p>
+
+<p>These commands were invented by me after looking at a similar usage pattern in the plugin’s manuals. Being able to inspect objects at point without switching from my editor to the R prompt made me much more productive than when I could not do this. After I switched to Emacs and the mighty <a href="http://ess.r-project.org/">ESS</a> for programming in R, replicating this was an explicit TODO in my ESS configuration. Ladies &amp; gentlemen, today I bring you the solution. <em>Drumroll!</em></p>
+
+<!--more-->
+
+<p>The primary idea — <code>ess-command</code> wrapped with <code>popup-tip</code> — came from <a href="https://blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/">this blog post</a> of yore and was wielded to magnificent effect by yours truly. (<em>Yes, I’m a megalomaniac, thank you very much.</em>)</p>
+
+<p>Lemme show you <em>teh codez</em>.</p>
+
+<p>``` lisp</p>
+
+<p>;;; Show a popup by executing arbitrary commands on object at point.
+;;; Inspiration:
+;;; blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/</p>
+
+<p>;; emacs.stackexchange.com/questions/696/get-content-of-a-buffer
+(defun asb-read-into-string (buffer)
+  (with-current-buffer buffer
+    (buffer-string)))</p>
+
+<p>(defun asb-ess-R-object-popup (r-func)
+  “R-FUNC: The R function to use on the object.
+Run R-FUN for object at point, and display results in a popup.”
+  (let ((objname (current-word))
+        (tmpbuf (get-buffer-create “<strong>ess-R-object-popup</strong>”)))
+    (if objname
+        (progn
+          (ess-command (concat “class(“ objname “)\n”) tmpbuf)
+          (let ((bs (asb-read-into-string tmpbuf)))
+            (if (not(string-match “(object .* not found)|unexpected” bs))
+                (progn
+                  (ess-command (concat r-func “(“ objname “)\n”) tmpbuf)
+                  (let ((bs (asb-read-into-string tmpbuf)))
+                    (popup-tip bs)))))))
+  (kill-buffer tmpbuf)))</p>
+
+<p>(defun asb-ess-R-object-popup-str ()
+  (interactive)
+  (asb-ess-R-object-popup “str”))</p>
+
+<p>(defun asb-ess-R-object-popup-interactive (r-func)
+  (interactive “sR function to execute: “)
+  (asb-ess-R-object-popup r-func))</p>
+
+<p>(evil-leader/set-key-for-mode ‘ess-mode “ei” ‘asb-ess-R-object-popup-str)
+(evil-leader/set-key-for-mode ‘ess-mode “eI”
+  ‘asb-ess-R-object-popup-interactive)</p>
+
+<p>```</p>
+
+<p>The function <code>asb-ess-R-object-popup</code> allows us to yank the word at point and execute an arbitrary function on it (without arguments) and display the output as a popup-tip. This function is wrapped into <code>asb-ess-R-object-popup-str</code> mapped to <code>&lt;leader&gt;ei</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nspect) to inspect the <code>str</code> of the object interactively because this is what I use the most. Another function called <code>asb-ess-R-object-popup-interactive</code> mapped to <code>&lt;leader&gt;eI</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nteractive-<strong>i</strong>nspect) asks the user what R function to inspect the object with. Common suspects will be <code>head</code>, <code>tail</code>, <code>names</code>, etc. You know the drill. Have a look at the <a href="https://www.youtube.com/watch?v=JwFjWHThIy4">video</a> and pay attention to the minibuffer.</p>
+
+<p>PS: Actually, don’t bother watching the video; I don’t know why youtube insists on downgrading the video quality.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

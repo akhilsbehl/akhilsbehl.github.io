@@ -1,0 +1,1666 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Inspecting objects at point with ESS]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess/"/>
+    <updated>2016-05-30T13:34:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess</id>
+    <content type="html"><![CDATA[<p>Somewhere in the second half of last year I switched my primary text editor from <a href="http://www.vim.org/">Vim</a> to <a href="https://www.gnu.org/software/emacs/">Emacs</a>. Calm down! I use <a href="https://www.emacswiki.org/emacs/Evil">Evil</a>. So, one of my primary languages is R and I was in love with this <a href="https://github.com/vim-scripts/Vim-R-plugin">plugin</a> in Vim. A snippet of my vim config that I used to rely heavily on in Vim was:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nr :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;rownames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nc :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;colnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>n2 :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nn :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dimnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nd :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dim&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nh :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nt :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;tail&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nl :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;length&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">cc</span> :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>These commands were invented by me after looking at a similar usage pattern in the plugin’s manuals. Being able to inspect objects at point without switching from my editor to the R prompt made me much more productive than when I could not do this. After I switched to Emacs and the mighty <a href="http://ess.r-project.org/">ESS</a> for programming in R, replicating this was an explicit TODO in my ESS configuration. Ladies &amp; gentlemen, today I bring you the solution. <em>Drumroll!</em></p>
+
+<!--more-->
+
+<p>The primary idea — <code>ess-command</code> wrapped with <code>popup-tip</code> — came from <a href="https://blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/">this blog post</a> of yore and was wielded to magnificent effect by yours truly. (<em>Yes, I’m a megalomaniac, thank you very much.</em>)</p>
+
+<p>Lemme show you <em>teh codez</em>.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="c1">;;; Show a popup by executing arbitrary commands on object at point.</span>
+</span><span class="line"><span class="c1">;;; Inspiration:</span>
+</span><span class="line"><span class="c1">;;; blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">;; emacs.stackexchange.com/questions/696/get-content-of-a-buffer</span>
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">asb-read-into-string</span> <span class="p">(</span><span class="nv">buffer</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">with-current-buffer</span> <span class="nv">buffer</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">buffer-string</span><span class="p">)))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">asb-ess-R-object-popup</span> <span class="p">(</span><span class="nv">r-func</span><span class="p">)</span>
+</span><span class="line">  <span class="s">&quot;R-FUNC: The R function to use on the object.</span>
+</span><span class="line"><span class="s">Run R-FUN for object at point, and display results in a popup.&quot;</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">objname</span> <span class="p">(</span><span class="nv">current-word</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">tmpbuf</span> <span class="p">(</span><span class="nv">get-buffer-create</span> <span class="s">&quot;**ess-R-object-popup**&quot;</span><span class="p">)))</span>
+</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="nv">objname</span>
+</span><span class="line">        <span class="p">(</span><span class="k">progn</span>
+</span><span class="line">          <span class="p">(</span><span class="nv">ess-command</span> <span class="p">(</span><span class="nv">concat</span> <span class="s">&quot;class(&quot;</span> <span class="nv">objname</span> <span class="s">&quot;)\n&quot;</span><span class="p">)</span> <span class="nv">tmpbuf</span><span class="p">)</span>
+</span><span class="line">          <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">bs</span> <span class="p">(</span><span class="nv">asb-read-into-string</span> <span class="nv">tmpbuf</span><span class="p">)))</span>
+</span><span class="line">            <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">not</span><span class="p">(</span><span class="nv">string-match</span> <span class="s">&quot;\(object .* not found\)\|unexpected&quot;</span> <span class="nv">bs</span><span class="p">))</span>
+</span><span class="line">                <span class="p">(</span><span class="k">progn</span>
+</span><span class="line">                  <span class="p">(</span><span class="nv">ess-command</span> <span class="p">(</span><span class="nv">concat</span> <span class="nv">r-func</span> <span class="s">&quot;(&quot;</span> <span class="nv">objname</span> <span class="s">&quot;)\n&quot;</span><span class="p">)</span> <span class="nv">tmpbuf</span><span class="p">)</span>
+</span><span class="line">                  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">bs</span> <span class="p">(</span><span class="nv">asb-read-into-string</span> <span class="nv">tmpbuf</span><span class="p">)))</span>
+</span><span class="line">                    <span class="p">(</span><span class="nv">popup-tip</span> <span class="nv">bs</span><span class="p">)))))))</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">kill-buffer</span> <span class="nv">tmpbuf</span><span class="p">)))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">asb-ess-R-object-popup-str</span> <span class="p">()</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">interactive</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">asb-ess-R-object-popup</span> <span class="s">&quot;str&quot;</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">asb-ess-R-object-popup-interactive</span> <span class="p">(</span><span class="nv">r-func</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">interactive</span> <span class="s">&quot;sR function to execute: &quot;</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">asb-ess-R-object-popup</span> <span class="nv">r-func</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nv">evil-leader/set-key-for-mode</span> <span class="ss">&#39;ess-mode</span> <span class="s">&quot;ei&quot;</span> <span class="ss">&#39;asb-ess-R-object-popup-str</span><span class="p">)</span>
+</span><span class="line"><span class="p">(</span><span class="nv">evil-leader/set-key-for-mode</span> <span class="ss">&#39;ess-mode</span> <span class="s">&quot;eI&quot;</span>
+</span><span class="line">  <span class="ss">&#39;asb-ess-R-object-popup-interactive</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The function <code>asb-ess-R-object-popup</code> allows us to yank the word at point and execute an arbitrary function on it (without arguments) and display the output as a popup-tip. This function is wrapped into <code>asb-ess-R-object-popup-str</code> mapped to <code>&lt;leader&gt;ei</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nspect) to inspect the <code>str</code> of the object interactively because this is what I use the most. Another function called <code>asb-ess-R-object-popup-interactive</code> mapped to <code>&lt;leader&gt;eI</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nteractive-<strong>i</strong>nspect) asks the user what R function to inspect the object with. Common suspects will be <code>head</code>, <code>tail</code>, <code>names</code>, etc. You know the drill. Have a look at the <a href="https://www.youtube.com/watch?v=JwFjWHThIy4">video</a> and pay attention to the minibuffer.</p>
+
+<p>PS: Actually, don’t bother watching the video; I don’t know why youtube insists on downgrading the video quality.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Python's AST module: Bringing a gun to a knife fight!]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/05/19/pythons-ast-module-bringing-a-gun-to-a-knife-fight/"/>
+    <updated>2016-05-19T16:22:54+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/05/19/pythons-ast-module-bringing-a-gun-to-a-knife-fight</id>
+    <content type="html"><![CDATA[<p>So, I’ve been writing unit tests for some statistical code using <a href="https://pytest.org/latest/">py.test</a>. One of the sweet things about py.test is that it gives you some cute <a href="https://pytest.org/latest/assert.html#making-use-of-context-sensitive-comparisons">context specific comparison assertions</a> where you can check a data structure with another.</p>
+
+<p>The problem that I ran into is when using this with floating point numbers. A minimal (convoluted) example:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">3141</span><span class="p">)</span>
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">xx</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">pd</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+</span><span class="line"><span class="mf">0.386739093187</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="k">assert</span> <span class="mf">0.386739093187</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+</span><span class="line"><span class="o">---------------------------------------------------------------------------</span>
+</span><span class="line"><span class="ne">AssertionError</span>                            <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+</span><span class="line"><span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">16</span><span class="o">-</span><span class="n">f6262184b4b6</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+</span><span class="line"><span class="o">----&gt;</span> <span class="mi">1</span> <span class="k">assert</span> <span class="mf">0.386739093187</span> <span class="o">==</span> <span class="n">pd</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="ne">AssertionError</span><span class="p">:</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<!--more-->
+
+<p><span class="pullquote-right" data-pullquote="Disclaimer: Don’t try this at work! Even though I did.">
+Now, this is not that annoying unless you wanna do this for complicated data structures such as dicts of lists of floats etc. and you want to use the assertion goodness that comes with <code>py.test</code>. And I had exactly this situation at hand. Disclaimer: Don’t try this at work! Even though I did.
+</span></p>
+
+<p>I was thinking that it’d be easy as pie to do this in a lisp by traversing the structure with a lambda that will round all the floats. And then I figured that Python can do this for me using the <a href="https://docs.python.org/2/library/ast.html"><code>AST</code></a> module. There is a good introduction to the module <a href="http://eli.thegreenplace.net/2009/11/28/python-internals-working-with-python-asts">here</a> and a discussion on <em>appropriate things to do with ASTs</em> <a href="http://pyvideo.org/video/419/pycon-2011--what-would-you-do-with-an-ast">here</a>.</p>
+
+<p>So, here is what I ended up implementing (this is miles away from being safe to use) to solve the problem.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">ast</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">codegen</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">NumberRounder</span><span class="p">(</span><span class="n">ast</span><span class="o">.</span><span class="n">NodeTransformer</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">digits</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">digits</span> <span class="o">=</span> <span class="n">digits</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">visit_Num</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Num</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">digits</span><span class="p">))</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">node</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">round_numbers_in</span><span class="p">(</span><span class="n">literal</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+</span><span class="line">    <span class="n">nr</span> <span class="o">=</span> <span class="n">NumberRounder</span><span class="p">(</span><span class="n">digits</span><span class="o">=</span><span class="n">digits</span><span class="p">)</span>
+</span><span class="line">    <span class="n">original_ast</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">literal</span><span class="p">))</span>
+</span><span class="line">    <span class="n">rewritten_ast</span> <span class="o">=</span> <span class="n">nr</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">original_ast</span><span class="p">)</span>
+</span><span class="line">    <span class="n">rewritten_source</span> <span class="o">=</span> <span class="n">codegen</span><span class="o">.</span><span class="n">to_source</span><span class="p">(</span><span class="n">rewritten_ast</span><span class="p">)</span>
+</span><span class="line">    <span class="n">rewritten_literal</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">rewritten_source</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">rewritten_literal</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>And voila!</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">sample_complicated_literal</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class="line">    <span class="s">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s">&#39;test&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">            <span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.074264470377902181</span><span class="p">,</span> <span class="mf">0.83386867290874311</span><span class="p">],</span>
+</span><span class="line">            <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">                <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.090294684490804245</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.46208167869977368</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.082279577434353213</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.075867491789192387</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.75951127406694918</span>
+</span><span class="line">            <span class="p">}</span>
+</span><span class="line">        <span class="p">},</span> <span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">            <span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.90590397810859369</span><span class="p">,</span> <span class="mf">0.074264470377902181</span><span class="p">],</span>
+</span><span class="line">            <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">                <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.51193055816399746</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.83386867290874311</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.38673909318708044</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.087088641668223832</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.90457554405068796</span>
+</span><span class="line">            <span class="p">}</span>
+</span><span class="line">        <span class="p">}</span>
+</span><span class="line">    <span class="p">},</span> <span class="s">&#39;c&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">        <span class="s">&#39;test&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">            <span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.76596994956051723</span><span class="p">,</span> <span class="mf">0.18885210718343348</span><span class="p">],</span>
+</span><span class="line">            <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">                <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.42025570188230343</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.59311282572141033</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.30455390453286846</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.2119924666533205</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.73139852479269585</span>
+</span><span class="line">            <span class="p">}</span>
+</span><span class="line">        <span class="p">},</span> <span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">            <span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.024942395243662818</span><span class="p">,</span> <span class="mf">0.90001151823365477</span><span class="p">],</span>
+</span><span class="line">            <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span>
+</span><span class="line">                <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.42025570188230343</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.54953955294935286</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.18885210718343348</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.057602330989601373</span><span class="p">,</span>
+</span><span class="line">                <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.89242588191298255</span>
+</span><span class="line">            <span class="p">}</span>
+</span><span class="line">        <span class="p">}</span>
+</span><span class="line">    <span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">pprint</span>
+</span><span class="line">
+</span><span class="line"><span class="o">&gt;&gt;&gt;</span> <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">round_numbers_in</span><span class="p">(</span><span class="n">sample_complicated_literal</span><span class="p">,</span> <span class="n">digits</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">{</span><span class="s">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.9059</span><span class="p">,</span> <span class="mf">0.0743</span><span class="p">],</span>
+</span><span class="line">                <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.3867</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.9046</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.5119</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.0871</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.8339</span><span class="p">}},</span>
+</span><span class="line">    <span class="s">&#39;test&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0743</span><span class="p">,</span> <span class="mf">0.8339</span><span class="p">],</span>
+</span><span class="line">                <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.0823</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.7595</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.0903</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.0759</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.4621</span><span class="p">}}},</span>
+</span><span class="line"><span class="s">&#39;c&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0249</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">],</span>
+</span><span class="line">                <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.1889</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.8924</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.4203</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.0576</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.5495</span><span class="p">}},</span>
+</span><span class="line">    <span class="s">&#39;test&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;outliers&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.766</span><span class="p">,</span> <span class="mf">0.1889</span><span class="p">],</span>
+</span><span class="line">                <span class="s">&#39;quantiles&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;lower_quartile&#39;</span><span class="p">:</span> <span class="mf">0.3046</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;maximum&#39;</span><span class="p">:</span> <span class="mf">0.7314</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;median&#39;</span><span class="p">:</span> <span class="mf">0.4203</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;minimum&#39;</span><span class="p">:</span> <span class="mf">0.212</span><span class="p">,</span>
+</span><span class="line">                            <span class="s">&#39;upper_quartile&#39;</span><span class="p">:</span> <span class="mf">0.5931</span><span class="p">}}}}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Boggle solver: Linear and recursive search]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2015/02/14/boggle-solver-linear-and-recursive-search/"/>
+    <updated>2015-02-14T15:03:17+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2015/02/14/boggle-solver-linear-and-recursive-search</id>
+    <content type="html"><![CDATA[<p>I was recently introduced to a Boggle solver problem by a friend of mine. Put simply, given a boggle board of sixteen characters and a dictionary, the program needs to figure out how many words from the dictionary are possible on the boggle board. The one deviation from standard boggle is that adjacent moves restriction is relaxed, i.e. order is unimportant.</p>
+
+<p>My <a href="https://github.com/akhilsbehl/boggle-scrabble">repository</a> on Github discusses the problem and the two solutions implemented and their tradeoffs in much more detail along with presenting the code. Do visit.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[`timeit` macro for SBCL]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/12/25/timeit-macro-for-sbcl/"/>
+    <updated>2014-12-25T05:23:28+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/12/25/timeit-macro-for-sbcl</id>
+    <content type="html"><![CDATA[<p>I am the sort of person who really likes to know how much time code I have written takes to run. I believe that it is important to know what works in your language and what does not and what sort of efficiency trade offs need to be made for expressiveness and brevity. Since, I am learning common lisp a little seriously again, I have been interested in seeing how to profile code in it. Even though I haven’t reached <a href="http://t-b-o-g.blogspot.in/2009/12/brians-brain-on-common-lisp-take-3.html">this</a> far that I have started using the <a href="http://www.sbcl.org/1.0/manual/Statistical-Profiler.html">statistical CPU profiler</a> or the <a href="https://www.snellman.net/blog/archive/2006-05-14-statistical-allocation-profiler-for-sbcl.html">statistical allocation profiler</a>, I am starting out with simply being able to time code I write quickly.</p>
+
+<p>Since, writing macros in lisp is so easy and timing code is just the sort of thing macros are really useful for, I decided to practice some macro writing to write a <code>timeit</code> macro. Similar <a href="http://www-users.cs.umn.edu/~gini/lisp/profile.html">attempts</a> have been made in the past but I wanted to roll my own. After some <a href="http://stackoverflow.com/questions/27642626/lisp-defmacro-with-optional-and-body">struggle and a little nudge</a> I was able to write something satisfactory:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defmacro</span> <span class="nv">timeit</span> <span class="p">((</span><span class="k">&amp;key</span>
+</span><span class="line">                    <span class="p">(</span><span class="nv">to-stream</span> <span class="vg">*standard-output*</span><span class="p">)</span>
+</span><span class="line">                    <span class="p">(</span><span class="nv">with-runs</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class="line">                  <span class="k">&amp;body</span> <span class="nv">body</span><span class="p">)</span>
+</span><span class="line">  <span class="s">&quot;Note that this function may barf if you are depending on a single evaluation</span>
+</span><span class="line"><span class="s">  and choose with-runs to be greater than one. But I guess that will be the</span>
+</span><span class="line"><span class="s">  caller&#39;s mistake instead.&quot;</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">start-time</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">stop-time</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">temp</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">retval</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">elapsed-time</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">)))</span>
+</span><span class="line">    <span class="o">`</span><span class="p">(</span><span class="k">let*</span> <span class="p">((</span><span class="o">,</span><span class="nv">start-time</span> <span class="p">(</span><span class="nb">get-internal-run-time</span><span class="p">))</span>
+</span><span class="line">            <span class="p">(</span><span class="o">,</span><span class="nv">retval</span> <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="o">,</span><span class="nv">temp</span><span class="p">))</span>
+</span><span class="line">                       <span class="p">(</span><span class="nb">dotimes</span> <span class="p">(</span><span class="nv">i</span> <span class="o">,</span><span class="nv">with-runs</span> <span class="o">,</span><span class="nv">temp</span><span class="p">)</span>
+</span><span class="line">                         <span class="p">(</span><span class="nb">setf</span> <span class="o">,</span><span class="nv">temp</span> <span class="o">,@</span><span class="nv">body</span><span class="p">))))</span>
+</span><span class="line">            <span class="p">(</span><span class="o">,</span><span class="nv">stop-time</span> <span class="p">(</span><span class="nb">get-internal-run-time</span><span class="p">))</span>
+</span><span class="line">            <span class="p">(</span><span class="o">,</span><span class="nv">elapsed-time</span> <span class="p">(</span><span class="nb">/</span> <span class="p">(</span><span class="nb">-</span> <span class="o">,</span><span class="nv">stop-time</span> <span class="o">,</span><span class="nv">start-time</span><span class="p">)</span>
+</span><span class="line">                              <span class="nv">internal-time-units-per-second</span><span class="p">)))</span>
+</span><span class="line">       <span class="p">(</span><span class="nb">format</span> <span class="o">,</span><span class="nv">to-stream</span>
+</span><span class="line">               <span class="p">(</span><span class="nb">concatenate</span> <span class="ss">&#39;string</span>
+</span><span class="line">                            <span class="s">&quot;~CAverage (total) time spent in expression&quot;</span>
+</span><span class="line">                            <span class="s">&quot; over ~:d iterations: ~f (~f) seconds.~C&quot;</span><span class="p">)</span>
+</span><span class="line">               <span class="sc">#\linefeed</span>
+</span><span class="line">               <span class="o">,</span><span class="nv">with-runs</span>
+</span><span class="line">               <span class="o">,</span><span class="nv">elapsed-time</span>
+</span><span class="line">               <span class="p">(</span><span class="nb">/</span> <span class="o">,</span><span class="nv">elapsed-time</span> <span class="o">,</span><span class="nv">with-runs</span><span class="p">)</span>
+</span><span class="line">               <span class="sc">#\linefeed</span><span class="p">)</span>
+</span><span class="line">       <span class="o">,</span><span class="nv">retval</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Hopefully, this is useful for someone not in the mood to write their own code to do this. This was definitely useful for me to write.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting simple_triplet_matrix to other sparse matrix formats.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats/"/>
+    <updated>2014-11-21T14:17:11+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats</id>
+    <content type="html"><![CDATA[<p>When working with the <code>tm</code> package in R, it produces a <code>DocumentTermMatrix</code> or <code>TermDocumentMatrix</code> as an S3 object of class <code>simple_triplet_matrix</code> from the package <code>slam</code>. Now R has various different packages for creating sparse matrices, each of which have packages depending upon themselves. Long back when working with text data I had created two functions to convert a <code>simple_triplet_matrix</code> to a matrix of class <code>sparseMatrix</code> (package: <code>Matrix</code>) and that to a matrix of class <code>matrix.csr</code> (package: <code>SparseM</code>). The conversions are simple enough once you have read through the documentation of the three packages but hopefully this will save someone some time.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">asSparseMatrix <span class="o">=</span> <span class="kr">function</span> <span class="p">(</span>simpleTripletMatrix<span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  retVal <span class="o">=</span> sparseMatrix<span class="p">(</span>i<span class="o">=</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;i&quot;</span><span class="p">]],</span>
+</span><span class="line">                        j<span class="o">=</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;j&quot;</span><span class="p">]],</span>
+</span><span class="line">                        x<span class="o">=</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;v&quot;</span><span class="p">]],</span>
+</span><span class="line">                        dims<span class="o">=</span><span class="kt">c</span><span class="p">(</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;nrow&quot;</span><span class="p">]],</span>
+</span><span class="line">                               simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;ncol&quot;</span><span class="p">]]))</span>
+</span><span class="line">  <span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="kp">is.null</span><span class="p">(</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;dimnames&quot;</span><span class="p">]]))</span>
+</span><span class="line">    <span class="kp">dimnames</span><span class="p">(</span>retVal<span class="p">)</span> <span class="o">=</span> simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;dimnames&quot;</span><span class="p">]]</span>
+</span><span class="line">  <span class="kr">return</span><span class="p">(</span>retVal<span class="p">)</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line">asMatrixCSR <span class="o">=</span> <span class="kr">function</span> <span class="p">(</span>sparseMatrix<span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="kp">warning</span><span class="p">(</span><span class="s">&quot;Will lose dimnames!&quot;</span><span class="p">)</span>
+</span><span class="line">  as.matrix.csr<span class="p">(</span>new<span class="p">(</span><span class="s">&quot;matrix.csc&quot;</span><span class="p">,</span>
+</span><span class="line">                    ra<span class="o">=</span>sparseMatrix<span class="o">@</span>x<span class="p">,</span>
+</span><span class="line">                    ja<span class="o">=</span>sparseMatrix<span class="o">@</span>i <span class="o">+</span> <span class="m">1L</span><span class="p">,</span>
+</span><span class="line">                    ia<span class="o">=</span>sparseMatrix<span class="o">@</span>p <span class="o">+</span> <span class="m">1L</span><span class="p">,</span>
+</span><span class="line">                    dimension<span class="o">=</span>sparseMatrix<span class="o">@</span>Dim<span class="p">))</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting a data.table to a multi way array (cube)]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube/"/>
+    <updated>2014-08-20T15:42:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube</id>
+    <content type="html"><![CDATA[<p>This post discusses the problem of converting a <code>data.table</code> to the <code>array</code> data structure in R. The idea is analogous to converting a denormalized dataset that presents both dimensions and facts in a table as columns of the table to a completely normalized fact cube along the dimensions of the dataset.</p>
+
+<p>The problem can be solved in multiple ways in R with attending constraints of these approaches – e.g. <code>plyr::daply</code>, <code>xtabs</code>, <code>by</code> or a manual home-brewn set of split and lapply routine. Without discussing the constraints I observed with the existing techniques, I am presenting an alternative approach here that depends on unrolling the rectangular data structure into a linear structure and then reshaping it by manually counting the facts and dimension sizes (think strides). The choice of using a <code>data.table</code> was purely for efficiency reasons but the same idea can be implemented with a <code>data.frame</code> with little changes to the code.</p>
+
+<!--more-->
+
+<p>Dislcaimer: A constraint (I see it as essentially the functionality being implemented here) that all rows should be unique along the chosen dimensions. Since a cube must have all dimensions perfectly normalized.</p>
+
+<p>Following is the implemenation with an example:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+</pre></td><td class="code"><pre><code class="r"><span class="line">dt2array <span class="o">=</span> <span class="kr">function</span> <span class="p">(</span>x<span class="p">,</span> facts<span class="p">,</span> dims<span class="p">)</span> <span class="p">{</span>
+</span><span class="line">  <span class="kp">stopifnot</span><span class="p">(</span>is.data.table<span class="p">(</span>x<span class="p">))</span>
+</span><span class="line">  setkeyv<span class="p">(</span>x<span class="p">,</span> <span class="kp">rev</span><span class="p">(</span>dims<span class="p">))</span>
+</span><span class="line">  <span class="kp">stopifnot</span><span class="p">(</span><span class="o">!</span><span class="kp">any</span><span class="p">(</span><span class="kp">duplicated</span><span class="p">(</span>x<span class="p">)))</span>
+</span><span class="line">  dimensions <span class="o">=</span> <span class="kp">lapply</span><span class="p">(</span>x<span class="p">[</span> <span class="p">,</span> <span class="kp">rev</span><span class="p">(</span>dims<span class="p">),</span> with<span class="o">=</span><span class="kc">FALSE</span><span class="p">],</span>
+</span><span class="line">                      <span class="kr">function</span> <span class="p">(</span>x<span class="p">)</span> <span class="kp">sort</span><span class="p">(</span><span class="kp">unique</span><span class="p">(</span>x<span class="p">)))</span>
+</span><span class="line">  xFull <span class="o">=</span> data.table<span class="p">(</span><span class="kp">expand.grid</span><span class="p">(</span>dimensions<span class="p">,</span> stringsAsFactors<span class="o">=</span><span class="kc">FALSE</span><span class="p">))</span>
+</span><span class="line">  setkeyv<span class="p">(</span>xFull<span class="p">,</span> <span class="kp">rev</span><span class="p">(</span>dims<span class="p">))</span>
+</span><span class="line">  x <span class="o">=</span> data.table<span class="o">:::</span>merge.data.table<span class="p">(</span>xFull<span class="p">,</span> x<span class="p">,</span> by<span class="o">=</span>dims<span class="p">,</span> all<span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+</span><span class="line">  factsVec <span class="o">=</span> <span class="kp">unlist</span><span class="p">(</span>x<span class="p">[</span> <span class="p">,</span> facts<span class="p">,</span> with<span class="o">=</span><span class="kc">FALSE</span><span class="p">],</span> recursive<span class="o">=</span><span class="kc">FALSE</span><span class="p">,</span> use.names<span class="o">=</span><span class="kc">FALSE</span><span class="p">)</span>
+</span><span class="line">  nFacts <span class="o">=</span> <span class="kp">length</span><span class="p">(</span>facts<span class="p">)</span>
+</span><span class="line">  nDims <span class="o">=</span> <span class="kp">length</span><span class="p">(</span>dims<span class="p">)</span>
+</span><span class="line">  <span class="kr">if</span> <span class="p">(</span>nFacts <span class="o">&gt;</span> <span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class="line">    <span class="kp">dim</span><span class="p">(</span>factsVec<span class="p">)</span> <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="kp">sapply</span><span class="p">(</span>dimensions<span class="p">,</span> <span class="kp">length</span><span class="p">),</span> nFacts<span class="p">)</span>
+</span><span class="line">    <span class="kp">dimnames</span><span class="p">(</span>factsVec<span class="p">)</span> <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>dimensions<span class="p">,</span> <span class="s">&quot;facts&quot;</span><span class="o">=</span><span class="kt">list</span><span class="p">(</span>facts<span class="p">))</span>
+</span><span class="line">    <span class="kr">return</span><span class="p">(</span><span class="kp">aperm</span><span class="p">(</span>factsVec<span class="p">,</span> perm<span class="o">=</span><span class="kt">c</span><span class="p">(</span>nDims<span class="o">:</span><span class="m">1</span><span class="p">,</span> nDims <span class="o">+</span> <span class="m">1</span><span class="p">)))</span>
+</span><span class="line">  <span class="p">}</span> <span class="kr">else</span> <span class="p">{</span>
+</span><span class="line">    <span class="kp">dim</span><span class="p">(</span>factsVec<span class="p">)</span> <span class="o">=</span> <span class="kp">sapply</span><span class="p">(</span>dimensions<span class="p">,</span> <span class="kp">length</span><span class="p">)</span>
+</span><span class="line">    <span class="kp">dimnames</span><span class="p">(</span>factsVec<span class="p">)</span> <span class="o">=</span> dimensions
+</span><span class="line">    <span class="kr">return</span><span class="p">(</span><span class="kp">aperm</span><span class="p">(</span>factsVec<span class="p">))</span>
+</span><span class="line">  <span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line">dat <span class="o">=</span> data.table<span class="p">(</span>f1<span class="o">=</span>runif<span class="p">(</span><span class="m">10</span><span class="p">),</span>
+</span><span class="line">                 f2<span class="o">=</span>runif<span class="p">(</span><span class="m">10</span><span class="p">),</span>
+</span><span class="line">                 f3<span class="o">=</span>runif<span class="p">(</span><span class="m">10</span><span class="p">),</span>
+</span><span class="line">                 d1<span class="o">=</span><span class="kc">letters</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">],</span>
+</span><span class="line">                 d2<span class="o">=</span><span class="kp">rep</span><span class="p">(</span><span class="kc">letters</span><span class="p">[</span><span class="m">3</span><span class="o">:</span><span class="m">4</span><span class="p">],</span> each<span class="o">=</span><span class="m">5</span><span class="p">),</span>
+</span><span class="line">                 d3<span class="o">=</span><span class="kc">LETTERS</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">])</span>
+</span><span class="line">dt2array<span class="p">(</span>dat<span class="p">,</span> <span class="s">&quot;f1&quot;</span><span class="p">,</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;d1&quot;</span><span class="p">,</span> <span class="s">&quot;d2&quot;</span><span class="p">,</span> <span class="s">&quot;d3&quot;</span><span class="p">))</span>
+</span><span class="line">dt2array<span class="p">(</span>dat<span class="p">,</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;f1&quot;</span><span class="p">,</span> <span class="s">&quot;f2&quot;</span><span class="p">),</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;d1&quot;</span><span class="p">,</span> <span class="s">&quot;d2&quot;</span><span class="p">,</span> <span class="s">&quot;d3&quot;</span><span class="p">))</span>
+</span><span class="line">dt2array<span class="p">(</span>dat<span class="p">,</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;f1&quot;</span><span class="p">,</span> <span class="s">&quot;f2&quot;</span><span class="p">,</span> <span class="s">&quot;f3&quot;</span><span class="p">),</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;d1&quot;</span><span class="p">,</span> <span class="s">&quot;d2&quot;</span><span class="p">,</span> <span class="s">&quot;d3&quot;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The implementation is very fast, if I say so myself, since almost all manipulations being used here are fairly low-level in R implemented in C. Hopefully, this will be useful.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Knuth-Fisher-Yates shuffling algorithm]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/18/knuth-fisher-yates-shuffling-algorithm/"/>
+    <updated>2014-08-18T21:41:08+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/18/knuth-fisher-yates-shuffling-algorithm</id>
+    <content type="html"><![CDATA[<p>So, yesterday, I was sent this <a href="http://spin.atomicobject.com/2014/08/11/fisher-yates-shuffle-randomization-algorithm/">article</a> by a friend. Articles titled <em>X every developer should know</em> sort of titles pique my interest very much. So, I headed over to this article only to find myself too confused. What I found more confusing is that the article links to <a href="http://blog.codinghorror.com/the-danger-of-naivete/">one</a> of Jeff Atwood’s blogposts that discusses the same concept.</p>
+
+<p>The central idea of the post is to correct a <em>naive</em> implementation of a shuffling algorithm. My confusion arose from the fact that after reading the article, I could only think that the algorithm was blatantly incorrect and not naive. The differences between the two algorithms – the naive one and the one ascribed to Knuth, Fisher, &amp; Yates is what, in sampling 101, is between sampling <em>with replacement</em> and sampling <em>without replacement</em>. This quote essentially highlights the naivete indeed:</p>
+
+<blockquote><p>How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.</p></blockquote>
+
+<p>Some shuffling does not mean a random permutation at all. This is akin to saying a naive implementation of a queue sometimes inserts incoming items at the head of the queue.</p>
+
+<h2 id="another-shuffling-algorithm">Another shuffling algorithm?</h2>
+
+<p>On the other hand, what was fruitful was that the article reminded me of a shuffling algorithm I recently wrote to solve <a href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25/">problem number 25</a> of <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 Lisp Problems</a>. The minor difference between the two algorithms is that the lisp algorithm pops an element from the original array per turn and collects it in a new array which becomes a random permutation (shuffle) of the original array at the end. The KFY algorithm instead swaps two elements at each turn. It can be worked out that, mathematically, the two algorithms are identical. But the KFY algorithm saves you making a copy. Therefore, yes, KFY is an algorithm that every programmer <em>should</em> know. Additionally, every programmer should also know the standard library of their language.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Editing markdown in Vim and previewing in Firefox.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/17/editing-markdown-in-vim-and-previewing-in-firefox/"/>
+    <updated>2014-08-17T15:03:15+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/17/editing-markdown-in-vim-and-previewing-in-firefox</id>
+    <content type="html"><![CDATA[<p>Lately, I have taken to maintaining most of my text in Markdown (desperately trying to avoid Emacs’ org-mode) and previewing it while editing in Vim is something that is a nice to have. So I searched a little bit and found this nice little <a href="http://ellengummesson.com/blog/2013/01/27/markdown-preview-for-vim/">snippet</a> by Ellen Gummesson that I then adapted per my preferences as such:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="c">&quot; Preview markdown in Firefox</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="p">!</span> PreviewMarkdown<span class="p">()</span>
+</span><span class="line">  <span class="k">let</span> outFile <span class="p">=</span> expand<span class="p">(</span><span class="s1">&#39;%:r&#39;</span><span class="p">)</span> . <span class="s1">&#39;.html&#39;</span>
+</span><span class="line">  <span class="k">silent</span> execute <span class="s1">&#39;!cd %:p:h&#39;</span>
+</span><span class="line">  <span class="k">silent</span> execute <span class="s1">&#39;!python -m markdown % &gt;&#39;</span> . outFile
+</span><span class="line"><span class="c">  &quot; The screen will need to be redrawn. Dunno why! :\</span>
+</span><span class="line">  <span class="k">silent</span> execute <span class="s1">&#39;redraw!&#39;</span>
+</span><span class="line"><span class="k">endfunction</span>
+</span><span class="line">
+</span><span class="line">augroup markdown
+</span><span class="line">    <span class="k">au</span><span class="p">!</span>
+</span><span class="line">    <span class="k">au</span> <span class="nb">BufNewFile</span><span class="p">,</span><span class="nb">BufRead</span> *.md<span class="p">,</span>*.markdown <span class="k">setlocal</span> <span class="k">filetype</span><span class="p">=</span>ghmarkdown
+</span><span class="line">    <span class="k">au</span> <span class="nb">BufNewFile</span><span class="p">,</span><span class="nb">BufRead</span> *.md<span class="p">,</span>*.markdown <span class="k">setlocal</span> <span class="nb">textwidth</span><span class="p">=</span><span class="m">0</span>
+</span><span class="line">    <span class="k">autocmd</span> <span class="nb">FileType</span> ghmarkdown map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">p</span>
+</span><span class="line">          \ :<span class="k">call</span> PreviewMarkdown<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">augroup END
+</span></code></pre></td></tr></table></div></figure>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Send Python commands from Vim to IPython via tmux.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/17/send-python-commands-from-vim-to-ipython-via-tmux/"/>
+    <updated>2014-08-17T13:58:53+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/17/send-python-commands-from-vim-to-ipython-via-tmux</id>
+    <content type="html"><![CDATA[<p>A few days ago I built a very simple framework (bunch of vimscript commands really) to work with <a href="http://en.wikipedia.org/wiki/Vim_%28text_editor%29">vim</a> and <a href="http://en.wikipedia.org/wiki/IPython">IPython</a> along the lines of the <a href="https://github.com/vim-scripts/Vim-R-plugin">Vim-R-Plugin</a>. In this post I show what I had to do to get this to work.</p>
+
+<!--more-->
+
+<h2 id="detour-vim-r-plugin">Detour: Vim R Plugin</h2>
+
+<p>If you live in Vim and work with R (or hope / want to) there is <em>no better tool</em> to boost your producitivity than the marriage of these two tools as brought about in the Vim R Plugin. R was my first serious programming language (horror of horrors!) and I had gotten sold on the Vim R Plugin model of doing things very early on. The plugin provides you the whole shebang like any modern IDE such as syntax highlighting, completion based on namespaces and R environments, an object browser that opens in Vim.</p>
+
+<p>However, I <strong>don’t</strong> use any of that fancy stuff. I tend to think of myself as a <em>simple man with simple needs</em>. The only thing I use the plugin to do is to send commands from Vim to R. Additionally, I wrote my own wrappers to execute my most frequent actions on R objects under the cursor in Vim. This makes me feel like I am always in the R console even when I am in Vim. And this is just the fluency I wanted in IPython with Vim. No bells and whistles, just make me feel like my editor understands my console and that is it.</p>
+
+<p>Here is the chunk from my <a href="https://github.com/akhilsbehl/configs/blob/master/vimrc"><code>.vimrc</code></a> that is relevant for this plugin. Even if you are not as minimalistic as I am, you may yet find the ideas in these snippets useful:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="c">&quot; Custom commands.</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nr :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;rownames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nc :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;colnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>n2 :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nn :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dimnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nd :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dim&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nh :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nt :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;tail&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nl :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;length&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">cc</span> :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nw :<span class="k">call</span> SendCmdToR<span class="p">(</span><span class="s2">&quot;system(&#39;clear&#39;)&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">ne</span> :<span class="k">call</span> SendCmdToR<span class="p">(</span><span class="s2">&quot;system(&#39;traceback()&#39;)&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">sb</span> :<span class="k">call</span> SendCmdToR<span class="p">(</span><span class="s2">&quot;system.time({&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">se</span> :<span class="k">call</span> SendCmdToR<span class="p">(</span><span class="s2">&quot;})&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>tt :<span class="k">call</span> SendCmdToR<span class="p">(</span><span class="s2">&quot;tt = &quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The <code>RAction</code> commands work this way: vim will inspect the word under the cursor and call the specified command with that argument. For example, <code>,nr</code> (my <code>LocalLeader</code> gets mapped to <code>,</code>) gives me the <code>rownames</code> of whichever object I happen to be sitting at and so on.</p>
+
+<p>The <code>SendCmdToR</code> commands are slightly different. These can be used to send arbitrary text to the R console. The last two are the most interesting to me. Whenever I want to time some arbitrary set of commands I would say <code>,sb</code> (<strong>s</strong>ystem.time <strong>b</strong>egin) which would start a <code>system.time({</code> expression block on my console. Then I send whichever R commands I want to time to the console and finish with <code>,se</code> (<strong>s</strong>ystem.time <strong>e</strong>nd) which will finish my expression and time it.</p>
+
+<p>A lot of times when debugging R code I want to evaluate chunks of the body of my function / code into a temporary variable (<code>tt</code> by convention). The plugin allows me to send arbitrary visual selections from vim to R. Therefore, often I would say <code>,tt</code> to start a variable assignment expression and then send whatever chunk I want to evaluate to <code>tt</code> by selecting it visually and executing it.</p>
+
+<h1 id="working-with-ipython-and-vim">Working with IPython and Vim</h1>
+
+<p>I had been looking for a plugin which provides me a similar model for IPython since a long time to no avail. Things that I found either did too many things or did them too differently. I was making do with <code>%paste</code> from IPython for a long time. Even though that was usable, it always made the distinction between my editor and my console too painfully obvious. And then I revisited one of the plugins that I have known for a long time but never investigated in detail.</p>
+
+<p>The <a href="https://github.com/ervandew/screen">Screen</a> plugin is a mighty lightweight and simple plugin (something that I already had as a dependency for – wait for it – Vim R Plugin) that allows you to send arbitrary commands from Vim running in a tmux split to an arbitrary console (think shell, lisp, ruby, whatever you want it to be). An hour of RTFM and experimentation later I had hacked out a simple usable framework. This is a preview of that. I am pretty sure I will hack it to make this more usable over time (perhaps to match my muscle memory for the Vim R Plugin). All changes should get reflected in my vimrc <a href="https://github.com/akhilsbehl/configs/blob/master/vimrc">here</a>.</p>
+
+<p>This is the first time I wrote any serious VimScript. I know this is kludgy but please bear with me.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="c">&quot; ervandew/screen configuration to send commands to ipython.</span>
+</span><span class="line">
+</span><span class="line"><span class="k">let</span> <span class="k">g</span>:ScreenImpl <span class="p">=</span> <span class="s2">&quot;Tmux&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Open an ipython3 shell.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">p</span> :ScreenShell<span class="p">!</span> ipython3<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Open an ipython2 shell.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">pp</span> :ScreenShell<span class="p">!</span> ipython2<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Close whichever shell is running.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">q</span> :ScreenQuit<span class="p">&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Send current line to python and move to next line.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">r</span> V:ScreenSend<span class="p">&lt;</span>CR<span class="p">&gt;</span><span class="k">j</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Send visual selection to python and move to next line.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">v</span> :ScreenSend<span class="p">&lt;</span>CR<span class="p">&gt;</span>`<span class="p">&gt;</span><span class="m">0</span>j
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Send a carriage return line to python.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">a</span> :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s2">&quot;\r&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Clear screen.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>L
+</span><span class="line">      \ :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s1">&#39;!clear&#39;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Start a time block to execute code in.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">t</span>
+</span><span class="line">      \ :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s1">&#39;%%time&#39;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Start a timeit block to execute code in.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>tt
+</span><span class="line">      \ :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s1">&#39;%%timeit&#39;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Start a debugger repl to execute code in.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>db
+</span><span class="line">      \ :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s1">&#39;%%debug&#39;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Start a profiling block to execute code in.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">pr</span>
+</span><span class="line">      \ :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s1">&#39;%%prun&#39;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Print the current working directory.</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>gw
+</span><span class="line">      \ :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="s1">&#39;!pwd&#39;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Set working directory to current file&#39;s folder.</span>
+</span><span class="line"><span class="k">function</span> SetWD<span class="p">()</span>
+</span><span class="line">  <span class="k">let</span> <span class="nb">wd</span> <span class="p">=</span> <span class="s1">&#39;!cd &#39;</span> . expand<span class="p">(</span><span class="s1">&#39;%:p:h&#39;</span><span class="p">)</span>
+</span><span class="line">  :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="nb">wd</span><span class="p">)</span>
+</span><span class="line"><span class="k">endfunction</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">sw</span> :<span class="k">call</span> SetWD<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Get ipython help for word under cursor. Complement it with Shift + K.</span>
+</span><span class="line"><span class="k">function</span> GetHelp<span class="p">()</span>
+</span><span class="line">  <span class="k">let</span> <span class="k">w</span> <span class="p">=</span> expand<span class="p">(</span><span class="s2">&quot;&lt;cword&gt;&quot;</span><span class="p">)</span> . <span class="s2">&quot;??&quot;</span>
+</span><span class="line">  :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="k">w</span><span class="p">)</span>
+</span><span class="line"><span class="k">endfunction</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">h</span> :<span class="k">call</span> GetHelp<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Get `dir` help for word under cursor.</span>
+</span><span class="line"><span class="k">function</span> GetDir<span class="p">()</span>
+</span><span class="line">  <span class="k">let</span> <span class="k">w</span> <span class="p">=</span> <span class="s2">&quot;dir(&quot;</span> . expand<span class="p">(</span><span class="s2">&quot;&lt;cword&gt;&quot;</span><span class="p">)</span> . <span class="s2">&quot;)&quot;</span>
+</span><span class="line">  :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="k">w</span><span class="p">)</span>
+</span><span class="line"><span class="k">endfunction</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">d</span> :<span class="k">call</span> GetDir<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">
+</span><span class="line"><span class="c">&quot; Get `dir` help for word under cursor.</span>
+</span><span class="line"><span class="k">function</span> GetLen<span class="p">()</span>
+</span><span class="line">  <span class="k">let</span> <span class="k">w</span> <span class="p">=</span> <span class="s2">&quot;len(&quot;</span> . expand<span class="p">(</span><span class="s2">&quot;&lt;cword&gt;&quot;</span><span class="p">)</span> . <span class="s2">&quot;)&quot;</span>
+</span><span class="line">  :<span class="k">call</span> <span class="k">g</span>:ScreenShellSend<span class="p">(</span><span class="k">w</span><span class="p">)</span>
+</span><span class="line"><span class="k">endfunction</span>
+</span><span class="line"><span class="k">autocmd</span> <span class="nb">FileType</span> python map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">l</span> :<span class="k">call</span> GetLen<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The <code>,,a</code> command to send just a carriage return is to complete an indented block when python expects an empty line, e.g. at the end of a <code>for</code> loop.</p>
+
+<p>This opens the possibility of having a bunch of different languages that vim can understand and I can transfer my muscle memory to. I am quite excited.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Machines that make music and steal jobs]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/17/machines-that-make-music-and-steal-jobs/"/>
+    <updated>2014-08-17T13:40:17+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/17/machines-that-make-music-and-steal-jobs</id>
+    <content type="html"><![CDATA[<p>I stumbled upon two different videos today while surfing the web both of which impressed me deeply. It was only later that I connected the dots between the two. The first is a breathtaking example of what human ingenuity and creativity can achieve with machines; the other a luddite damnation of the same phenomenon. I will put these here and refrain from any comments.</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/yY1FSsUV-8c" allowfullscreen=""></iframe></div>
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/7Pq-S557XQU" allowfullscreen=""></iframe></div>
+
+<p><a href="http://www.digitopoly.org/2014/08/16/the-ownership-of-machines/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=the-ownership-of-machines">Digitopoly</a> provides a counter-arguments to the conclusions of the second video which I, personally, found unconvincing in their depth of analysis.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #34]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-34/"/>
+    <updated>2014-08-06T03:23:34+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-34</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #34</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">range</span> <span class="p">(</span><span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">&gt;</span> <span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span> <span class="no">nil</span><span class="p">)</span>
+</span><span class="line">    <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">cons</span> <span class="nv">lo</span> <span class="p">(</span><span class="nv">range</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">lo</span><span class="p">)</span> <span class="nv">hi</span><span class="p">)))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">eucgcd</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">    <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">p</span> <span class="p">(</span><span class="nb">abs</span> <span class="nv">m</span><span class="p">))</span> <span class="p">(</span><span class="nv">q</span> <span class="p">(</span><span class="nb">abs</span> <span class="nv">n</span><span class="p">)))</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">=</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="nv">m</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">gcd</span> <span class="p">(</span><span class="nb">-</span> <span class="p">(</span><span class="nb">max</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">coprimep</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">=</span> <span class="p">(</span><span class="nv">eucgcd</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">totient</span> <span class="p">(</span><span class="nv">m</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">=</span> <span class="nv">m</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">apply</span> <span class="nf">#&#39;</span><span class="nb">+</span> <span class="p">(</span><span class="nb">mapcar</span>
+</span><span class="line">                        <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nv">coprimep</span> <span class="nv">m</span> <span class="nv">x</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">))</span>
+</span><span class="line">                        <span class="p">(</span><span class="nv">range</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">m</span><span class="p">)))))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #31]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-31/"/>
+    <updated>2014-08-06T02:11:59+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-31</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #31</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">range</span> <span class="p">(</span><span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">&gt;</span> <span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span> <span class="no">nil</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">cons</span> <span class="nv">lo</span> <span class="p">(</span><span class="nv">range</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">lo</span><span class="p">)</span> <span class="nv">hi</span><span class="p">)))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">all</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">and</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">                <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">primep</span> <span class="p">(</span><span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">mapcar</span>
+</span><span class="line">         <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">not</span> <span class="p">(</span><span class="nb">=</span> <span class="mi">0</span> <span class="p">(</span><span class="nb">mod</span> <span class="nv">n</span> <span class="nv">x</span><span class="p">))))</span>
+</span><span class="line">         <span class="p">(</span><span class="nv">range</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">isqrt</span> <span class="nv">n</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #33]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-33/"/>
+    <updated>2014-08-06T02:08:27+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-33</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #33</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">eucgcd</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">p</span> <span class="p">(</span><span class="nb">abs</span> <span class="nv">m</span><span class="p">))</span> <span class="p">(</span><span class="nv">q</span> <span class="p">(</span><span class="nb">abs</span> <span class="nv">n</span><span class="p">)))</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">=</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="nv">m</span><span class="p">)</span>
+</span><span class="line">    <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">gcd</span> <span class="p">(</span><span class="nb">-</span> <span class="p">(</span><span class="nb">max</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">coprimep</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">=</span> <span class="p">(</span><span class="nv">eucgcd</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="mi">1</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #32]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-32/"/>
+    <updated>2014-08-06T01:43:25+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-32</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #32</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">eucgcd</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">or</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">m</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">))</span> <span class="no">nil</span><span class="p">)</span>
+</span><span class="line">        <span class="p">((</span><span class="nb">=</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="nv">m</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">gcd</span> <span class="p">(</span><span class="nb">-</span> <span class="p">(</span><span class="nb">max</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Julia - Project Euler Qs 1 - 10]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/07/13/julia-project-euler-qs-1-10/"/>
+    <updated>2014-07-13T23:51:33+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/07/13/julia-project-euler-qs-1-10</id>
+    <content type="html"><![CDATA[<p>So, today I decided to take Julia for a spin because, <em>finally</em>, it has a stable version available in the <a href="http://www.archlinux.org">Arch</a> community repo. I tried it with the <a href="http://projecteuler.net/problems">Project Euler problems</a> to get started. Here is a bunch of code in Julia that solves problems 1 - 10 of Project Euler. I have been watching a lot of videos on the language. I will probably follow up with a post on initial thoughts about the language.</p>
+
+<!--more-->
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+<span class="line-number">92</span>
+<span class="line-number">93</span>
+<span class="line-number">94</span>
+<span class="line-number">95</span>
+<span class="line-number">96</span>
+<span class="line-number">97</span>
+<span class="line-number">98</span>
+<span class="line-number">99</span>
+<span class="line-number">100</span>
+<span class="line-number">101</span>
+<span class="line-number">102</span>
+<span class="line-number">103</span>
+<span class="line-number">104</span>
+<span class="line-number">105</span>
+<span class="line-number">106</span>
+<span class="line-number">107</span>
+<span class="line-number">108</span>
+<span class="line-number">109</span>
+<span class="line-number">110</span>
+<span class="line-number">111</span>
+<span class="line-number">112</span>
+<span class="line-number">113</span>
+<span class="line-number">114</span>
+<span class="line-number">115</span>
+<span class="line-number">116</span>
+<span class="line-number">117</span>
+<span class="line-number">118</span>
+<span class="line-number">119</span>
+<span class="line-number">120</span>
+<span class="line-number">121</span>
+<span class="line-number">122</span>
+<span class="line-number">123</span>
+<span class="line-number">124</span>
+<span class="line-number">125</span>
+<span class="line-number">126</span>
+<span class="line-number">127</span>
+<span class="line-number">128</span>
+<span class="line-number">129</span>
+<span class="line-number">130</span>
+<span class="line-number">131</span>
+<span class="line-number">132</span>
+<span class="line-number">133</span>
+<span class="line-number">134</span>
+<span class="line-number">135</span>
+<span class="line-number">136</span>
+<span class="line-number">137</span>
+<span class="line-number">138</span>
+<span class="line-number">139</span>
+<span class="line-number">140</span>
+<span class="line-number">141</span>
+<span class="line-number">142</span>
+<span class="line-number">143</span>
+<span class="line-number">144</span>
+<span class="line-number">145</span>
+<span class="line-number">146</span>
+<span class="line-number">147</span>
+<span class="line-number">148</span>
+<span class="line-number">149</span>
+<span class="line-number">150</span>
+<span class="line-number">151</span>
+<span class="line-number">152</span>
+<span class="line-number">153</span>
+<span class="line-number">154</span>
+<span class="line-number">155</span>
+<span class="line-number">156</span>
+<span class="line-number">157</span>
+<span class="line-number">158</span>
+<span class="line-number">159</span>
+<span class="line-number">160</span>
+<span class="line-number">161</span>
+<span class="line-number">162</span>
+<span class="line-number">163</span>
+<span class="line-number">164</span>
+<span class="line-number">165</span>
+<span class="line-number">166</span>
+<span class="line-number">167</span>
+<span class="line-number">168</span>
+<span class="line-number">169</span>
+<span class="line-number">170</span>
+<span class="line-number">171</span>
+<span class="line-number">172</span>
+<span class="line-number">173</span>
+<span class="line-number">174</span>
+<span class="line-number">175</span>
+<span class="line-number">176</span>
+<span class="line-number">177</span>
+<span class="line-number">178</span>
+<span class="line-number">179</span>
+<span class="line-number">180</span>
+<span class="line-number">181</span>
+<span class="line-number">182</span>
+<span class="line-number">183</span>
+</pre></td><td class="code"><pre><code class="julia"><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q1  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">mysum</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line"><span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span>
+</span><span class="line">  <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class="line">    <span class="n">mysum</span> <span class="o">+=</span> <span class="n">i</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">mysum</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q2  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">penultimateFib</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">ultimateFib</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class="line"><span class="n">mysum</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class="line"><span class="k">while</span> <span class="p">(</span><span class="n">thisFib</span> <span class="o">=</span> <span class="n">penultimateFib</span> <span class="o">+</span> <span class="n">ultimateFib</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">4e6</span>
+</span><span class="line">  <span class="k">if</span> <span class="n">thisFib</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span class="line">    <span class="n">mysum</span> <span class="o">+=</span> <span class="n">thisFib</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="n">penultimateFib</span> <span class="o">=</span> <span class="n">ultimateFib</span>
+</span><span class="line">  <span class="n">ultimateFib</span> <span class="o">=</span> <span class="n">thisFib</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">mysum</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q3  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="nf"> primep</span> <span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">  <span class="n">retval</span> <span class="o">=</span> <span class="n">true</span>
+</span><span class="line">  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">2</span><span class="p">:</span><span class="n">isqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span class="line">      <span class="n">retval</span> <span class="o">=</span> <span class="n">false</span>
+</span><span class="line">      <span class="k">break</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="k">return</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="nf"> nextprime</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">  <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line">  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">primep</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+</span><span class="line">    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="k">return</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="nf"> previousprime</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">  <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span>
+</span><span class="line">    <span class="k">return</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="n">n</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class="line">  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">primep</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class="line">    <span class="n">n</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="k">return</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="nf"> primesupto</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">  <span class="c"># Implements the Eratosthenes&#39; sieve.</span>
+</span><span class="line">  <span class="n">sieve</span> <span class="o">=</span> <span class="n">repeat</span><span class="p">([</span><span class="n">true</span><span class="p">],</span> <span class="n">inner</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+</span><span class="line">  <span class="n">sieve</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">false</span>
+</span><span class="line">  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">2</span><span class="p">:</span><span class="n">isqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">sieve</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class="line">      <span class="n">sieve</span><span class="p">[</span><span class="mi">2</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="p">:</span><span class="k">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">false</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="n">retval</span> <span class="o">=</span> <span class="kt">Int64</span><span class="p">[]</span>
+</span><span class="line">  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">n</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">sieve</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+</span><span class="line">      <span class="n">Base</span><span class="o">.</span><span class="n">push</span><span class="o">!</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line">  <span class="k">return</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Should not be upto isqrt(n). But works for this case.</span>
+</span><span class="line"><span class="n">n</span> <span class="o">=</span> <span class="mi">600851475143</span>
+</span><span class="line"><span class="k">for</span> <span class="n">p</span> <span class="k">in</span> <span class="n">reverse</span><span class="p">(</span><span class="n">primesupto</span><span class="p">(</span><span class="n">isqrt</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span>
+</span><span class="line">  <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="n">p</span> <span class="o">==</span> <span class="mi">0</span>
+</span><span class="line">    <span class="n">println</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</span><span class="line">    <span class="k">break</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q4  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="nf"> palindromep</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">  <span class="n">sn</span> <span class="o">=</span> <span class="n">string</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</span><span class="line">  <span class="k">return</span><span class="p">(</span><span class="n">sn</span> <span class="o">==</span> <span class="n">reverse</span><span class="p">(</span><span class="n">sn</span><span class="p">))</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="n">largest</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line"><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">101</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">999</span>
+</span><span class="line">  <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">101</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">999</span>
+</span><span class="line">    <span class="n">n</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">j</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">palindromep</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">largest</span>
+</span><span class="line">      <span class="n">largest</span> <span class="o">=</span> <span class="n">n</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">largest</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q5  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">found</span> <span class="o">=</span> <span class="n">false</span>
+</span><span class="line"><span class="n">i</span> <span class="o">=</span> <span class="mi">380</span>
+</span><span class="line"><span class="k">while</span> <span class="o">!</span><span class="n">found</span>
+</span><span class="line">  <span class="n">found</span> <span class="o">=</span> <span class="n">true</span>
+</span><span class="line">  <span class="n">i</span> <span class="o">+=</span> <span class="mi">380</span>
+</span><span class="line">  <span class="k">for</span> <span class="n">d</span> <span class="k">in</span> <span class="mi">20</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">11</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">d</span> <span class="o">!=</span> <span class="mi">0</span>
+</span><span class="line">      <span class="n">found</span> <span class="o">=</span> <span class="n">false</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">i</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Alternatively:</span>
+</span><span class="line"><span class="n">lcm</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q6  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">mysum</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line"><span class="n">mysumsq</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line"><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:</span><span class="mi">100</span>
+</span><span class="line">  <span class="n">mysum</span> <span class="o">+=</span> <span class="n">i</span>
+</span><span class="line">  <span class="n">mysumsq</span> <span class="o">+=</span> <span class="n">i</span><span class="o">^</span><span class="mi">2</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">mysum</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="n">mysumsq</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q7  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">p</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class="line"><span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10001</span><span class="p">)</span>
+</span><span class="line">  <span class="n">p</span> <span class="o">=</span> <span class="n">nextprime</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</span><span class="line">  <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">p</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q8  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">num</span><span class="o">=</span><span class="s">&quot;7316717653133062491922511967442657474235534919493496983520312774506326239578318016984801869478851843858615607891129494954595017379583319528532088055111254069874715852386305071569329096329522744304355766896648950445244523161731856403098711121722383113622298934233803081353362766142828064444866452387493035890729629049156044077239071381051585930796086670172427121883998797908792274921901699720888093776657273330010533678812202354218097512545405947522435258490771167055601360483958644670632441572215539753697817977846174064955149290862569321978468622482839722413756570560574902614079729686524145351004748216637048440319989000889524345065854122758866688116427171479924442928230863465674813919123162824586178664583591245665294765456828489128831426076900422421902267105562632111110937054421750694165896040807198403850962455444362981230987879927244284909188845801561660979191338754992005240636899125607176060588611646710940507754100225698315520005593572972571636269561882670428252483600823257530420752963450&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="n">largest</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class="line"><span class="k">for</span> <span class="n">start</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:(</span><span class="n">length</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">-</span> <span class="mi">13</span><span class="p">)</span>
+</span><span class="line">  <span class="n">seqn</span> <span class="o">=</span> <span class="n">num</span><span class="p">[</span><span class="n">start</span><span class="p">:(</span><span class="n">start</span> <span class="o">+</span> <span class="mi">12</span><span class="p">)]</span>
+</span><span class="line">  <span class="n">product</span> <span class="o">=</span> <span class="n">prod</span><span class="p">([</span><span class="n">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="mi">48</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">seqn</span><span class="p">])</span>
+</span><span class="line">  <span class="k">if</span> <span class="n">product</span> <span class="o">&gt;</span> <span class="n">largest</span>
+</span><span class="line">    <span class="n">largest</span> <span class="o">=</span> <span class="n">product</span>
+</span><span class="line">  <span class="k">end</span>
+</span><span class="line"><span class="k">end</span>
+</span><span class="line"><span class="n">largest</span>
+</span><span class="line">
+</span><span class="line"><span class="c">########</span>
+</span><span class="line"><span class="c">#  Q9  #</span>
+</span><span class="line"><span class="c">########</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># sum(25 * (8, 15, 17)) = 1000</span>
+</span><span class="line"><span class="n">prod</span><span class="p">([</span><span class="mi">25</span> <span class="o">*</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">17</span><span class="p">]])</span>
+</span><span class="line">
+</span><span class="line"><span class="c">#########</span>
+</span><span class="line"><span class="c">#  Q10  #</span>
+</span><span class="line"><span class="c">#########</span>
+</span><span class="line">
+</span><span class="line"><span class="n">sum</span><span class="p">(</span><span class="n">primesupto</span><span class="p">(</span><span class="mi">2000000</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The modern paradigm for hypothesis testing]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/07/11/the-modern-paradigm-for-hypothesis-testing/"/>
+    <updated>2014-07-11T12:48:57+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/07/11/the-modern-paradigm-for-hypothesis-testing</id>
+    <content type="html"><![CDATA[<p>In a couple of earlier posts, I briefly summarized the <a href="http://akhilsbehl.github.io/blog/2014/06/18/fisher-test-of-statistical-signficance/">Fisherian</a> and the <a href="http://akhilsbehl.github.io/blog/2014/06/19/neyman-pearson-hypothesis-testing/">Neyman-Pearson</a> (NP) approaches to frequentist hypothesis testing. In this post, I outline the modern paradigm of hypothesis testing taught in a graduate social science course and the various ways in which it is, if not wrong, misguided and prone to misinterpretation.</p>
+
+<!--more-->
+
+<h2 id="background">Background</h2>
+
+<p><span class="pullquote-right" data-pullquote="Fisher objected to the preselection of significance level as well as the mandatory two outcome decision process. Neyman and Pearson disagreed with interpreting p-values (or worse yet, ranges of p-values indicated by “stars”) as the probability of Type I errors since they do not constitute a long-range probability of rejection. Neyman and Pearson also considered the interpretation of data derived p-values to be subjective and futile.">
+As discussed earlier, the Fisherian setup employs a <em>null</em> hypothesis and a <em>post-data</em> test statistic as evidence against the null hypothesis. Fisher leaves the setup and inference from a test upto the researcher with some guidelines. <a href="http://www.stat.ualberta.ca/~wiens/stat665/TAS%20-%20testing.pdf">Christensen</a> quotes From Fisher (1956, pp 50): ‘In choosing the grounds upon which a general hypothesis should be rejected, personal judgement may and should properly be exercised. The experimenter will rightly consider all points on which, in light of current knowledge, the hypothesis may be imperfectly accurate, and will selects tests, so far as possible, sensitive to these faults, rather than to others.’</span></p>
+
+<p>The Neyman-Pearson setup, on the other hand, employs two competing hypotheses, with a pre-data test-statistic chosen on grounds of optimal power. NP reject Fisher’s <em>subjective</em> approach and lean towards pre-specified long run error rates. Their method is essentially an objective decision theoretic framework when faced with uncertainty.</p>
+
+<p><a href="www.nyu.edu/classes/nbeck/q2/gill.pdf">Gill</a> further underlines these philosophical differences in their attitudes to hypothesis testing: ‘Fisher objected to the preselection of significance level as well as the mandatory two outcome decision process. Neyman and Pearson disagreed with interpreting p-values (or worse yet, ranges of p-values indicated by “stars”) as the probability of Type I errors since they do not constitute a long-range probability of rejection. Neyman and Pearson also considered the interpretation of data derived p-values to be subjective and futile.’
+&lt;/span&gt;</p>
+
+<h2 id="the-modern-paradigm-for-hypothesis-testing">The modern paradigm for hypothesis testing</h2>
+<p>Hypothesis testing, as taught in a modern graduate school, is a pragmatic straddling of both these approaches with wilful ignorance of the philosophical differences between the pioneers’ approach. In a typical hypothesis test set up, one employs two competing hypothesis of which one is set up as a <em>null</em> hypothesis and the other as an <em>alternative</em>. Again, even though these test specify a pre-specified significance level, it is the p-values instead that are used as evidence in favor of or against the null hypothesis. Therefore, such a test conveniently incorporates an alternative hypothesis sidestepping the search of a powerful test.</p>
+
+<p>Let’s consider the example of a linear model where a researcher wishes to establish that an exogenous variable, say IQ, has a statistically significant and positive impact on a dependent variable, say income. One will set this up in a modern test as <em>null</em> hypothesis of <script type="math/tex">\beta_{\mathrm{iq}} = 0</script> against an alternative hypothesis of <script type="math/tex">\beta_{\mathrm{iq}} > 0</script>. Now, even though we pre-specify a level of significance, say 95%, and an alternative hypothesis we still rely on the post-data p-value to decide whether our results are useful (even publishable) or not. In a strictly NP sense, inferences on both sides of the critical value are equally valid and still I remember being taught that ‘one only rejects the null but never accepts it.’ Recall that falsificationist inference is purely Fisherian. This confusion, I believe, results from the fact that most students are taught by professors who are themselves unaware of the roots of these rules of thumb.</p>
+
+<p>However, awareness of the philosophies underlying the two approaches can help one move beyond the rules of thumb and choose one of the two paradigms (or others such as confidence intervals and bayesian methods etc) suitable to the problem at hand. For example, situations where the cost of a false positive far exceeds the cost of a false negative one may readily resort to Fisher’s falsificationist agenda. In situations where there are clear – theoretically identified – dichotomies in the event space and / or the costs for the two types of errors are similar one may choose a suitably fashioned NP test. This <a href="http://stats.stackexchange.com/questions/23142/when-to-use-fisher-and-neyman-pearson-framework">discussion</a> on stack exchange elicits some interesting insights into the choice between the two methods.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Note to self: Origins of 'car' and 'cdr']]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/07/07/note-to-self-origins-of-car-and-cdr/"/>
+    <updated>2014-07-07T13:27:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/07/07/note-to-self-origins-of-car-and-cdr</id>
+    <content type="html"><![CDATA[<p>So, I am rereading the <a href="http://www.cs.cmu.edu/~dst/LispBook/book.pdf">book</a> <em>Gentle Introduction to Symbolic Computing</em> by Touretzky. I highly recommend the book to people who are new to both lisp and programming. Today’s post is simply a quote from the book that I want to preserve as a note to self on the origins of the two fundamental lisp functions: <code>car</code> and <code>cdr</code>.</p>
+
+<blockquote><p>These names are relics from the early days of computing, when Lisp first ran on a machine called the IBM 704. The 704 was so primitive it didn't even have transistors -- it used vacuum tubes. Each of its 'registers' was divided into several components, two of which were the address portion and the decrement portion. Back then, the name CAR stood for Contents of Address portion of Register, and CDR stood for Contents of Decrement portion of Register.</p></blockquote>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #28]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-28/"/>
+    <updated>2014-06-28T15:54:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-28</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #28</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="c1">;;; Part a)</span>
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">lsort</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">sort</span>
+</span><span class="line">    <span class="nv">alist</span>
+</span><span class="line">    <span class="nf">#&#39;</span><span class="nb">&lt;</span>
+</span><span class="line">    <span class="ss">:key</span> <span class="nf">#&#39;</span><span class="nb">length</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">;;; Part b)</span>
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">count-elem</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">elem</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">apply</span>
+</span><span class="line">    <span class="nf">#&#39;</span><span class="nb">+</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">mapcar</span>
+</span><span class="line">      <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">equalp</span> <span class="nv">x</span> <span class="nv">elem</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">))</span>
+</span><span class="line">      <span class="nv">alist</span><span class="p">)))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">lfsort</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">lengths</span> <span class="p">(</span><span class="nb">mapcar</span> <span class="nf">#&#39;</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">sort</span>
+</span><span class="line">      <span class="nv">alist</span> <span class="nf">#&#39;</span><span class="nb">&lt;</span>
+</span><span class="line">      <span class="ss">:key</span> <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nv">count-elem</span> <span class="nv">lengths</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">x</span><span class="p">))))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #25]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25/"/>
+    <updated>2014-06-28T15:54:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #25</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">element-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">    <span class="no">nil</span>
+</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line">      <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">      <span class="p">(</span><span class="nv">element-at</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">)))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">remove-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">i</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">mapcan</span>
+</span><span class="line">      <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">j</span> <span class="nv">i</span><span class="p">))</span>
+</span><span class="line">          <span class="p">(</span><span class="nb">setf</span> <span class="nv">i</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">i</span><span class="p">))</span>
+</span><span class="line">          <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">j</span> <span class="nv">n</span><span class="p">)</span> <span class="no">nil</span> <span class="p">(</span><span class="nb">list</span> <span class="nv">x</span><span class="p">))))</span>
+</span><span class="line">      <span class="nv">alist</span><span class="p">)))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class="line">    <span class="no">nil</span>
+</span><span class="line">    <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">k</span> <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nb">random</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))))</span>
+</span><span class="line">      <span class="p">(</span><span class="nb">append</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nv">element-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">remove-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">))))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-permu</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">rnd-select</span> <span class="nv">alist</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #24]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-24/"/>
+    <updated>2014-06-28T15:54:31+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-24</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #24</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">element-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">    <span class="no">nil</span>
+</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line">      <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">      <span class="p">(</span><span class="nv">element-at</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">)))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">remove-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">i</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">mapcan</span>
+</span><span class="line">      <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">j</span> <span class="nv">i</span><span class="p">))</span>
+</span><span class="line">          <span class="p">(</span><span class="nb">setf</span> <span class="nv">i</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">i</span><span class="p">))</span>
+</span><span class="line">          <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">j</span> <span class="nv">n</span><span class="p">)</span> <span class="no">nil</span> <span class="p">(</span><span class="nb">list</span> <span class="nv">x</span><span class="p">))))</span>
+</span><span class="line">      <span class="nv">alist</span><span class="p">)))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class="line">    <span class="no">nil</span>
+</span><span class="line">    <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">k</span> <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nb">random</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))))</span>
+</span><span class="line">      <span class="p">(</span><span class="nb">append</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nv">element-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">remove-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">))))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">lotto-select</span> <span class="p">(</span><span class="nv">n</span> <span class="nv">m</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
+</span><span class="line">    <span class="no">nil</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">range</span> <span class="mi">1</span> <span class="nv">m</span><span class="p">)</span> <span class="nv">n</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

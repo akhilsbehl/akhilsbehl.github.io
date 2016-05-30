@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: islr | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/islr/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[EDA: Plotting non linear decision boundaries in R]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r/"/>
+    <updated>2014-06-05T13:22:53+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r</id>
+    <content type="html"><![CDATA[<p><img class="center" src="http://i.stack.imgur.com/UCJol.png" title="‘Figure 2.13, ISLR’" ></p>
+
+<p>So continuing with the beautiful plots in ISLR, <a href="http://stackoverflow.com/questions/24052643/r-how-to-plot-non-linear-decision-boundaries-with-a-grid-in-r">here</a> is a
+discussion I had on SO today about hot to plot decision boundaries or arbitrary
+non-linear curves. The <a href="http://stats.stackexchange.com/questions/21572/how-to-plot-decision-boundary-of-a-k-nearest-neighbor-classifier-from-elements-o">discussion</a> on SE that was linked to in
+the answer was even more useful. Plus, I picked up two new functions today:
+<code>curve</code> and <code>contour</code>.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ISLR: Notes - Chapter 2]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/05/islr-notes-chapter-2/"/>
+    <updated>2014-06-05T10:56:30+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/05/islr-notes-chapter-2</id>
+    <content type="html"><![CDATA[<ul>
+  <li>
+    <p>Non-parametric methods seek an estimate of $f$ that gets as close to the data
+points as possible without being too <em>rough or wiggly</em>. Non-parametric
+approaches completely avoid the danger of the chosen functional form being
+too far from the true $f$. The disadvantage of non-parametric methods is that
+they need a large set of observations to obtain an accurate estimate of $f$.
+Therefore, the informational requirements of non-parametric methods are
+larger.</p>
+
+    <p>Contrast this to parametric methods. Parametric methods essentially
+extrapolate information from one region of the domain to another. This is
+because global regularities are assumed in the functional form. A
+non-parametric method however has to trace the surface $f$ in all regions of
+the domain to be valid.</p>
+  </li>
+</ul>
+
+<!--more-->
+
+<ul>
+  <li>
+    <p>Almost as a rule, the flexibility of a model will trade-off it’s
+interpretability. Therefore, the intent of the model, vis-a-vis prediction vs
+inference becomes the prime consideration when choosing across a spectrum of
+modeling techniques.</p>
+
+    <p>However, another consideration that can affect the predictive power of a
+non-parametric model is the predisposition to overfit.</p>
+  </li>
+  <li>
+    <p>Sometimes the question of whether an analysis should be considered supervised
+or unsupervised is less clear-cut. For instance-suppose that we have a set of
+$n$ observations. For $m$ of the observations, where $m &lt; n$, we have both
+predictor and response measurements. Fore the remaining $n - m$ observations,
+we only have the predictors’ but no response measurement. Such a scenario can
+arise if the predictors can be measured <em>relatively cheaply</em> as compared to
+the corresponding response. We refer to this setting as a semi-supervised
+learning problem where we desire a statistical method that can handle all $n$
+observations appropriately.</p>
+  </li>
+  <li>
+    <p>MSE:</p>
+
+    <script type="math/tex; mode=display">E(y_0 - \hat{f}(x_0)) = \mathrm{Var}(\hat{f}(x_0)) +
+                          \mathrm{Bias}(\hat{f}(x_0)) ^ 2 +
+                          \mathrm{Var}(\epsilon)</script>
+
+    <p>The left hand side is the <em>expected test MSE</em> that one would obtain if
+repeatedly estimating $f$ using a large number of training sets and testing
+each at $x_0$ (or averaging over a set of test values).</p>
+
+    <p>Note that all three terms in the equation for MSE are non-negative.
+Therefore, it is necessarily non-negative and is bounded below by
+Var(\epsilon) which is the variance of the <em>irreducible</em> error. We need to
+select a statistical learning method that simultaneously achieves low
+variance and low bias which objectives are always at odds with each other.</p>
+
+    <p>Variance of a method refers to the amount by which $\hat{f}$ would change if
+we estimated $f$ using a different training data set. Ideally the estimate
+for $f$ should not vary too much between training sets. In general, more
+flexible statistical methods have higher variance.</p>
+
+    <p>Bias refers to the error that is introduced by <em>approximating</em> a real life
+problem, which may be complicated, by a much simpler model. Essentially, this
+is the bias in a method’s prediction that is independent of the size of the
+sample available to the method. If a markedly non-linear relationship is
+approximated using a linear model, there would be residual bias no matter how
+large a training set is available to this model. As a general rule, more
+flexible methods have lower bias.</p>
+  </li>
+  <li>
+    <p>As we choose progressively more flexible models, the variance will increase
+and the bias will decrease. The relative rate of change of these two
+quantities determines whether the test MSE increases or decreases. As we
+increase the flexibility, the bias tends to initially decrease faster than
+the variance increases. Consequently, the expected test MSE declines.
+However, at some point the increasing flexibility has little impact on the
+bias but starts to significantly increase the variance. When this happens the
+test MSE increases. [The first half of this curve is the area of innovation:
+create methods that can reduce bias faster than they increase variance.
+Consider Breiman’s introduction of forests by mixing Ho’s random subspace
+method and bootstrap aggregation with CARTs.]</p>
+  </li>
+  <li>
+    <p>Look at the third panel in Fig. 2.12. Your life is so good if you are
+required to model that. Not only do you have a steep slope you will be
+descending, you have a vast plain where your MSE is virtually constant over a
+large range of parameters. You can’t go very wrong there. Compare this to the
+first panel where it is a more perverse situation of blink-and-you-miss-it.</p>
+  </li>
+</ul>
+
+<p><img src="../images/islr-fig-2.12.png" alt="ISLR, Fig. 2.12" /></p>
+
+<ul>
+  <li>
+    <p>To quantify the accuracy of a <strong>classifier</strong> $\hat{f}$, one may use the
+<strong>test error rate</strong>: <script type="math/tex">\mathrm{Ave}(I(y_0 \ne \hat{y}_0))</script>.
+The test error rate is minimized (<strong>Bayes error rate</strong>) for the <strong>Bayes
+classifier</strong> that assigns each observation to the most likely class given its
+predictor values: <script type="math/tex">\hat{y_0} = \arg\max_j Pr(Y = j | X = x_0)</script>.
+The Bayes classifier produces the <strong>Bayes decision boundary</strong> with the
+following error rate: <script type="math/tex">Ave(1 - \hat{y_0})</script>.</p>
+
+    <p><em>The Bayes error rate is analogous to the irreducible error and is greater
+than zero when the categories overlap in the true population.</em></p>
+  </li>
+  <li>
+    <p>Question 1d) A relatively inflexible model would be better to model a process
+which is inherently too noisy, i.e. $\mathrm{Var}(\epsilon)$ is high. This is
+because a model with fewer degrees of freedom would be less susceptible to
+overfitting.</p>
+  </li>
+  <li>
+    <p>Question 7d) If the Bayes decision boundary in a problem is highly non-linear
+one would expect a smaller value of K to be optimal for KNN. This is because
+a highly non-linear decision boundary implies weak global regularities in the
+data and stronger local regularities. Therefore, a very high value of k would
+ignore these local regularities.</p>
+  </li>
+</ul>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[EDA: Plotting least squares fit line in R]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/04/eda-plotting-least-squares-fit-line-in-r/"/>
+    <updated>2014-06-04T12:22:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/04/eda-plotting-least-squares-fit-line-in-r</id>
+    <content type="html"><![CDATA[<p>I have recently started reading <a href="http://www-bcf.usc.edu/~gareth/ISL/">ISLR</a> and am finding the plots in the
+book very useful.</p>
+
+<p>A visualization aid one often uses for exploratory data analysis is a scatter
+plot of the response variable against a potential predictor. Overlaying the
+ordinary least squares fit line on this scatter provides a readily accessible
+visual representation of the effect of the predictor on the response (if any).</p>
+
+<p>Following is a simple snippet that I wrote in R to plot such graphs for any
+arbitrary dataset with some numeric response variable. Note that the function
+only attempts the plots for predictors which are numeric (or integer). It also
+attempts a crude adjustment of the layout of the plot according to the number
+of predictors.</p>
+
+<!--more-->
+
+<p>```r Plotting OLS fit of features against the response</p>
+
+<p>plotLeastSqFit = function(df, responseVar) {
+    stopifnot(is.data.frame(df), responseVar %in% colnames(df), is.numeric(df[[responseVar]]))
+    areNumeric = setdiff(colnames(df)[sapply(df, is.numeric)], responseVar)
+    if (length(areNumeric) &lt;= 3) {
+        mfRow = c(1, length(areNumeric))
+    } else {
+        mfRow = c(ceiling(length(areNumeric)/2), 2)
+    }
+    par(mfrow = mfRow)
+    lapply(X = areNumeric, FUN = function(x) {
+        plot(y = df[[responseVar]], x = df[[x]], col = “red”, lwd = 1.5, ylab = responseVar, 
+            xlab = x, main = sprintf(“LS fit of %s against %s”, responseVar, 
+                x))
+        abline(lm(as.formula(paste(responseVar, “~”, x)), data = df), col = “blue”, 
+            lwd = 2)
+    })
+}</p>
+
+<p>```</p>
+
+<p>Here are sample plots from this function for a couple of the ISLR datasets.</p>
+
+<p>```r For the mtcars dataset</p>
+
+<p>library(ISLR)</p>
+
+<p>data(mtcars)
+## Choose only a few columns.
+plotLeastSqFit(df = mtcars[c(“mpg”, “cyl”, “hp”, “wt”)], responseVar = “mpg”)</p>
+
+<p>```</p>
+
+<p><img src="../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png" alt="plot of chunk For the mtcars dataset" /></p>
+
+<p>```r For the Advertising dataset, Ch. 2, ISLR</p>
+
+<p>Advertising = read.csv(“http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv”)
+Advertising[[“X”]] = NULL
+set.seed(pi)
+Advertising[[“random”]] = runif(nrow(Advertising))
+plotLeastSqFit(df = Advertising, responseVar = “Sales”)</p>
+
+<p>```</p>
+
+<p><img src="../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_Advertising_dataset__Ch__2__ISLR.png" alt="plot of chunk For the Advertising dataset, Ch. 2, ISLR" /></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

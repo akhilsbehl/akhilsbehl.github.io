@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: ols | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/ols/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[EDA: Plotting least squares fit line in R]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/04/eda-plotting-least-squares-fit-line-in-r/"/>
+    <updated>2014-06-04T12:22:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/04/eda-plotting-least-squares-fit-line-in-r</id>
+    <content type="html"><![CDATA[<p>I have recently started reading <a href="http://www-bcf.usc.edu/~gareth/ISL/">ISLR</a> and am finding the plots in the
+book very useful.</p>
+
+<p>A visualization aid one often uses for exploratory data analysis is a scatter
+plot of the response variable against a potential predictor. Overlaying the
+ordinary least squares fit line on this scatter provides a readily accessible
+visual representation of the effect of the predictor on the response (if any).</p>
+
+<p>Following is a simple snippet that I wrote in R to plot such graphs for any
+arbitrary dataset with some numeric response variable. Note that the function
+only attempts the plots for predictors which are numeric (or integer). It also
+attempts a crude adjustment of the layout of the plot according to the number
+of predictors.</p>
+
+<!--more-->
+
+<p>```r Plotting OLS fit of features against the response</p>
+
+<p>plotLeastSqFit = function(df, responseVar) {
+    stopifnot(is.data.frame(df), responseVar %in% colnames(df), is.numeric(df[[responseVar]]))
+    areNumeric = setdiff(colnames(df)[sapply(df, is.numeric)], responseVar)
+    if (length(areNumeric) &lt;= 3) {
+        mfRow = c(1, length(areNumeric))
+    } else {
+        mfRow = c(ceiling(length(areNumeric)/2), 2)
+    }
+    par(mfrow = mfRow)
+    lapply(X = areNumeric, FUN = function(x) {
+        plot(y = df[[responseVar]], x = df[[x]], col = “red”, lwd = 1.5, ylab = responseVar, 
+            xlab = x, main = sprintf(“LS fit of %s against %s”, responseVar, 
+                x))
+        abline(lm(as.formula(paste(responseVar, “~”, x)), data = df), col = “blue”, 
+            lwd = 2)
+    })
+}</p>
+
+<p>```</p>
+
+<p>Here are sample plots from this function for a couple of the ISLR datasets.</p>
+
+<p>```r For the mtcars dataset</p>
+
+<p>library(ISLR)</p>
+
+<p>data(mtcars)
+## Choose only a few columns.
+plotLeastSqFit(df = mtcars[c(“mpg”, “cyl”, “hp”, “wt”)], responseVar = “mpg”)</p>
+
+<p>```</p>
+
+<p><img src="../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_mtcars_dataset.png" alt="plot of chunk For the mtcars dataset" /></p>
+
+<p>```r For the Advertising dataset, Ch. 2, ISLR</p>
+
+<p>Advertising = read.csv(“http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv”)
+Advertising[[“X”]] = NULL
+set.seed(pi)
+Advertising[[“random”]] = runif(nrow(Advertising))
+plotLeastSqFit(df = Advertising, responseVar = “Sales”)</p>
+
+<p>```</p>
+
+<p><img src="../images/rmdimages/2014-06-04-eda-plotting-least-squares-fit-line-in-r/For_the_Advertising_dataset__Ch__2__ISLR.png" alt="plot of chunk For the Advertising dataset, Ch. 2, ISLR" /></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

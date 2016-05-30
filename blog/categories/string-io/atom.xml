@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: string io | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/string-io/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: textConnection for string IO]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/02/09/r-textconnections-for-string-io/"/>
+    <updated>2014-02-09T12:26:14+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/02/09/r-textconnections-for-string-io</id>
+    <content type="html"><![CDATA[<p>I’ve used <code>textConnection</code> in R for reading from strings. Only recently, I realized (duh!) that it may also be used for write functionality much like Python’s stringIO module. In this post I show some simple examples for how to use this functionality.</p>
+
+<!--more-->
+
+<h2 id="reading-from-a-text-connection">Reading from a text connection.</h2>
+
+<p>Probably the most common places we use a text connection for input is when using the <code>scan</code> command. In fact, <code>scan</code> provides a simple optional argument to handle this special case. The fact that <code>read.table</code> (and derivatives) rely on <code>scan</code> under the hood makes this usable there as well.</p>
+
+<p>```r</p>
+
+<p>R&gt; myString = “1 2 3 4 5 6 7 8 9 10”
+R&gt; scan(text=myString, what=1L)
+Read 10 items
+ [1]  1  2  3  4  5  6  7  8  9 10</p>
+
+<p>R&gt; myString = “1 2 3 4 5\n6 7 8 9 10”
+R&gt; read.table(text=myString, sep=” “)
+  V1 V2 V3 V4 V5
+1  1  2  3  4  5
+2  6  7  8  9 10</p>
+
+<p>```</p>
+
+<p>I can’t think of any other cases where I have used this functionality personally. If you have any other common (or even exotic) use-cases where this was useful, let me know in the comments.</p>
+
+<h2 id="writing-out-to-a-textconnection">Writing out to a textConnection:</h2>
+
+<p>Consider the case where one may want to collect all output from the R console as text to parse for some further analysis. <code>sink</code> is a useful command in this case. One may need to use <code>sink</code> while bypassing the filesystem (perhaps on a diskless system?!). <code>textConnection</code> to the rescue.</p>
+
+<p>Here is an example:</p>
+
+<p>```r</p>
+
+<p>R&gt; textSink = “”
+R&gt; sinkCon = textConnection(“textSink”, open=”w”)
+R&gt; sinkCon
+     description            class             mode             text           opened         can read        can write 
+      “textSink” “textConnection”              “w”           “text”         “opened”             “no”            “yes”</p>
+
+<p>```</p>
+
+<p>Look at the <code>mode</code> and <code>can write</code> parts of the description above. Now let’s try actually writing to it.</p>
+
+<p>```r</p>
+
+<p>R&gt; sink(sinkCon)
+R&gt; summary(lm(runif(1e3) ~ rnorm(1e3))) # There will be no output on the console.
+R&gt; close(sinkCon) # Make sure to close the sink.</p>
+
+<h1 id="lets-look-at-what-is-in-the-textsink">Let’s look at what is in the textSink</h1>
+<p>R&gt; textSink
+ [1] “”                                                               “Call:”                                                       <br />
+ [3] “lm(formula = runif(1000) ~ rnorm(1000))”                        “”                                                            <br />
+ [5] “Residuals:”                                                     “     Min       1Q   Median       3Q      Max “               <br />
+ [7] “-0.52214 -0.25361  0.01119  0.25541  0.52547 “                  “”                                                            <br />
+ [9] “Coefficients:”                                                  “             Estimate Std. Error t value Pr(&gt;|t|)    “       <br />
+[11] “(Intercept)  0.501199   0.009238  54.256   &lt;2e-16 <strong><em>”          “rnorm(1000) -0.023373   0.009168  -2.549   0.0109 *  “       <br />
+[13] “—”                                                            “Signif. codes:  0 ‘</em></strong>’ 0.001 ‘<em>*’ 0.01 ‘</em>’ 0.05 ‘.’ 0.1 ‘ ’ 1”
+[15] “”                                                               “Residual standard error: 0.292 on 998 degrees of freedom”    <br />
+[17] “Multiple R-squared:  0.006471,\tAdjusted R-squared:  0.005475 “ “F-statistic:   6.5 on 1 and 998 DF,  p-value: 0.01094”       <br />
+[19] “”</p>
+
+<p>```</p>
+
+<h2 id="epilogue">Epilogue</h2>
+
+<p>Clearly, we have full capabilities to do IO to and from strings in R. However, the use-cases where string IO is the best idea still eludes me. I will love to hear from other users who have or may use this for some idea of their own.</p>
+]]></content>
+  </entry>
+  
+</feed>

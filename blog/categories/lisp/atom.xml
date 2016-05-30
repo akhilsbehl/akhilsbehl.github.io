@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: lisp | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/lisp/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Inspecting objects at point with ESS]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess/"/>
+    <updated>2016-05-30T13:34:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess</id>
+    <content type="html"><![CDATA[<p>Somewhere in the second half of last year I switched my primary text editor from <a href="http://www.vim.org/">Vim</a> to <a href="https://www.gnu.org/software/emacs/">Emacs</a>. Calm down! I use <a href="https://www.emacswiki.org/emacs/Evil">Evil</a>. So, one of my primary languages is R and I was in love with this <a href="https://github.com/vim-scripts/Vim-R-plugin">plugin</a> in Vim. A snippet of my vim config that I used to rely heavily on in Vim was:</p>
+
+<p>``` vim</p>
+
+<p>map <LocalLeader>nr :call RAction("rownames")<CR>
+map <LocalLeader>nc :call RAction("colnames")<CR>
+map <LocalLeader>n2 :call RAction("names")<CR>
+map <LocalLeader>nn :call RAction("dimnames")<CR>
+map <LocalLeader>nd :call RAction("dim")<CR>
+map <LocalLeader>nh :call RAction("head")<CR>
+map <LocalLeader>nt :call RAction("tail")<CR>
+map <LocalLeader>nl :call RAction("length")<CR>
+map <LocalLeader>cc :call RAction("class")<CR></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></CR></LocalLeader></p>
+
+<p>```</p>
+
+<p>These commands were invented by me after looking at a similar usage pattern in the plugin’s manuals. Being able to inspect objects at point without switching from my editor to the R prompt made me much more productive than when I could not do this. After I switched to Emacs and the mighty <a href="http://ess.r-project.org/">ESS</a> for programming in R, replicating this was an explicit TODO in my ESS configuration. Ladies &amp; gentlemen, today I bring you the solution. <em>Drumroll!</em></p>
+
+<!--more-->
+
+<p>The primary idea — <code>ess-command</code> wrapped with <code>popup-tip</code> — came from <a href="https://blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/">this blog post</a> of yore and was wielded to magnificent effect by yours truly. (<em>Yes, I’m a megalomaniac, thank you very much.</em>)</p>
+
+<p>Lemme show you <em>teh codez</em>.</p>
+
+<p>``` lisp</p>
+
+<p>;;; Show a popup by executing arbitrary commands on object at point.
+;;; Inspiration:
+;;; blogisticreflections.wordpress.com/2009/10/01/r-object-tooltips-in-ess/</p>
+
+<p>;; emacs.stackexchange.com/questions/696/get-content-of-a-buffer
+(defun asb-read-into-string (buffer)
+  (with-current-buffer buffer
+    (buffer-string)))</p>
+
+<p>(defun asb-ess-R-object-popup (r-func)
+  “R-FUNC: The R function to use on the object.
+Run R-FUN for object at point, and display results in a popup.”
+  (let ((objname (current-word))
+        (tmpbuf (get-buffer-create “<strong>ess-R-object-popup</strong>”)))
+    (if objname
+        (progn
+          (ess-command (concat “class(“ objname “)\n”) tmpbuf)
+          (let ((bs (asb-read-into-string tmpbuf)))
+            (if (not(string-match “(object .* not found)|unexpected” bs))
+                (progn
+                  (ess-command (concat r-func “(“ objname “)\n”) tmpbuf)
+                  (let ((bs (asb-read-into-string tmpbuf)))
+                    (popup-tip bs)))))))
+  (kill-buffer tmpbuf)))</p>
+
+<p>(defun asb-ess-R-object-popup-str ()
+  (interactive)
+  (asb-ess-R-object-popup “str”))</p>
+
+<p>(defun asb-ess-R-object-popup-interactive (r-func)
+  (interactive “sR function to execute: “)
+  (asb-ess-R-object-popup r-func))</p>
+
+<p>(evil-leader/set-key-for-mode ‘ess-mode “ei” ‘asb-ess-R-object-popup-str)
+(evil-leader/set-key-for-mode ‘ess-mode “eI”
+  ‘asb-ess-R-object-popup-interactive)</p>
+
+<p>```</p>
+
+<p>The function <code>asb-ess-R-object-popup</code> allows us to yank the word at point and execute an arbitrary function on it (without arguments) and display the output as a popup-tip. This function is wrapped into <code>asb-ess-R-object-popup-str</code> mapped to <code>&lt;leader&gt;ei</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nspect) to inspect the <code>str</code> of the object interactively because this is what I use the most. Another function called <code>asb-ess-R-object-popup-interactive</code> mapped to <code>&lt;leader&gt;eI</code> (<strong>e</strong>vil-<strong>e</strong>ss-<strong>i</strong>nteractive-<strong>i</strong>nspect) asks the user what R function to inspect the object with. Common suspects will be <code>head</code>, <code>tail</code>, <code>names</code>, etc. You know the drill. Have a look at the <a href="https://www.youtube.com/watch?v=JwFjWHThIy4">video</a> and pay attention to the minibuffer.</p>
+
+<p>PS: Actually, don’t bother watching the video; I don’t know why youtube insists on downgrading the video quality.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[`timeit` macro for SBCL]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/12/25/timeit-macro-for-sbcl/"/>
+    <updated>2014-12-25T05:23:28+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/12/25/timeit-macro-for-sbcl</id>
+    <content type="html"><![CDATA[<p>I am the sort of person who really likes to know how much time code I have written takes to run. I believe that it is important to know what works in your language and what does not and what sort of efficiency trade offs need to be made for expressiveness and brevity. Since, I am learning common lisp a little seriously again, I have been interested in seeing how to profile code in it. Even though I haven’t reached <a href="http://t-b-o-g.blogspot.in/2009/12/brians-brain-on-common-lisp-take-3.html">this</a> far that I have started using the <a href="http://www.sbcl.org/1.0/manual/Statistical-Profiler.html">statistical CPU profiler</a> or the <a href="https://www.snellman.net/blog/archive/2006-05-14-statistical-allocation-profiler-for-sbcl.html">statistical allocation profiler</a>, I am starting out with simply being able to time code I write quickly.</p>
+
+<p>Since, writing macros in lisp is so easy and timing code is just the sort of thing macros are really useful for, I decided to practice some macro writing to write a <code>timeit</code> macro. Similar <a href="http://www-users.cs.umn.edu/~gini/lisp/profile.html">attempts</a> have been made in the past but I wanted to roll my own. After some <a href="http://stackoverflow.com/questions/27642626/lisp-defmacro-with-optional-and-body">struggle and a little nudge</a> I was able to write something satisfactory:</p>
+
+<p>```cl</p>
+
+<p>(defmacro timeit ((&amp;key
+                    (to-stream <em>standard-output</em>)
+                    (with-runs 1))
+                  &amp;body body)
+  “Note that this function may barf if you are depending on a single evaluation
+  and choose with-runs to be greater than one. But I guess that will be the
+  caller’s mistake instead.”
+  (let ((start-time (gensym))
+        (stop-time (gensym))
+        (temp (gensym))
+        (retval (gensym))
+        (elapsed-time (gensym)))
+    `(let* ((,start-time (get-internal-run-time))
+            (,retval (let ((,temp))
+                       (dotimes (i ,with-runs ,temp)
+                         (setf ,temp ,@body))))
+            (,stop-time (get-internal-run-time))
+            (,elapsed-time (/ (- ,stop-time ,start-time)
+                              internal-time-units-per-second)))
+       (format ,to-stream
+               (concatenate ‘string
+                            “~CAverage (total) time spent in expression”
+                            “ over ~:d iterations: ~f (~f) seconds.~C”)
+               #\linefeed
+               ,with-runs
+               ,elapsed-time
+               (/ ,elapsed-time ,with-runs)
+               #\linefeed)
+       ,retval)))</p>
+
+<p>```</p>
+
+<p>Hopefully, this is useful for someone not in the mood to write their own code to do this. This was definitely useful for me to write.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Machines that make music and steal jobs]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/17/machines-that-make-music-and-steal-jobs/"/>
+    <updated>2014-08-17T13:40:17+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/17/machines-that-make-music-and-steal-jobs</id>
+    <content type="html"><![CDATA[<p>I stumbled upon two different videos today while surfing the web both of which impressed me deeply. It was only later that I connected the dots between the two. The first is a breathtaking example of what human ingenuity and creativity can achieve with machines; the other a luddite damnation of the same phenomenon. I will put these here and refrain from any comments.</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/yY1FSsUV-8c" allowfullscreen></iframe></div>
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/7Pq-S557XQU" allowfullscreen></iframe></div></p>
+
+<p><a href="http://www.digitopoly.org/2014/08/16/the-ownership-of-machines/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=the-ownership-of-machines">Digitopoly</a> provides a counter-arguments to the conclusions of the second video which I, personally, found unconvincing in their depth of analysis.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #34]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-34/"/>
+    <updated>2014-08-06T03:23:34+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-34</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #34</p>
+
+<p>```cl</p>
+
+<p>(defun range (lo hi)
+    (cond ((&gt; lo hi) nil)
+    (t (cons lo (range (1+ lo) hi)))))</p>
+
+<p>(defun eucgcd (m n)
+    (let ((p (abs m)) (q (abs n)))
+        (cond ((= m n) m)
+        (t (gcd (- (max m n) (min m n)) (min m n))))))</p>
+
+<p>(defun coprimep (m n)
+    (= (eucgcd m n) 1))</p>
+
+<p>(defun totient (m)
+  (cond ((= m 1) 1)
+        (t (apply #’+ (mapcar
+                        (lambda (x) (if (coprimep m x) 1 0))
+                        (range 1 (1- m)))))))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #31]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-31/"/>
+    <updated>2014-08-06T02:11:59+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-31</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #31</p>
+
+<p>```cl</p>
+
+<p>(defun range (lo hi)
+  (cond ((&gt; lo hi) nil)
+        (t (cons lo (range (1+ lo) hi)))))</p>
+
+<p>(defun all (alist)
+  (cond ((null alist) t)
+        (t (and (car alist)
+                (all (cdr alist))))))</p>
+
+<p>(defun primep (n)
+  (all (mapcar
+         (lambda (x) (not (= 0 (mod n x))))
+         (range 2 (isqrt n)))))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

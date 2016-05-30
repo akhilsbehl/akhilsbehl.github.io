@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: factor | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/factor/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting a factor variable to a matrix of dummies]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/02/07/r-converting-a-factor-variable-to-a-matrix-of-dummies/"/>
+    <updated>2014-02-07T07:16:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/02/07/r-converting-a-factor-variable-to-a-matrix-of-dummies</id>
+    <content type="html"><![CDATA[<p>I have often needed to do this: split a factor variable into a set of dummies. For example, when randomForest will not let you use a factor with more than 32 levels, you may want to take this route. Or if you are like me and don’t like to rely too much on R’s <code>formula</code> interface it may help you choose your base category for a factor or supress intercept easily.</p>
+
+<!--more-->
+
+<p>We all know that this is <em>easily</em> done using <code>model.matrix</code>. I do too. And yet, I always forget how I did this the last time. So, now I have written this small utility that I can always just invoke without worrying about the exact voodoo I need to have <code>model.matrix</code> obey me. (If you think I need this only because I am extremely forgetful, you are probably right.)</p>
+
+<p>So here is the function:</p>
+
+<p>```r</p>
+
+<p>createDummiesFromFactor = function (f, df=data.frame(), …) {
+  # createDummiesFromFactor:
+  #
+  # Breaks down a given factor variable into a matrix of dummy factors with a
+  # column for each unique level of the factor. For example, for a factor
+  # variable ‘myvar’ with levels ‘Foo’, ‘Bar’, and ‘Baz’, returns a matrix with
+  # columns named myVarFoo, myVarBar, and myVarBaz.
+  #
+  # Args:
+  #
+  # f: An atomic vector which is a factor or may be coerced to one.
+  #
+  # df: The data.frame (or matrix) containing the factor. If ‘df’ is provided,
+  # the column name may be provided as a symbol or string.
+  #
+  # …: Further arguments passed to ‘factor’ for conversion of ‘f’.
+  #
+  # Returns:
+  #
+  # A matrix of factors with levels in {1, 2} and corresponding labels {0, 1}.
+  # Any rows / entries with NAs are silently dropped.
+  #
+  stopifnot(is.data.frame(df) || is.matrix(df))
+  fname = deparse(substitute(f))
+  if (nrow(df) &gt; 0L) {
+    f = df[ , fname]
+    if (is.null(f)) stop(“No such column in df.”)
+  }
+  stopifnot(is.atomic(f))
+  if (!is.factor(f)) f = factor(f, …)
+  fformula = as.formula(paste(“~”, fname, “- 1”))
+  retVal = setNames(as.data.frame(f), fname)
+  retVal = as.data.frame(model.matrix(fformula, data=retVal))
+  retVal[] = lapply(X=retVal, FUN=factor)
+  return(retVal)
+}</p>
+
+<p>```</p>
+
+<p>The command above works with any atomic vector which can be coerced to a factor or is already a factor. This variable may exist in the global environment or in a data.frame in which case one must use the <code>df</code> argument to the function. If <code>f</code> is not a factor already, one may use the <code>...</code> argument to pass variables to the <code>factor</code> call used inside the function.</p>
+
+<p>Following are a few examples of the function in action (output omitted):</p>
+
+<p>```r</p>
+
+<p>set.seed(pi)
+x = sample.int(10, 100, TRUE)
+x = factor(x)
+createDummiesFromFactor(x)
+x = factor(x, levels=1:9, labels=letters[1:9])
+createDummiesFromFactor(x)
+createDummiesFromFactor(x[is.na(x)])</p>
+
+<p>set.seed(pi)
+x = data.frame(foo=sample.int(10, 100, TRUE))
+createDummiesFromFactor(foo, df=x)
+createDummiesFromFactor(foo, df=x, labels=LETTERS[1:10])
+createDummiesFromFactor(foo, df=x, levels=1:9, labels=LETTERS[1:9])
+createDummiesFromFactor(foo, df=x[1:20, “foo”, drop=FALSE],
+                        levels=1:9, labels=LETTERS[1:9])</p>
+
+<p>```</p>
+
+<p>This work is also available in a <a href="https://gist.github.com/akhilsbehl/8894978">gist</a> for people to download and start working off of. I’d be happy to consider any alternatives, improvements or disucssion on this.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

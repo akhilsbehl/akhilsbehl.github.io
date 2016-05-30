@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: scrabble | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/scrabble/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Boggle solver: Linear and recursive search]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2015/02/14/boggle-solver-linear-and-recursive-search/"/>
+    <updated>2015-02-14T15:03:17+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2015/02/14/boggle-solver-linear-and-recursive-search</id>
+    <content type="html"><![CDATA[<p>I was recently introduced to a Boggle solver problem by a friend of mine. Put simply, given a boggle board of sixteen characters and a dictionary, the program needs to figure out how many words from the dictionary are possible on the boggle board. The one deviation from standard boggle is that adjacent moves restriction is relaxed, i.e. order is unimportant.</p>
+
+<p>My <a href="https://github.com/akhilsbehl/boggle-scrabble">repository</a> on Github discusses the problem and the two solutions implemented and their tradeoffs in much more detail along with presenting the code. Do visit.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

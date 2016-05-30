@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: statistical-inference | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/statistical-inference/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[The modern paradigm for hypothesis testing]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/07/11/the-modern-paradigm-for-hypothesis-testing/"/>
+    <updated>2014-07-11T12:48:57+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/07/11/the-modern-paradigm-for-hypothesis-testing</id>
+    <content type="html"><![CDATA[<p>In a couple of earlier posts, I briefly summarized the <a href="http://akhilsbehl.github.io/blog/2014/06/18/fisher-test-of-statistical-signficance/">Fisherian</a> and the <a href="http://akhilsbehl.github.io/blog/2014/06/19/neyman-pearson-hypothesis-testing/">Neyman-Pearson</a> (NP) approaches to frequentist hypothesis testing. In this post, I outline the modern paradigm of hypothesis testing taught in a graduate social science course and the various ways in which it is, if not wrong, misguided and prone to misinterpretation.</p>
+
+<!--more-->
+
+<h2 id="background">Background</h2>
+
+<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<h2 id="the-modern-paradigm-for-hypothesis-testing">The modern paradigm for hypothesis testing</h2>
+<p>Hypothesis testing, as taught in a modern graduate school, is a pragmatic straddling of both these approaches with wilful ignorance of the philosophical differences between the pioneers’ approach. In a typical hypothesis test set up, one employs two competing hypothesis of which one is set up as a <em>null</em> hypothesis and the other as an <em>alternative</em>. Again, even though these test specify a pre-specified significance level, it is the p-values instead that are used as evidence in favor of or against the null hypothesis. Therefore, such a test conveniently incorporates an alternative hypothesis sidestepping the search of a powerful test.</p>
+
+<p>Let’s consider the example of a linear model where a researcher wishes to establish that an exogenous variable, say IQ, has a statistically significant and positive impact on a dependent variable, say income. One will set this up in a modern test as <em>null</em> hypothesis of <script type="math/tex">\beta_{\mathrm{iq}} = 0</script> against an alternative hypothesis of <script type="math/tex">\beta_{\mathrm{iq}} > 0</script>. Now, even though we pre-specify a level of significance, say 95%, and an alternative hypothesis we still rely on the post-data p-value to decide whether our results are useful (even publishable) or not. In a strictly NP sense, inferences on both sides of the critical value are equally valid and still I remember being taught that ‘one only rejects the null but never accepts it.’ Recall that falsificationist inference is purely Fisherian. This confusion, I believe, results from the fact that most students are taught by professors who are themselves unaware of the roots of these rules of thumb.</p>
+
+<p>However, awareness of the philosophies underlying the two approaches can help one move beyond the rules of thumb and choose one of the two paradigms (or others such as confidence intervals and bayesian methods etc) suitable to the problem at hand. For example, situations where the cost of a false positive far exceeds the cost of a false negative one may readily resort to Fisher’s falsificationist agenda. In situations where there are clear – theoretically identified – dichotomies in the event space and / or the costs for the two types of errors are similar one may choose a suitably fashioned NP test. This <a href="http://stats.stackexchange.com/questions/23142/when-to-use-fisher-and-neyman-pearson-framework">discussion</a> on stack exchange elicits some interesting insights into the choice between the two methods.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Neyman & Pearson's hypothesis testing]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/19/neyman-pearson-hypothesis-testing/"/>
+    <updated>2014-06-19T13:32:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/19/neyman-pearson-hypothesis-testing</id>
+    <content type="html"><![CDATA[<p>In the last <a href="http://akhilsbehl.github.io/blog/2014/06/18/fisher-test-of-statistical-signficance/">post</a>, I talked about the test of statistical
+significance. Here I talk about the next major step in frequentist inference,
+i.e. Neyman Pearson hypothesis testing. I will also attempt to simultaneously
+elicit the differences between the two.</p>
+
+<!--more-->
+
+<p>Neyman &amp; Pearson (NP, hereinafter) motivate their objections to the Fisherian
+technique (although they ascribe it to the mathematician <a href="http://en.wikipedia.org/wiki/Joseph_Louis_Fran%C3%A7ois_Bertrand">Bertrand</a>)
+in this <a href="http://www.stats.org.uk/statistical-inference/NeymanPearson1933.pdf">paper</a>. To quote their primary objections:</p>
+
+<p><blockquote><p>… however small be the probability that a particular grouping of a number of stars is due to “chance,” does this in itself provide any evidence of another “cause” for the grouping but “chance?” [snip] Indeed, if $x$ is a continuous variable  – as for example is the angular distance between two stars – then any value of $x$ is a singularity of relative probability equal to zero. We are inclined to think that as far as a particular hypothesis is concerned no test based upon the theory of probability can by itself provide any valuable evidence of the truth or falsehood of that hypothesis.</p></blockquote></p>
+
+<h3 id="long-run-error-probabilities">Long run error probabilities</h3>
+
+<p>What NP did to formulate ‘an efficient test of the hypothesis H’ was to cast it
+into a decision theoretic framework (a “rule of behavior”) instead of search
+for truth. Fixing the rate of errors of acceptance (Type 1 error rate) and the
+rate of errors of rejection (Type 2 error rate) allows one to make objective
+decisions that minimize <em>expected</em> loss. NP motivate this thus:</p>
+
+<p><blockquote><p>… we may search for rules to govern our behavior with regard to them, in following which we insure that, in the long run of experience, we shall not be too often wrong. Here, for example, would be such a “rule of behavior”: to decide whether a hypothesis, H, of a given type be rejected or not, calculate a specified character, $x$ of the observed facts; if $x \gt x_0$ reject H, if $x \le x_0$ accept H. Such a rule tells us nothing as to whether in a particular case H is true when $x \le x_0$ or false when $x \gt x_0$. But it may often be proved that if we behave according to such a rule, then in the long run we shall reject H when it is true not more, say, than once in a hundred times, and in addition we may have evidence that we shall reject H sufficiently often when it is false.</p></blockquote></p>
+
+<p>While Fisher used an <em>achieved level of significance</em> (p-value) which is a
+post-data statistic, NP used the idea of fixing long run error probabilities
+which can be specified before the data collection phase. More on this later.</p>
+
+<h3 id="two-competing-hypotheses">Two competing hypotheses</h3>
+
+<p>Another most important difference that NP introduced with hypothesis testing
+was the introduction of two <em>competing</em> hypotheses (<strong>not</strong> necessarily
+christened the <em>null</em> and the <em>alternative</em>).</p>
+
+<p>Let’s take the familiar example of the mean of a random variable:</p>
+
+<script type="math/tex; mode=display">H_0: \mu = 0</script>
+
+<script type="math/tex; mode=display">H_1: \mu > 0</script>
+
+<script type="math/tex; mode=display">X \sim \mathrm{NIID}(\mu, \sigma^2)</script>
+
+<p>Corresponding to these hypothesis one can fix the two long run error rates
+conditional on mutually exclusive events:</p>
+
+<ul>
+  <li>Type 1 error rate ($\alpha$): the probability of rejecting $H_0$ when it is
+true; the size of the test.</li>
+  <li>Type 2 error rate ($\beta$): the probability of failing to reject $H_0$ when
+it is false; 1 - the power of the test.</li>
+</ul>
+
+<h3 id="most-efficient-test">Most efficient test</h3>
+
+<p>An NP hypothesis test statistic is chosen on the grounds of optimality: fixing
+the size of the test the statistic <strong>maximizes the power</strong> of the test.</p>
+
+<h3 id="pre-data-test">Pre data test</h3>
+
+<p>Consider the simple example discussed above. The sampling distribution of Type
+1 error in this case is the same as that for Fisher’s t-statistic we saw in the
+last post, viz.</p>
+
+<script type="math/tex; mode=display">t(X_n) = \frac{\sqrt{n}(\bar{X}_n - \mu_0)}{s} \sim^{H_0} S_t(n - 1)</script>
+
+<p>where $\bar{X}_n$ and $s^2$ are the sample mean and standard error of a random
+sample $X_n$.</p>
+
+<p>Given the size of the test $\alpha$ and fixing the size of the sample $n$, one
+can calculate the <em>critical value</em> of the test-statistic $c_{\alpha}$. This
+completes our test before we even attempt to collect data. In this sense NP
+hypothesis test is a pre-data test inasmuch as it can be fully specified before
+any collection of data.</p>
+
+<h3 id="power-calculation">Power calculation</h3>
+
+<p>To evaluate the power of the test one needs the sampling distribution of the
+test statistic under <script type="math/tex">H_1</script> (which must (?) be a <a href="http://www.emathzone.com/tutorials/basic-statistics/simple-hypothesis-and-composite-hypothesis.html">simple</a>
+hypothesis such as <script type="math/tex">\mu = \mu_1</script>). This is defined as in Spanos’
+<a href="http://errorstatistics.files.wordpress.com/2014/05/spanos_recurring-controversies-about-p-values-and-confidence-intervals-revisited.pdf">paper</a>:</p>
+
+<script type="math/tex; mode=display">t(X_n) = \frac{\sqrt{n}(\bar{X}_n - \mu_0)}{s} \sim^{\mu = \mu_1} S_t(\delta_1, n - 1)</script>
+
+<p>where, $\delta_1$ denotes the non-centrality parameter:</p>
+
+<script type="math/tex; mode=display">\delta_1 = \frac{\sqrt{n}(\mu_1 - 0)}{\sigma}</script>
+
+<p>The power then is calculated as the following:</p>
+
+<script type="math/tex; mode=display">\pi(\mu_1) = 1 - \beta(\mu_1) = P[t(x_n) > c_{\alpha}; \mu = \mu_1]</script>
+
+<h2 id="differences-in-practical-application">Differences in practical application</h2>
+
+<p>Gill’s <a href="www.nyu.edu/classes/nbeck/q2/gill.pdf">paper</a> succintly summarises the application of the two tests in the following steps:</p>
+
+<h3 id="steps-in-a-fisherian-test-of-significance">Steps in a Fisherian test of significance:</h3>
+<ol>
+  <li>Identify the null hypothesis.</li>
+  <li>Determine the appropriate test statistic and its distribution under the
+assumption that the null hypothesis is true.</li>
+  <li>Calculate the test-statistic from the data.</li>
+  <li>Determine the achieved level of significance that corresponds to the test
+statistic using the distibution under the assumption that the null
+hypothesis is true.</li>
+  <li>Reject $H_0$ if achieved level of significance is sufficiently small.
+Othewise reach no conclusion.</li>
+</ol>
+
+<p>The primary motivation (in my understanding of the readings) of NP was their
+discomfort with the subjectiveness in the last step above. Their claim
+apparently was to provide an objective decision theoretic framework by
+generalizing the rpinciples in Fisher’s test of significance.</p>
+
+<h3 id="steps-in-a-hypothesis-test--la-neyman-pearson">Steps in a hypothesis test à la Neyman Pearson:</h3>
+<ol>
+  <li>Identify a hypothesis of interst <script type="math/tex">H_1</script> and a complementary hypothesis
+<script type="math/tex">H_0</script>.</li>
+  <li>Determine the appropriate test statistic and its distibution under the
+assumption that <script type="math/tex">H_0</script> is true.</li>
+  <li>Specify a significance level (<script type="math/tex">\alpha</script>), and determine the corresponding
+critical value of the test statistic under the assumption that <script type="math/tex">H_0</script> is
+true.</li>
+  <li>Calculate the test-statistic from the data.</li>
+  <li>Reject <script type="math/tex">H_0</script> and accept <script type="math/tex">H_1</script> if the test statistic is futher than the
+critical value from the expected value of the test statistic (calculated
+under the assumption that <script type="math/tex">H_0</script> is true). Otherwise, accept <script type="math/tex">H_0</script>.</li>
+</ol>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Fisher's test of statistical significance]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/18/fisher-test-of-statistical-signficance/"/>
+    <updated>2014-06-18T20:54:24+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/18/fisher-test-of-statistical-signficance</id>
+    <content type="html"><![CDATA[<h2 id="prologue">Prologue</h2>
+
+<p>The past couple of days I have been reading about tests of statistical
+significance and the associated maladies since I came across this
+<a href="http://errorstatistics.files.wordpress.com/2014/05/spanos_recurring-controversies-about-p-values-and-confidence-intervals-revisited.pdf">paper</a> shared on a social networking site.</p>
+
+<p>In <a href="http://www.igidr.ac.in">grad school</a> conferences, I used to hear myriad tales of caution
+about p-values being unreliable, prone to misinterpretation and so on. Yet, no
+econometrics prof will touch this topic in class with a barge-pole. By the
+second semester, with term papers becoming the norm, the whole class was
+hunting for <em>stars</em> in the <a href="http://hetv.org/india/nfhs/">NHFS</a> wilderness. PhDs were always discussing
+how they spent the whole night trying to find a model that will render the
+variable of interest (on which their thesis rested) significant at 5% level. I
+did too. We were taught to.</p>
+
+<!--more-->
+
+<p>I was simply too stupid then to chase this literature on my own. In the true
+spirit of <a href="http://blog.codinghorror.com/learn-to-read-the-source-luke/">‘read the source, luke’</a>, I am going to attempt reading the
+adventures of <a href="http://en.wikipedia.org/wiki/Ronald_fisher">Fisher</a>, <a href="http://en.wikipedia.org/wiki/Neyman">Neyman</a>, and <a href="http://en.wikipedia.org/wiki/Egon_Pearson">Pearson</a> in the
+Royal Society. I will try to distil whatever I find interesting and post it
+here. [None of this will be any original thought: it is just a spotty
+statistician trying to refine his vocabulary.]</p>
+
+<p>For today, I want to specifically talk about the origin of <em>frequentist
+inference methods</em> starting with Fisherian <strong>significance testing</strong>. Today’s
+material comes primarily from this <a href="www.nyu.edu/classes/nbeck/q2/gill.pdf">paper</a> (excellent exposition) and the
+earlier <a href="http://errorstatistics.files.wordpress.com/2014/05/spanos_recurring-controversies-about-p-values-and-confidence-intervals-revisited.pdf">paper</a> by Spanos. The <a href="http://en.wikipedia.org/wiki/Statistical_significance_test">wikipedia page</a> is another useful
+resource, especially, regarding the historical narrative.</p>
+
+<h2 id="test-of-statistical-significance">Test of statistical significance:</h2>
+
+<p>Fisher laid the groundwork for inference in the frequentist sense. As the
+first-mover he built the <a href="http://faculty.ksu.edu.sa/salghamdi/Statistical%20Tables/T%20Table.jpg">t-tables</a> and decided the rules of thumb
+regarding how many stars to put next to a p-value.</p>
+
+<p>His stance on inductive inference was <strong>falsificationist</strong>, i.e. his test was
+developed as a tool to <em>nullify</em> a posited (<em>null</em>) hypothesis. Moreover, the
+Fisherian test <strong>does not</strong> employ an <em>alternative</em> hypothesis. A null
+hypothesis typically arises as either the result of a theory or from the status
+quo (conventional wisdom). In either case, we attempt to falsify the theory or
+conventional wisdom based on a sample of data.</p>
+
+<p>The nuance in this test becomes clearer when we consider that it is, in fact, a
+<strong>double negative</strong>. For example:</p>
+
+<p>Surround your pullquote like this {" text to be quoted "}</p>
+
+<h3 id="collecting-evidence-against-the-null-hypothesis">Collecting evidence against the null hypothesis</h3>
+
+<p>Consider a typical test for significance for the value of the mean of a random
+variable:</p>
+
+<script type="math/tex; mode=display">H_0: \mu = \mu_0 = 0; X \sim \mathrm{NIID}(\mu, \sigma^2)</script>
+
+<p>The null hypothesis is set thus because the researcher believes (on theoretical
+grounds) that $\mu \ne 0$ and thus would like to collect evidence against the
+null hypothesis above.</p>
+
+<p>The researcher can deduce that (even before any data is collected), <strong>assuming
+the null hypothesis is true</strong>, the following <em>sample statistic</em> follows the
+Student’s $t$ distribution, i.e.:</p>
+
+<script type="math/tex; mode=display">t(X_n) = \frac{\sqrt{n}(\bar{X}_n - \mu_0)}{s} \sim^{H_0} S_t(n - 1)</script>
+
+<p>where $\bar{X}_n$ and $s^2$ are the sample mean and standard error of a random
+sample $X_n$.</p>
+
+<p>The researcher now sets about collecting a sample $x_n$ of size n. The mean
+<script type="math/tex">\bar{x}_n</script> may be different from 0 but since we are only working with a
+<em>sample</em>, we do not know if it is so only by <em>chance</em> (a random outcome). The
+test statistic is a way of quantifying how unlikely such a chance event would
+be. The more unlikely such a chance event, the stronger is our evidence against
+the null hypothesis being true.</p>
+
+<p>Note that evidence thus derived is never certain; always probabilistic. One
+can, however, control (quantify with this test) the probability with which one
+shall tolerate an error in rejecting the null. This is, essentially, the level
+of significance of our test, say $\alpha$.</p>
+
+<h3 id="t-tables-and-p-value">t-tables and p-value</h3>
+
+<p>Here, Fisher developed two different mechanisms to evaluate the results of his
+tests, which are conceptually exactly the same but differed due to practical
+consideration of the time. These are the t-tables and the p-value. The p-value
+defined as:</p>
+
+<script type="math/tex; mode=display">p(x_n) = P[t(X_n) \gt t(x_n); H_0]</script>
+
+<p>is the exact probability of obtaining the test-statistic at least as extreme as
+the one observed assuming $H_0$ is true. Having calculated an exact p-value one
+can weigh the evidence against the null at any chosen level of significance
+$\alpha$.</p>
+
+<p>However, at the time, calculating exact p-values used to be difficult since
+they needed to be done by hand. Fisher computed the values of test statistics
+for different sample sizes ($n$) and for typical (read: arbitrarily chosen by
+him) values of $\alpha$. These values were 0.5(*), 0.01(**), 0.001(***). A
+computed test statistic was then checked against these levels to determine if
+it exceeded the value for a chosen level of significance.</p>
+
+<p>Fisher was well aware of the arbitrariness of these levels of significance and
+probably chose them for convenience in his agricultural experiments. Moreover,
+now that calculation of exact p-values is cheaply available using computers,
+one should always rely on reporting these exact values instead of only
+reporting the legacy, arbitrary, and redundant significance stars.</p>
+
+<h3 id="post-data-test">Post data test</h3>
+
+<p>The p-value is a <em>post-data statistic</em> since it can only be computed post the
+collection of data. The significance test is therefore a post data test, the
+test (and resulting inference) is incomplete untill the data has been
+collected. This is a concept that becomes useful when contrasting test of
+statistical significance with <a href="http://akhilsbehl.github.io/blog/2014/06/19/neyman-pearson-hypothesis-testing/">hypothesis testing framework</a> à la
+Neyman and Pearson.</p>
+
+<!--links-->
+
+]]></content>
+  </entry>
+  
+</feed>

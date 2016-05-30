@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: markdown | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/markdown/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Editing markdown in Vim and previewing in Firefox.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/17/editing-markdown-in-vim-and-previewing-in-firefox/"/>
+    <updated>2014-08-17T15:03:15+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/17/editing-markdown-in-vim-and-previewing-in-firefox</id>
+    <content type="html"><![CDATA[<p>Lately, I have taken to maintaining most of my text in Markdown (desperately trying to avoid Emacs’ org-mode) and previewing it while editing in Vim is something that is a nice to have. So I searched a little bit and found this nice little <a href="http://ellengummesson.com/blog/2013/01/27/markdown-preview-for-vim/">snippet</a> by Ellen Gummesson that I then adapted per my preferences as such:</p>
+
+<p>```vim</p>
+
+<p>” Preview markdown in Firefox</p>
+
+<p>function! PreviewMarkdown()
+  let outFile = expand(‘%:r’) . ‘.html’
+  silent execute ‘!cd %:p:h’
+  silent execute ‘!python -m markdown % &gt;’ . outFile
+  “ The screen will need to be redrawn. Dunno why! :\
+  silent execute ‘redraw!’
+endfunction</p>
+
+<p>augroup markdown
+    au!
+    au BufNewFile,BufRead <em>.md,</em>.markdown setlocal filetype=ghmarkdown
+    au BufNewFile,BufRead <em>.md,</em>.markdown setlocal textwidth=0
+    autocmd FileType ghmarkdown map <LocalLeader>p
+          \ :call PreviewMarkdown()<CR>
+augroup END</CR></LocalLeader></p>
+
+<p>```</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

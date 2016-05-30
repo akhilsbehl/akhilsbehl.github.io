@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: cube | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/cube/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: Converting a data.table to a multi way array (cube)]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube/"/>
+    <updated>2014-08-20T15:42:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube</id>
+    <content type="html"><![CDATA[<p>This post discusses the problem of converting a <code>data.table</code> to the <code>array</code> data structure in R. The idea is analogous to converting a denormalized dataset that presents both dimensions and facts in a table as columns of the table to a completely normalized fact cube along the dimensions of the dataset.</p>
+
+<p>The problem can be solved in multiple ways in R with attending constraints of these approaches – e.g. <code>plyr::daply</code>, <code>xtabs</code>, <code>by</code> or a manual home-brewn set of split and lapply routine. Without discussing the constraints I observed with the existing techniques, I am presenting an alternative approach here that depends on unrolling the rectangular data structure into a linear structure and then reshaping it by manually counting the facts and dimension sizes (think strides). The choice of using a <code>data.table</code> was purely for efficiency reasons but the same idea can be implemented with a <code>data.frame</code> with little changes to the code.</p>
+
+<!--more-->
+
+<p>Dislcaimer: A constraint (I see it as essentially the functionality being implemented here) that all rows should be unique along the chosen dimensions. Since a cube must have all dimensions perfectly normalized.</p>
+
+<p>Following is the implemenation with an example:</p>
+
+<p>```r</p>
+
+<p>dt2array = function (x, facts, dims) {
+  stopifnot(is.data.table(x))
+  setkeyv(x, rev(dims))
+  stopifnot(!any(duplicated(x)))
+  dimensions = lapply(x[ , rev(dims), with=FALSE],
+                      function (x) sort(unique(x)))
+  xFull = data.table(expand.grid(dimensions, stringsAsFactors=FALSE))
+  setkeyv(xFull, rev(dims))
+  x = data.table:::merge.data.table(xFull, x, by=dims, all=TRUE)
+  factsVec = unlist(x[ , facts, with=FALSE], recursive=FALSE, use.names=FALSE)
+  nFacts = length(facts)
+  nDims = length(dims)
+  if (nFacts &gt; 1) {
+    dim(factsVec) = c(sapply(dimensions, length), nFacts)
+    dimnames(factsVec) = c(dimensions, “facts”=list(facts))
+    return(aperm(factsVec, perm=c(nDims:1, nDims + 1)))
+  } else {
+    dim(factsVec) = sapply(dimensions, length)
+    dimnames(factsVec) = dimensions
+    return(aperm(factsVec))
+  }
+}</p>
+
+<p>dat = data.table(f1=runif(10),
+                 f2=runif(10),
+                 f3=runif(10),
+                 d1=letters[1:5],
+                 d2=rep(letters[3:4], each=5),
+                 d3=LETTERS[1:2])
+dt2array(dat, “f1”, c(“d1”, “d2”, “d3”))
+dt2array(dat, c(“f1”, “f2”), c(“d1”, “d2”, “d3”))
+dt2array(dat, c(“f1”, “f2”, “f3”), c(“d1”, “d2”, “d3”))</p>
+
+<p>```</p>
+
+<p>The implementation is very fast, if I say so myself, since almost all manipulations being used here are fairly low-level in R implemented in C. Hopefully, this will be useful.</p>
+]]></content>
+  </entry>
+  
+</feed>

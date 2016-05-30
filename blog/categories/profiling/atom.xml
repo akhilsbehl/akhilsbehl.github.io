@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: profiling | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/profiling/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[`timeit` macro for SBCL]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/12/25/timeit-macro-for-sbcl/"/>
+    <updated>2014-12-25T05:23:28+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/12/25/timeit-macro-for-sbcl</id>
+    <content type="html"><![CDATA[<p>I am the sort of person who really likes to know how much time code I have written takes to run. I believe that it is important to know what works in your language and what does not and what sort of efficiency trade offs need to be made for expressiveness and brevity. Since, I am learning common lisp a little seriously again, I have been interested in seeing how to profile code in it. Even though I haven’t reached <a href="http://t-b-o-g.blogspot.in/2009/12/brians-brain-on-common-lisp-take-3.html">this</a> far that I have started using the <a href="http://www.sbcl.org/1.0/manual/Statistical-Profiler.html">statistical CPU profiler</a> or the <a href="https://www.snellman.net/blog/archive/2006-05-14-statistical-allocation-profiler-for-sbcl.html">statistical allocation profiler</a>, I am starting out with simply being able to time code I write quickly.</p>
+
+<p>Since, writing macros in lisp is so easy and timing code is just the sort of thing macros are really useful for, I decided to practice some macro writing to write a <code>timeit</code> macro. Similar <a href="http://www-users.cs.umn.edu/~gini/lisp/profile.html">attempts</a> have been made in the past but I wanted to roll my own. After some <a href="http://stackoverflow.com/questions/27642626/lisp-defmacro-with-optional-and-body">struggle and a little nudge</a> I was able to write something satisfactory:</p>
+
+<p>```cl</p>
+
+<p>(defmacro timeit ((&amp;key
+                    (to-stream <em>standard-output</em>)
+                    (with-runs 1))
+                  &amp;body body)
+  “Note that this function may barf if you are depending on a single evaluation
+  and choose with-runs to be greater than one. But I guess that will be the
+  caller’s mistake instead.”
+  (let ((start-time (gensym))
+        (stop-time (gensym))
+        (temp (gensym))
+        (retval (gensym))
+        (elapsed-time (gensym)))
+    `(let* ((,start-time (get-internal-run-time))
+            (,retval (let ((,temp))
+                       (dotimes (i ,with-runs ,temp)
+                         (setf ,temp ,@body))))
+            (,stop-time (get-internal-run-time))
+            (,elapsed-time (/ (- ,stop-time ,start-time)
+                              internal-time-units-per-second)))
+       (format ,to-stream
+               (concatenate ‘string
+                            “~CAverage (total) time spent in expression”
+                            “ over ~:d iterations: ~f (~f) seconds.~C”)
+               #\linefeed
+               ,with-runs
+               ,elapsed-time
+               (/ ,elapsed-time ,with-runs)
+               #\linefeed)
+       ,retval)))</p>
+
+<p>```</p>
+
+<p>Hopefully, this is useful for someone not in the mood to write their own code to do this. This was definitely useful for me to write.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

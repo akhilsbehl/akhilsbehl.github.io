@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: finance | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/finance/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: Recreating the history of a stock index's membership]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2013/07/15/stock-index-membership-in-r/"/>
+    <updated>2013-07-15T01:40:00+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2013/07/15/stock-index-membership-in-r</id>
+    <content type="html"><![CDATA[<p>If you work in finance, have you ever needed to identify the stocks that were in an index at any given date? Or perhaps a series of dates? Given how central indices are to financial markets and how frequently they change, this is a common problem.</p>
+
+<!--more-->
+
+<p>The rub is that this common problem seems too trivial till you sit down to solve it. Hopefully, this post will save you a couple of hours the next time you come across this problem (and if you are a user of R).</p>
+
+<h2 id="overgeneralize-time-series-of-membership-of-a-set">Overgeneralize: Time series of membership of a set</h2>
+
+<p>In this post I am going to present a general method to recreate a time series of membership of a set using the current membership and a list of changes in it.</p>
+
+<p>There are a few subtle points to it that we’ll discuss shortly. But first let’s start with a very simple example.</p>
+
+<p>```r</p>
+
+<h1 id="lets-have-three-time-periods">Let’s have three time periods.</h1>
+<p>periods &lt;- 3</p>
+
+<h1 id="and-name-the-change-times-as-t-1-t-2-and-t-3">And name the change times as <code>t-1', </code>t-2’, and `t-3’.</h1>
+<p>ctime &lt;- paste0(“t-“, seq_len(periods))</p>
+
+<h1 id="define-current-membership-of-a-set-of-alphabets">Define current membership of a set of alphabets.</h1>
+<p>current &lt;- letters[1:5]</p>
+
+<h1 id="lets-assume-that-a-was-added-to-the-set-at-t-1-and-so-on">Let’s assume that “a” was added to the set at `t-1’ and so on…</h1>
+<p>added &lt;- setNames(c(“a”, “b”, “c”), ctime)
+added</p>
+
+<h1 id="similarly-the-ones-that-were-removed">Similarly the ones that were removed:</h1>
+<p>removed &lt;- setNames(c(“f”, “g”, “h”), ctime)
+removed</p>
+
+<h1 id="lets-use-the-power-of-wishful-thinking-and-hope-we-have-something">Let’s use the power of `wishful thinking’ and hope we have something</h1>
+<p># which could give us this:
+create_mem_ts(ctime, added, removed, current)</p>
+
+<p>$current
+[1] “a” “b” “c” “d” “e”</p>
+
+<p>$<code>t-1</code>
+[1] “b” “c” “d” “e” “f”</p>
+
+<p>$<code>t-2</code>
+[1] “c” “d” “e” “f” “g”</p>
+
+<p>$<code>t-3</code>
+[1] “d” “e” “f” “g” “h”</p>
+
+<p>attr(,”index”)
+[1] “t-1” “t-2” “t-3”</p>
+
+<p>```</p>
+
+<p>And here is what our <a href="https://www.google.co.in/search?q=wishful+programming&amp;oq=wishful+programming">wishes</a> brought us:</p>
+
+<p>```r</p>
+
+<p>create_mem_ts &lt;- function (ctime, added, removed, current) {</p>
+
+<p>stopifnot(is.atomic(ctime),
+            is.atomic(added) || is.list(added),
+            is.atomic(removed) || is.list(removed))</p>
+
+<p>if (any(is.na(ctime))) stop(“NAs not allowed in ctime.”)</p>
+
+<p>stopifnot(length(ctime) == length(added),
+            length(added) == length(removed))</p>
+
+<p>if (any(duplicated(ctime))) {
+    ctime.u &lt;- unique(ctime)
+    ctime.f &lt;- factor(ctime, levels=as.character(ctime.u))
+    added &lt;- split(added, ctime.f)
+    removed &lt;- split(removed, ctime.f)
+  } else {
+    ctime.u &lt;- ctime
+  }</p>
+
+<p>out &lt;- setNames(vector(mode=”list”, length=length(ctime.u) + 1),
+                  c(“current”, as.character(ctime.u)))
+  out[[“current”]] &lt;- current</p>
+
+<p>for (i in 2:length(out))
+    out[[i]] &lt;- union(setdiff(out[[i - 1]], added[[i - 1]]),
+                      na.omit(removed[[i - 1]]))</p>
+
+<p>attr(out, “index”) &lt;- ctime.u</p>
+
+<p>out</p>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>The function is much more powerful than the simple example quoted above. Here is the <a href="https://gist.github.com/akhilsbehl/6000190">gist</a> including this code, documentation and a few examples.</p>
+
+<h2 id="contextualize-time-series-of-stock-index-membership">Contextualize: Time series of stock index membership</h2>
+
+<p>Let’s take the example of the Nifty index on the <a href="http://nseindia.com">National Stock Exchange</a> of India.<sup id="fnref:example"><a href="#fn:example" class="footnote">1</a></sup> Nifty is the most important Indian stock index comprised of fifty stocks. The membership is typically shuffled twice a year. The following is the list of NSE symbols for the current members of Nifty:</p>
+
+<p>```r</p>
+
+<p>current_nifty</p>
+
+<p>[1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO”
+ [6] “BANKBARODA” “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”   <br />
+[11] “CIPLA”      “COALINDIA”  “DLF”        “DRREDDY”    “GAIL”    <br />
+[16] “GRASIM”     “HCLTECH”    “HDFCBANK”   “HEROMOTOCO” “HINDALCO”<br />
+[21] “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK”  “IDFC”    <br />
+[26] “INDUSINDBK” “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK” 
+[31] “LT”         “LUPIN”      “M&amp;M”        “MARUTI”     “NMDC”    <br />
+[36] “NTPC”       “ONGC”       “POWERGRID”  “PNB”        “RANBAXY” <br />
+[41] “RELIANCE”   “RELINFRA”   “SESAGOA”    “SBIN”       “SUNPHARMA” 
+[46] “TCS”        “TATAMOTORS” “TATAPOWER”  “TATASTEEL”  “ULTRACEMCO”</p>
+
+<p>```</p>
+
+<p>And here are the recent changes in Nifty:</p>
+
+<p>```r</p>
+
+<p>head(changes_in_nifty)</p>
+
+<pre><code>   ctime      added removed 1 2013-04-01 INDUSINDBK SIEMENS 2 2013-04-01       NMDC   WIPRO 3 2012-09-28      LUPIN    SAIL 4 2012-09-28 ULTRACEMCO    STER 5 2012-04-27 ASIANPAINT    RCOM 6 2012-04-27 BANKBARODA  RPOWER
+</code></pre>
+
+<p>```</p>
+
+<p>There are two important differences between this example and the last:</p>
+
+<ul>
+  <li><code>ctime</code> is now a true <em>time class</em> (<code>POSIXt</code>) in R.</li>
+  <li>There may be more than one <em>record</em> for a given <code>ctime</code>.</li>
+</ul>
+
+<p>The function <code>create_mem_ts</code> has been designed to handle such changes (and others) seamlessly. In fact, having a true time class lends a benefit we’ll soon observe.</p>
+
+<p>For now, let’s see how our function performs in this case:</p>
+
+<p>```r</p>
+
+<p>ans &lt;- create_mem_ts(ctime=changes_in_nifty[[“ctime”]],
+                     added=changes_in_nifty[[“added”]],
+                     removed=changes_in_nifty[[“removed”]]
+                     current=current_nifty)</p>
+
+<p>head(ans, 3)</p>
+
+<p>$current
+ [1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO”
+ [6] “BANKBARODA” “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”   <br />
+[11] “CIPLA”      “COALINDIA”  “DLF”        “DRREDDY”    “GAIL”    <br />
+[16] “GRASIM”     “HCLTECH”    “HDFCBANK”   “HEROMOTOCO” “HINDALCO”<br />
+[21] “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK”  “IDFC”    <br />
+[26] “INDUSINDBK” “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK” 
+[31] “LT”         “LUPIN”      “M&amp;M”        “MARUTI”     “NMDC”    <br />
+[36] “NTPC”       “ONGC”       “POWERGRID”  “PNB”        “RANBAXY” <br />
+[41] “RELIANCE”   “RELINFRA”   “SESAGOA”    “SBIN”       “SUNPHARMA” 
+[46] “TCS”        “TATAMOTORS” “TATAPOWER”  “TATASTEEL”  “ULTRACEMCO”</p>
+
+<p>$<code>2013-04-01</code>
+ [1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO”
+ [6] “BANKBARODA” “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”   <br />
+[11] “CIPLA”      “COALINDIA”  “DLF”        “DRREDDY”    “GAIL”    <br />
+[16] “GRASIM”     “HCLTECH”    “HDFCBANK”   “HEROMOTOCO” “HINDALCO”<br />
+[21] “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK”  “IDFC”    <br />
+[26] “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK”  “LT”      <br />
+[31] “LUPIN”      “M&amp;M”        “MARUTI”     “NTPC”       “ONGC”    <br />
+[36] “POWERGRID”  “PNB”        “RANBAXY”    “RELIANCE”   “RELINFRA”<br />
+[41] “SESAGOA”    “SBIN”       “SUNPHARMA”  “TCS”        “TATAMOTORS”
+[46] “TATAPOWER”  “TATASTEEL”  “ULTRACEMCO” “SIEMENS”    “WIPRO”</p>
+
+<p>$<code>2012-09-28</code>
+ [1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO”
+ [6] “BANKBARODA” “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”   <br />
+[11] “CIPLA”      “COALINDIA”  “DLF”        “DRREDDY”    “GAIL”    <br />
+[16] “GRASIM”     “HCLTECH”    “HDFCBANK”   “HEROMOTOCO” “HINDALCO”<br />
+[21] “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK”  “IDFC”    <br />
+[26] “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK”  “LT”      <br />
+[31] “M&amp;M”        “MARUTI”     “NTPC”       “ONGC”       “POWERGRID” 
+[36] “PNB”        “RANBAXY”    “RELIANCE”   “RELINFRA”   “SESAGOA” <br />
+[41] “SBIN”       “SUNPHARMA”  “TCS”        “TATAMOTORS” “TATAPOWER” 
+[46] “TATASTEEL”  “SIEMENS”    “WIPRO”      “SAIL”       “STER”</p>
+
+<p>```</p>
+
+<p>It is easy (but boring) to check that the answer is correct. The nice part is to have a tool ready for you now, whenever you want to do this again.</p>
+
+<h2 id="big-deal-thats-just-seven-dates-not-a-timeseries">Big deal! That’s just seven dates, not a timeseries.</h2>
+
+<p>Feeling sharp, eh Sherlock?! Drat, I wish I could create a regular time-series from the irregular time-series of changes.</p>
+
+<p>Wait a second… I can! Using this:</p>
+
+<p>```r</p>
+
+<p>memship_at &lt;- function (mem_ts, at) {</p>
+
+<p>stopifnot(inherits(at, class(attr(mem_ts, “index”))))</p>
+
+<p>just.before &lt;- which(at &gt; attr(mem_ts, “index”))[1]</p>
+
+<p>if (just.before &gt; 1)
+    mem_ts[[just.before - 1]]
+  else
+    mem_ts[[1]]</p>
+
+<p>}</p>
+
+<p>```</p>
+
+<p><strong>Why another function? Why not just create the whole series at once?</strong></p>
+
+<p>Because it is smart! Essentially, think of this as applying a set of diffs/patches to a text file.</p>
+
+<ul>
+  <li>It needs less <em>space</em> to store.</li>
+  <li>It provides the user the flexibility and efficiency (both in time and space) by computing only for the dates one asks for.</li>
+  <li>It is a much cleaner abstraction (think initalizing and querying a database) that can work with any time-series class (or even user-written classes provided they define a <em>greater than</em> <code>&gt;</code> method for their class).</li>
+</ul>
+
+<p>All right! Smart, shmart, what do I do with it?</p>
+
+<h2 id="and-finally-the-answer">And finally, the answer!</h2>
+
+<p>Use a loop or an <code>apply</code> variant to find out the membership on the dates that you want. Suppose I want the membership of Nifty on a weekly basis starting from the January 1, 2012 to March 31, 2012.</p>
+
+<p>I first create a sequence of desired dates like so:</p>
+
+<p>```r</p>
+
+<p>my_dates &lt;- seq.POSIXt(from=as.POSIXct(“2012-01-01”),
+                       to=as.POSIXct(“2012-03-31”),
+                       by=”7 day”)
+ [1] “2012-01-01 IST” “2012-01-08 IST” “2012-01-15 IST” “2012-01-22 IST”
+ [5] “2012-01-29 IST” “2012-02-05 IST” “2012-02-12 IST” “2012-02-19 IST”
+ [9] “2012-02-26 IST” “2012-03-04 IST” “2012-03-11 IST” “2012-03-18 IST”
+[13] “2012-03-25 IST”</p>
+
+<p>```</p>
+
+<p>Now I can use the <code>memship_at</code> function to generate membership at each of these dates like so:</p>
+
+<p>```r</p>
+
+<p>memship_dates &lt;- setNames(lapply(X=my_dates, FUN=memship_at, mem_ts=ans),
+                          my_dates)
+head(memship_dates)
+$<code>2012-01-01</code>
+ [1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO” “BANKBARODA”
+ [7] “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”      “CIPLA”      “COALINDIA” 
+[13] “DLF”        “DRREDDY”    “GAIL”       “GRASIM”     “HCLTECH”    “HDFCBANK”<br />
+[19] “HEROMOTOCO” “HINDALCO”   “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK” 
+[25] “IDFC”       “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK”  “LT”      <br />
+[31] “M&amp;M”        “MARUTI”     “NTPC”       “ONGC”       “POWERGRID”  “PNB”     <br />
+[37] “RANBAXY”    “RELIANCE”   “RELINFRA”   “SESAGOA”    “SBIN”       “SUNPHARMA” 
+[43] “TCS”        “TATAMOTORS” “TATAPOWER”  “TATASTEEL”  “SIEMENS”    “WIPRO”   <br />
+[49] “SAIL”       “STER”</p>
+
+<p>$<code>2012-01-08</code>
+ [1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO” “BANKBARODA”
+ [7] “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”      “CIPLA”      “COALINDIA” 
+[13] “DLF”        “DRREDDY”    “GAIL”       “GRASIM”     “HCLTECH”    “HDFCBANK”<br />
+[19] “HEROMOTOCO” “HINDALCO”   “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK” 
+[25] “IDFC”       “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK”  “LT”      <br />
+[31] “M&amp;M”        “MARUTI”     “NTPC”       “ONGC”       “POWERGRID”  “PNB”     <br />
+[37] “RANBAXY”    “RELIANCE”   “RELINFRA”   “SESAGOA”    “SBIN”       “SUNPHARMA” 
+[43] “TCS”        “TATAMOTORS” “TATAPOWER”  “TATASTEEL”  “SIEMENS”    “WIPRO”   <br />
+[49] “SAIL”       “STER”</p>
+
+<p>$<code>2012-01-15</code>
+ [1] “ACC”        “AMBUJACEM”  “ASIANPAINT” “AXISBANK”   “BAJAJ-AUTO” “BANKBARODA”
+ [7] “BHEL”       “BPCL”       “BHARTIARTL” “CAIRN”      “CIPLA”      “COALINDIA” 
+[13] “DLF”        “DRREDDY”    “GAIL”       “GRASIM”     “HCLTECH”    “HDFCBANK”<br />
+[19] “HEROMOTOCO” “HINDALCO”   “HINDUNILVR” “HDFC”       “ITC”        “ICICIBANK” 
+[25] “IDFC”       “INFY”       “JPASSOCIAT” “JINDALSTEL” “KOTAKBANK”  “LT”      <br />
+[31] “M&amp;M”        “MARUTI”     “NTPC”       “ONGC”       “POWERGRID”  “PNB”     <br />
+[37] “RANBAXY”    “RELIANCE”   “RELINFRA”   “SESAGOA”    “SBIN”       “SUNPHARMA” 
+[43] “TCS”        “TATAMOTORS” “TATAPOWER”  “TATASTEEL”  “SIEMENS”    “WIPRO”   <br />
+[49] “SAIL”       “STER”</p>
+
+<p>```</p>
+
+<p>And there we have it.</p>
+
+<p>I leave the proof of correctness as an exercise for the reader. No, seriously! Let me know if you find a bug in the comments below. Feel free to clone the <a href="https://gist.github.com/akhilsbehl/6000190">gist</a> to tinker and let me know if you improve it.</p>
+
+<hr />
+<!-- Footnotes -->
+
+<!-- Links -->
+<div class="footnotes">
+  <ol>
+    <li id="fn:example">
+      <p>The forementioned <a href="https://gist.github.com/akhilsbehl/6000190">gist</a> contains a copy of the data used here. One may replicate this example by cloning the <a href="http://git-scm.com">git</a> repository. <a href="#fnref:example" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+]]></content>
+  </entry>
+  
+</feed>

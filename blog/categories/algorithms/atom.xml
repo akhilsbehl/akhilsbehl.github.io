@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: algorithms | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/algorithms/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Knuth-Fisher-Yates shuffling algorithm]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/18/knuth-fisher-yates-shuffling-algorithm/"/>
+    <updated>2014-08-18T21:41:08+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/18/knuth-fisher-yates-shuffling-algorithm</id>
+    <content type="html"><![CDATA[<p>So, yesterday, I was sent this <a href="http://spin.atomicobject.com/2014/08/11/fisher-yates-shuffle-randomization-algorithm/">article</a> by a friend. Articles titled <em>X every developer should know</em> sort of titles pique my interest very much. So, I headed over to this article only to find myself too confused. What I found more confusing is that the article links to <a href="http://blog.codinghorror.com/the-danger-of-naivete/">one</a> of Jeff Atwood’s blogposts that discusses the same concept.</p>
+
+<p>The central idea of the post is to correct a <em>naive</em> implementation of a shuffling algorithm. My confusion arose from the fact that after reading the article, I could only think that the algorithm was blatantly incorrect and not naive. The differences between the two algorithms – the naive one and the one ascribed to Knuth, Fisher, &amp; Yates is what, in sampling 101, is between sampling <em>with replacement</em> and sampling <em>without replacement</em>. This quote essentially highlights the naivete indeed:</p>
+
+<p><blockquote><p>How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.</p></blockquote></p>
+
+<p>Some shuffling does not mean a random permutation at all. This is akin to saying a naive implementation of a queue sometimes inserts incoming items at the head of the queue.</p>
+
+<h2 id="another-shuffling-algorithm">Another shuffling algorithm?</h2>
+
+<p>On the other hand, what was fruitful was that the article reminded me of a shuffling algorithm I recently wrote to solve <a href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25/">problem number 25</a> of <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 Lisp Problems</a>. The minor difference between the two algorithms is that the lisp algorithm pops an element from the original array per turn and collects it in a new array which becomes a random permutation (shuffle) of the original array at the end. The KFY algorithm instead swaps two elements at each turn. It can be worked out that, mathematically, the two algorithms are identical. But the KFY algorithm saves you making a copy. Therefore, yes, KFY is an algorithm that every programmer <em>should</em> know. Additionally, every programmer should also know the standard library of their language.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: id | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/id/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[R: Finding identifier variables]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/04/03/r-finding-identifier-variables/"/>
+    <updated>2014-04-03T15:31:33+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/04/03/r-finding-identifier-variables</id>
+    <content type="html"><![CDATA[<p>I had never expected such a problem, much less a <a href="http://www.stata.com/help.cgi?isid">solution</a>, to exist
+till I was asked yesterday to solve it. The problem statement: given a dataset
+and a list of candidate variables, find which minimal combination, if any, is a
+valid identifier for the observations in the dataset.</p>
+
+<!--more-->
+
+<p>Following is a generic with methods for <code>matrix</code>, <code>data.frame</code>, and <code>data.table</code>.</p>
+
+<p>```r Implementations of isId &amp; findId</p>
+
+<p>isId = function (x, candidate, …) UseMethod(“isId”, x)</p>
+
+<p>isId.default = function (x, candidate, …)
+  return(!anyDuplicated(x[ , candidate], …))</p>
+
+<p>isId.data.table = function (x, candidate)
+  return(!any(duplicated(x, by=candidate, with=FALSE)))</p>
+
+<p>findId = function (x, candidateVars, minCombn=2L,
+                   maxCombn=length(candidateVars), …) {
+  candidates = unlist(lapply(X=seq.int(minCombn, maxCombn),
+                             FUN=combn, x=candidateVars,
+                             simplify=FALSE),
+                      recursive=FALSE)
+  for(cand in candidates) if (isId(x, cand, …)) return(cand)
+  print(“Failed. Try other variables.”)
+  return(invisible(NULL))
+}</p>
+
+<p>```</p>
+
+<p>Here are some tests for the implemenation above.</p>
+
+<p>```r Testing the functions</p>
+
+<h6 id="section">#</h6>
+<p>#  Test 1  #
+############</p>
+
+<p>set.seed(pi)
+testDF = data.frame(id=letters[1:10],
+                    a=letters[sample.int(5, 10, TRUE)],
+                    b=LETTERS[sample.int(3, 10, TRUE)],
+                    e=runif(10),
+                    f=rnorm(10))</p>
+
+<p>sapply(names(testDF), isId, x=testDF)
+#   id     a     b     e     f 
+# TRUE FALSE FALSE  TRUE  TRUE</p>
+
+<p>findId(testDF, c(“id”), 1)
+#[1] “id”</p>
+
+<p>findId(testDF, c(“a”, “b”, “id”), 2)
+#[1] “a” “id”</p>
+
+<h6 id="section-1">#</h6>
+<p>#  Test 2  #
+############</p>
+
+<p>data(iris)
+findId(iris, names(iris), 1)
+#[1] “Failed. Try other variables.”</p>
+
+<p>iris[[“id”]] = 1:nrow(iris)
+findId(iris, names(iris), 1)
+#[1] “id”</p>
+
+<p>```</p>
+
+<p>The <code>minCombn</code> and <code>maxCombn</code> variables are used to specify how many candidate
+columns must be considered together to find an identifier. <code>...</code> can be used to
+pass further arguments to <code>anyDuplicated</code>. The code is smart enough to try all
+<code>k</code> variable combinations before attempting any combination of <code>k + 1</code>
+variables.</p>
+
+<h1 id="benchmarking">Benchmarking</h1>
+
+<p>The <code>data.table</code> method for this function was implemented after <a href="http://stackoverflow.com/questions/22834725/r-checking-if-a-set-of-variables-forms-a-unique-index">this discussion</a>
+at StackOverflow. Therefore, I use a similar example to show the efficiency of
+the two methods here:</p>
+
+<p>```r Benchmarking data.frame vs. data.table</p>
+
+<p>library(data.table)
+library(microbenchmark)</p>
+
+<p>set.seed(pi)
+df = data.frame(a=sample(100, 1e7, TRUE), 
+                b=sample(letters, 1e7, TRUE), 
+                id=seq.int(1e7))
+dt &lt;- as.data.table(df)</p>
+
+<p>microbenchmark(system.time(isId(df, “id”)),
+               system.time(isId(dt, “id”)),
+               system.time(isId(df, c(“a”, “id”))),
+               system.time(isId(dt, c(“a”, “id”))),
+               system.time(isId(df, c(“a”, “b”, “id”))),
+               system.time(isId(dt, c(“a”, “b”, “id”))),
+               times=3L)
+#Unit: milliseconds
+#                                     expr        min         lq     median          uq        max neval
+#              system.time(isId(df, “id”))   599.8991   644.8919   689.8848    808.0744   926.2641     3
+#              system.time(isId(dt, “id”))  1877.0710  1893.4972  1909.9234   2843.8230  3777.7225     3
+#      system.time(isId(df, c(“a”, “id”))) 34398.9664 35028.6384 35658.3105  52713.9050 69769.4995     3
+#      system.time(isId(dt, c(“a”, “id”)))  4013.6891  4017.2014  4020.7137   4027.9836  4035.2535     3
+# system.time(isId(df, c(“a”, “b”, “id”))) 39915.0490 48370.9638 56826.8785  70350.0956 83873.3127     3
+# system.time(isId(dt, c(“a”, “b”, “id”)))  6993.5077  7642.8285  8292.1493   8342.6799  8393.2105     3</p>
+
+<p>```</p>
+
+<p>We can see that the <code>default</code> method is faster when evaluating a single column
+as id. However, that is the only case where it does better. It scales poorly;
+especially if compared against the <code>data.table</code> method. When you are searching
+for an identifier you probably are going to try various combinations and
+<code>data.table</code> will almost always be much faster.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

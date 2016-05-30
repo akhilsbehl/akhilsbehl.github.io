@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: 99-problems | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/99-problems/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-05-30T16:09:40+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #34]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-34/"/>
+    <updated>2014-08-06T03:23:34+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-34</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #34</p>
+
+<p>```cl</p>
+
+<p>(defun range (lo hi)
+    (cond ((&gt; lo hi) nil)
+    (t (cons lo (range (1+ lo) hi)))))</p>
+
+<p>(defun eucgcd (m n)
+    (let ((p (abs m)) (q (abs n)))
+        (cond ((= m n) m)
+        (t (gcd (- (max m n) (min m n)) (min m n))))))</p>
+
+<p>(defun coprimep (m n)
+    (= (eucgcd m n) 1))</p>
+
+<p>(defun totient (m)
+  (cond ((= m 1) 1)
+        (t (apply #’+ (mapcar
+                        (lambda (x) (if (coprimep m x) 1 0))
+                        (range 1 (1- m)))))))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #31]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-31/"/>
+    <updated>2014-08-06T02:11:59+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-31</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #31</p>
+
+<p>```cl</p>
+
+<p>(defun range (lo hi)
+  (cond ((&gt; lo hi) nil)
+        (t (cons lo (range (1+ lo) hi)))))</p>
+
+<p>(defun all (alist)
+  (cond ((null alist) t)
+        (t (and (car alist)
+                (all (cdr alist))))))</p>
+
+<p>(defun primep (n)
+  (all (mapcar
+         (lambda (x) (not (= 0 (mod n x))))
+         (range 2 (isqrt n)))))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #33]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-33/"/>
+    <updated>2014-08-06T02:08:27+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-33</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #33</p>
+
+<p>```cl</p>
+
+<p>(defun eucgcd (m n)
+  (let ((p (abs m)) (q (abs n)))
+    (cond ((= m n) m)
+    (t (gcd (- (max m n) (min m n)) (min m n))))))</p>
+
+<p>(defun coprimep (m n)
+  (= (eucgcd m n) 1))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #32]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-32/"/>
+    <updated>2014-08-06T01:43:25+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/08/06/99-lisp-problems-problem-number-32</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #32</p>
+
+<p>```cl</p>
+
+<p>(defun eucgcd (m n)
+  (cond ((or (&lt;= m 1) (&lt;= n 1)) nil)
+        ((= m n) m)
+        (t (gcd (- (max m n) (min m n)) (min m n)))))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[99 LISP problems: Problem #28]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-28/"/>
+    <updated>2014-06-28T15:54:32+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-28</id>
+    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #28</p>
+
+<p>```cl</p>
+
+<p>;;; Part a)
+(defun lsort (alist)
+  (sort
+    alist
+    #’&lt;
+    :key #’length))</p>
+
+<p>;;; Part b)
+(defun count-elem (alist elem)
+  (apply
+    #’+
+    (mapcar
+      (lambda (x)
+        (if (equalp x elem) 1 0))
+      alist)))</p>
+
+<p>(defun lfsort (alist)
+  (let ((lengths (mapcar #’length alist)))
+    (sort
+      alist #’&lt;
+      :key (lambda (x) (count-elem lengths (length x))))))</p>
+
+<p>```</p>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>
