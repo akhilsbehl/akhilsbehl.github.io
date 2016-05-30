@@ -1,0 +1,41 @@
+---
+layout: page
+title: Things I've talked about
+permalink: /blog/categories/
+sitemap: false
+---
+
+<style>
+  span {
+    display: inline-block; /* change the display type           */
+    margin: 10px 10px;     /* apply the needed vertical margins */
+  }
+  .space-out {
+    margin-bottom: 50px;
+  }
+</style>
+
+<div class="space-out">
+{% assign categories = site.categories | sort %}
+{% for category in categories %}
+    <span class="site-tag">
+      <a href="#{{ category | first }}"> {{ category[0] }}</a>
+    </span>
+{% endfor %}
+</div>
+
+<div id="index">
+
+{% for category in categories %}
+<a name="{{ category[0] }}"></a><h1>{{ category[0] | replace:'-', ' ' }} ({{ category | last | size }}) </h1>
+{% assign sorted_posts = (site.posts | sort: 'date') | reverse %}
+{% for post in sorted_posts %}
+{%if post.categories contains category[0]%}
+
+    <h3><a href="{{ site.url }}{{site.baseurl}}{{ post.url }}" title="{{ post.title }}">{{ post.title }} </a></h3>
+
+{%endif%}
+{% endfor %}
+
+{% endfor %}
+</div>
