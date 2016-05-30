@@ -78,7 +78,7 @@ Run R-FUN for object at point, and display results in a popup."
 
 The function `asb-ess-R-object-popup` allows us to yank the word at point and execute an arbitrary function on it (without arguments) and display the output as a popup-tip. This function is wrapped into `asb-ess-R-object-popup-str` mapped to `<leader>ei` (**e**vil-**e**ss-**i**nspect) to inspect the `str` of the object interactively because this is what I use the most. Another function called `asb-ess-R-object-popup-interactive` mapped to `<leader>eI` (**e**vil-**e**ss-**i**nteractive-**i**nspect) asks the user what R function to inspect the object with. Common suspects will be `head`, `tail`, `names`, etc. You know the drill. Have a look at the [video][demo] and pay attention to the minibuffer.
 
-{% youtube JwFjWHThIy4 %}
+PS: Actually, don't bother watching the video; I don't know why youtube insists on downgrading the video quality.
 
 <!--links-->
 [vim]: http://www.vim.org/
