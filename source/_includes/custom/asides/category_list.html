@@ -1,8 +1,0 @@
-<section>
-  <h1>Read more about:</h1>
-  <ul id="categories">
-    {% for category in site.categories %}
-    {% capture category_url %}{{ site.category_dir }}/{{ category | first | slugize | downcase | replace:' ','-' | append:'/index.html'}}{% endcapture %}
-    <li> <a href="{{ root_url | append:'/' | append:category_url }}"> {{ category | first }} (<span class="badge">{{ category | last | size }}</span>) </a> </li>
-    {% endfor %}
-</section>
