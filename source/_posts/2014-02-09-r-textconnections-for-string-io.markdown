@@ -7,7 +7,7 @@ publish: false
 categories:
 - r
 - textconnection
-- string io
+- string-io
 ---
 
 I've used `textConnection` in R for reading from strings. Only recently, I realized (duh!) that it may also be used for write functionality much like Python's stringIO module. In this post I show some simple examples for how to use this functionality.
