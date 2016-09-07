@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: emacs | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/emacs/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-07T19:23:42+05:30</updated>
+  <updated>2016-09-07T19:36:24+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -63,7 +63,7 @@
 <h3 id="toggle-function">Toggle function</h3>
 
 <p><code>lisp
-(defun toggle-function ()
+(defun toggle-special-behavior ()
   (interactive)
   (let ((this-buffer (current-buffer)))
     (if (buffer-local-value inhibit-special-behavior this-buffer)
