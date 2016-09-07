@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://akhilsbehl.github.io/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network/</loc>
+<lastmod>2016-09-06T17:38:12+05:30</lastmod>
+</url>
+<url>
 <loc>http://akhilsbehl.github.io/blog/2016/05/30/inspecting-objects-at-point-with-ess/</loc>
 <lastmod>2016-05-30T13:34:32+05:30</lastmod>
 </url>
@@ -449,5 +453,17 @@
 </url>
 <url>
 <loc>http://akhilsbehl.github.io/blog/categories/ess/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/neural-networks/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/supervised-learning/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/classification/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/logistic-regression/</loc>
 </url>
 </urlset>

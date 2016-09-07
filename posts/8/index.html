@@ -9,17 +9,8 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Solution to the 99 LISP Problems #8 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-(defun compress (alist) (if (null alist) nil (append (if (equalp (car alist) (car (cdr alist &hellip;">
+  <meta name="description" content="Solution to the 99 LISP Problems #9 This was the first challenging problem I encountered in this set. After
+spending the first few minutes, I started &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -174,6 +165,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-9/">99 LISP problems: Problem #9</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-20T13:35:38+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:35 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #9</p>
+
+<p>This was the first <em>challenging</em> problem I encountered in this set. After
+spending the first few minutes, I started worrying that this problem may not
+fit into a simple recursive solution. I did not want to write a <code>do</code> or <code>for</code>
+loop etc.</p>
+
+<p>What I was looking for was some ingenuously simple recursive solution to this
+problem (without the use of a helper or a lambda). After quite a bit of
+struggle (and some looking around) I realized there isn’t one (that I could
+find, at least). Therefore, I implemented this as a recursive solution by
+implementing two new verbs (themselves recursive) specifically for this
+problem.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/20/99-lisp-problems-problem-number-9/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -373,50 +411,6 @@
 </span><span class="line">    <span class="p">(</span><span class="nb">append</span>
 </span><span class="line">      <span class="p">(</span><span class="nv">my-reverse</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))</span>
 </span><span class="line">      <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-4/">99 LISP problems: Problem #4</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-20T00:49:55+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:49 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #4</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-len</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">    <span class="mi">0</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nv">my-len</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)))))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

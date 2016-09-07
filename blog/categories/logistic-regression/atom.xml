@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: logistic-regression | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/logistic-regression/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-09-07T17:51:52+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Why you have, in fact, used a neural network!]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network/"/>
+    <updated>2016-09-06T17:38:12+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network</id>
+    <content type="html"><![CDATA[<p>Have you ever used a <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a>? Would you like to be able to say you have used a <a href="https://en.wikipedia.org/wiki/Artificial_neural_network">neural network</a> – perhaps in your next interview? Here’s your cheat code.</p>
+
+<p><em>NB: <a href="https://en.wikipedia.org/wiki/There_ain%27t_no_such_thing_as_a_free_lunch">NFL</a> applies insomuch as you will have to know what we are talking about in this post. This is not a tutorial.</em></p>
+
+<!--more-->
+
+<h2 id="logistic-regression">Logistic regression</h2>
+
+<p>A lot has been said and is known about the logistic regression. Refer <a href="http://www.stat.cmu.edu/~cshalizi/ADAfaEPoV/ADAfaEPoV.pdf">Chapter 11</a> for a thorough discussion. I’ll attempt a quick recap.</p>
+
+<p>The learning problem is to learn the distribution of a <em>categorical</em> response <script type="math/tex">Y</script> conditional on a set of covariates <script type="math/tex">X</script>, i.e. <script type="math/tex">P[Y = i \mid X = x]</script>. For the <em>binary</em> response case, there are two values that <script type="math/tex">Y</script> can take, e.g. <script type="math/tex">\{\textrm{head}, \textrm{tail}\}</script>, <script type="math/tex">\{\textrm{accept}, \textrm{reject}\}</script>, etc. Traditionally, one of the two responses is encoded as <script type="math/tex">1</script> and the other <script type="math/tex">0</script>. As such, the learning problem is transformed to learning <script type="math/tex">E[Y \mid X = x]</script> which is modeled as a <a href="https://en.wikipedia.org/wiki/Bernoulli_distribution">Bernoulli outcome</a> with probability of success parametrized as <script type="math/tex">p(X; \theta)</script>. From here, one can write the <em>log <a href="https://en.wikipedia.org/wiki/Likelihood_function">likelihood</a></em> under standard assumptions and maximiize it to obtain the parameter estimate <script type="math/tex">\hat{\theta}</script>. In this set up, we have still not chosen the function <script type="math/tex">p(x; \theta)</script>. Different forms of <script type="math/tex">p</script> give rise to different classifiers. One choice – the logistic regression – chooses <script type="math/tex">p</script> to be:</p>
+
+<script type="math/tex; mode=display">p(x; \theta) = \frac{e^{x \bullet \theta}}{1 + e^{x \bullet \theta}}</script>
+
+<h2 id="a-tale-of-two-interpretations">A tale of two interpretations</h2>
+
+<p>Logit regression has been <a href="https://en.wikipedia.org/wiki/Logistic_regression#Formal_mathematical_specification">reinterpreted</a> in innumerable ways. Heck, even this post is a rehashing of one of these interpretations. For our sake, however, we will examine two interpretations and their equivalence.</p>
+
+<h3 id="using-the-log-odds-ratio">Using the log odds-ratio</h3>
+
+<p>The standard intepretation coming from econometrics and the (generalized) linear models camp is the log-odds interpretation. In this interpretation, one linearly models the log of odds-ratio:</p>
+
+<script type="math/tex; mode=display">\ln{\frac{P[Y = 1 \mid X = x]}{P[Y = 0 \mid X = x]}} = \ln\frac{p(x, \theta)}{1 - p(x, \theta)} = x \bullet \theta</script>
+
+<p>Note that rearranging this is equivalent to the defintion of <script type="math/tex">p(x; \theta)</script> given above. However, what is more important for this discussion is to note that <script type="math/tex">p(x; \theta)</script> can be written as a <a href="https://en.wikipedia.org/wiki/Function_composition">function composition</a> <script type="math/tex">\sigma \bullet</script> applied on the input vector of covariates (<script type="math/tex">x</script>) and the parameter vector to be learned (<script type="math/tex">\theta</script>). Here <script type="math/tex">\sigma</script> is the logistic function and <script type="math/tex">\bullet</script> is the dot product of two vectors.</p>
+
+<h3 id="using-a-log-linear-model">Using a log-linear model</h3>
+
+<p>Another interpretation of a logistic regression is as a <a href="https://en.wikipedia.org/wiki/Logistic_regression#As_a_.22log-linear.22_model">log-linear</a> model. The difficulty is that the log-linear method is used to estimate outcomes which have support in <script type="math/tex">[0, \infty)</script> whereas we need to model <script type="math/tex">p</script> which is a probability distribution with support in [0, 1]. The trick to overcome this is to model <script type="math/tex">\tilde{p}</script> – an <em>un-normalized</em> probability distribution for each of the binary outcomes as a log-linear model. The true probability distribution <script type="math/tex">p</script> is then realized from <script type="math/tex">\tilde{p}</script> by normalizing it over all outcomes.</p>
+
+<script type="math/tex; mode=display">\begin{align}
+\ln{\tilde{p}[Y = 0 \mid X = x]} = x \bullet \beta_0 \\
+\ln{\tilde{p}[Y = 1 \mid X = x]} = x \bullet \beta_1 \\
+\end{align}</script>
+
+<p>Expnonentiating and summing the two <em>un-normalized</em> probabilities, we get (say) <script type="math/tex">Z = e^{x \bullet \beta_0} + e^{x \bullet \beta_1}</script> which we use to find a <em>normalized</em> probability distribution:</p>
+
+<script type="math/tex; mode=display">\begin{align}
+P[Y = 0 \mid X = x] = \frac{1}{Z}e^{x \bullet \beta_0} = \frac{e^{x \bullet \beta_0}}{e^{x \bullet \beta_0} + e^{x \bullet \beta_1}} \\
+P[Y = 1 \mid X = x] = \frac{1}{Z}e^{x \bullet \beta_1} = \frac{e^{x \bullet \beta_1}}{e^{x \bullet \beta_0} + e^{x \bullet \beta_1}}
+\end{align}</script>
+
+<p>Note that in this formulation, I use <script type="math/tex">\beta</script> to denote model parameters and not <script type="math/tex">\theta</script>. This is because the parameter estimates are in fact different. Contrast the probability of <em>success</em> across the two interpretations:</p>
+
+<script type="math/tex; mode=display">P[Y = 1 \mid X = x] = \frac{e^{x \bullet \beta_1}}{e^{x \bullet \beta_0} + e^{x \bullet \beta_1}} = \frac{e^{x \bullet \theta}}{1 + e^{x \bullet \theta}} \\</script>
+
+<p>This arises out of the fact that the log-linear formulation is <a href="https://en.wikipedia.org/wiki/Parameter_identification_problem"><em>over-identified</em></a> because if we know <script type="math/tex">P[Y = 1 \mid X = x]</script>, we automatically know <script type="math/tex">P[Y = 0 \mid X = x]</script>. The over-identification is resolved by setting <script type="math/tex">\beta_0 = 0</script> which reconciles the two expressions above. See <a href="https://en.wikipedia.org/wiki/Logistic_regression#As_a_.22log-linear.22_model">the wiki</a> for an explanation.</p>
+
+<p>Once again, we notice that even this formulation of the logistic regression can be factorized into a function composition where <script type="math/tex">P[Y = i \mid X = x] \equiv p_i(x; \theta) \equiv s \bullet</script> where <script type="math/tex">s</script> is the <a href="https://en.wikipedia.org/wiki/Softmax_function">softmax</a> function and <script type="math/tex">\bullet</script> is the dot product.</p>
+
+<h5 id="generalization-to-the-multinomial-case-with-the-softmax-function">Generalization to the multinomial case with the softmax function</h5>
+
+<p>The other advantage to choosing the log-linear formulation is that it is easily generalized to the case of the <em>n-ary</em> categorical variable – equivalent to the <em>multinomial</em> logit case. One can easily replicate the discussion above to derive:</p>
+
+<script type="math/tex; mode=display">P[Y = i \mid X = x] \equiv p_i(x; \theta) = \frac{1}{Z}e^{x \bullet \beta_i} = \frac{e^{x \bullet \beta_i}}{\sum_{k} e^{x \bullet \beta_k}}</script>
+
+<h2 id="nns-as-function-composition-machinery">NNs as function composition machinery</h2>
+
+<p>The class of neural networks that we are going to use here is the simple feed-forward multi-layer perceptron (<a href="https://en.wikipedia.org/wiki/Multilayer_perceptron">MLP</a>). For a quick recap, a multi layer perceptron is a directed acyclical graph which has each layer fully-connected to the next layer. The simplest MLP will have at least three layers: the <em>input</em> layer (to which the data is fed), an <em>output</em> layer (which outputs the results) and one (or more for deeper architectures) <em>hidden</em> layer. <a href="http://www.deeplearningbook.org/">Goodfellow et al.</a> (Ch. 1, p. 5) describe:</p>
+
+<p><blockquote><p></p></p><p><p>A multilayer perceptron is just a mathematical function mapping some set of input values to output values. The function is formed by <strong>composing many simpler functions</strong>. We can think of each application of a diﬀerent mathematical function as providing a new representation of the input.</p></p><p><p></p></blockquote></p>
+
+<p>Emphasis added.</p>
+
+<p>In fact, in Figure 1.3, the book provides the MLP graph that represents logistic regression (as the composition <script type="math/tex">\sigma \bullet</script>, further decomposing <script type="math/tex">\bullet</script> into elementary operations <script type="math/tex">\times</script> and <script type="math/tex">+</script>).</p>
+
+<h3 id="mlp-design-of-a-multinomial-logit">MLP design of a multinomial logit</h3>
+
+<p>Similarly, the log-linear interpretation of the logistic regression model can be used to design an n-ary MLP classifier with the following layers:</p>
+
+<ol>
+  <li>Input layer of covariates.</li>
+  <li>Fully connected hidden layer with n <em>linear units</em> (the <script type="math/tex">\bullet</script> function).</li>
+  <li>Fully connected output layer with n <em>softmax units</em> (the <script type="math/tex">s</script> function).</li>
+</ol>
+
+<p>This here is the blueprint of your cheat code promised in the beginning of the post! ;) See this <a href="https://www.youtube.com/watch?v=FYgsztDxSvE">lecture</a> for a full exposition on this design.</p>
+
+<h2 id="tldr">tl;dr</h2>
+
+<p>This is the key insight that motivated this article: NNs are arbitrary function composition machinery that can be tuned to learn model parameters. This was illustrated by decomposing the multinomial logistic regression as a (quite <em>shallow</em>, in fact) composition of functions and then re-assembling it as a MLP. Indeed, <a href="http://www.iro.umontreal.ca/~bengioy/papers/ftml_book.pdf">Bengio</a> (Ch. 2, pp. 15 - 16) summarizes that a diverse set of (machine?) learning techniques such as GLM, kernel machines, decision trees, boosting machines, stacking, and even the human cortex etc. are networks with increasingly complex or <em>deep</em> (à la <em>deep learning</em>) compositions of simple functions.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="In a couple of earlier posts, I briefly summarized the Fisherian and the Neyman-Pearson (NP) approaches to frequentist hypothesis testing. In this &hellip;">
+  <meta name="description" content="So, today I decided to take Julia for a spin because, finally, it has a stable version available in the Arch community repo. I tried it with the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,41 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/07/13/julia-project-euler-qs-1-10/">Julia - Project Euler Qs 1 - 10</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-07-13T23:51:33+05:30'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:51 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So, today I decided to take Julia for a spin because, <em>finally</em>, it has a stable version available in the <a href="http://www.archlinux.org">Arch</a> community repo. I tried it with the <a href="http://projecteuler.net/problems">Project Euler problems</a> to get started. Here is a bunch of code in Julia that solves problems 1 - 10 of Project Euler. I have been watching a lot of videos on the language. I will probably follow up with a post on initial thoughts about the language.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/13/julia-project-euler-qs-1-10/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -388,98 +423,6 @@
 </span><span class="line">
 </span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-permu</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
 </span><span class="line">  <span class="p">(</span><span class="nv">rnd-select</span> <span class="nv">alist</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/28/99-lisp-problems-problem-number-24/">99 LISP problems: Problem #24</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-28T15:54:31+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>3:54 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #24</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">element-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">      <span class="p">(</span><span class="nv">element-at</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">)))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">remove-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">i</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">mapcan</span>
-</span><span class="line">      <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span>
-</span><span class="line">        <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">j</span> <span class="nv">i</span><span class="p">))</span>
-</span><span class="line">          <span class="p">(</span><span class="nb">setf</span> <span class="nv">i</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">i</span><span class="p">))</span>
-</span><span class="line">          <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">j</span> <span class="nv">n</span><span class="p">)</span> <span class="no">nil</span> <span class="p">(</span><span class="nb">list</span> <span class="nv">x</span><span class="p">))))</span>
-</span><span class="line">      <span class="nv">alist</span><span class="p">)))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">k</span> <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nb">random</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))))</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">append</span>
-</span><span class="line">        <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nv">element-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">))</span>
-</span><span class="line">        <span class="p">(</span><span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">remove-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">))))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">lotto-select</span> <span class="p">(</span><span class="nv">n</span> <span class="nv">m</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">range</span> <span class="mi">1</span> <span class="nv">m</span><span class="p">)</span> <span class="nv">n</span><span class="p">)))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

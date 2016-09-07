@@ -9,13 +9,11 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Solution to the 99 LISP Problems #3: 1
+  <meta name="description" content="Solution to the 99 LISP Problems #4 1
 2
 3
 4
-5
-6
-(defun element-at (alist n) (if (&lt; (length alist) n) nil (if (= n 1) (car alist) (element-at (cdr &hellip;">
+(defun my-len (alist) (if (null alist) 0 (1+ (my-len (cdr alist))))) Lisp dialect: Steel Bank Common Lisp ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -170,6 +168,50 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-4/">99 LISP problems: Problem #4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-20T00:49:55+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:49 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #4</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-len</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">    <span class="mi">0</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nv">my-len</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -349,54 +391,6 @@ elicit the differences between the two.</p>
   
     <footer>
       <a rel="full-article" href="/blog/2014/06/19/neyman-pearson-hypothesis-testing/">Read full post &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/18/fisher-test-of-statistical-signficance/">Fisher's test of statistical significance</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-18T20:54:24+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:54 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2 id="prologue">Prologue</h2>
-
-<p>The past couple of days I have been reading about tests of statistical
-significance and the associated maladies since I came across this
-<a href="http://errorstatistics.files.wordpress.com/2014/05/spanos_recurring-controversies-about-p-values-and-confidence-intervals-revisited.pdf">paper</a> shared on a social networking site.</p>
-
-<p>In <a href="http://www.igidr.ac.in">grad school</a> conferences, I used to hear myriad tales of caution
-about p-values being unreliable, prone to misinterpretation and so on. Yet, no
-econometrics prof will touch this topic in class with a barge-pole. By the
-second semester, with term papers becoming the norm, the whole class was
-hunting for <em>stars</em> in the <a href="http://hetv.org/india/nfhs/">NHFS</a> wilderness. PhDs were always discussing
-how they spent the whole night trying to find a model that will render the
-variable of interest (on which their thesis rested) significant at 5% level. I
-did too. We were taught to.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/18/fisher-test-of-statistical-signficance/">Read full post &rarr;</a>
     </footer>
   
 

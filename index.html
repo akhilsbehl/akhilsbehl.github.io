@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Somewhere in the second half of last year I switched my primary text editor from Vim to Emacs. Calm down! I use Evil. So, one of my primary languages &hellip;">
+  <meta name="description" content="Have you ever used a logistic regression? Would you like to be able to say you have used a neural network – perhaps in your next interview? Here’s &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,43 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network/">Why you have, in fact, used a neural network!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-06T17:38:12+05:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:38 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Have you ever used a <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a>? Would you like to be able to say you have used a <a href="https://en.wikipedia.org/wiki/Artificial_neural_network">neural network</a> – perhaps in your next interview? Here’s your cheat code.</p>
+
+<p><em>NB: <a href="https://en.wikipedia.org/wiki/There_ain%27t_no_such_thing_as_a_free_lunch">NFL</a> applies insomuch as you will have to know what we are talking about in this post. This is not a tutorial.</em></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -414,77 +451,6 @@
 <p>Hopefully, this is useful for someone not in the mood to write their own code to do this. This was definitely useful for me to write.</p>
 
 <!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/21/r-converting-simple-triplet-matrix-to-other-sparse-matrix-formats/">R: Converting simple_triplet_matrix to other sparse matrix formats.</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-21T14:17:11+05:30'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2014</span></span> <span class='time'>2:17 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>When working with the <code>tm</code> package in R, it produces a <code>DocumentTermMatrix</code> or <code>TermDocumentMatrix</code> as an S3 object of class <code>simple_triplet_matrix</code> from the package <code>slam</code>. Now R has various different packages for creating sparse matrices, each of which have packages depending upon themselves. Long back when working with text data I had created two functions to convert a <code>simple_triplet_matrix</code> to a matrix of class <code>sparseMatrix</code> (package: <code>Matrix</code>) and that to a matrix of class <code>matrix.csr</code> (package: <code>SparseM</code>). The conversions are simple enough once you have read through the documentation of the three packages but hopefully this will save someone some time.</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-</pre></td><td class="code"><pre><code class="r"><span class="line">asSparseMatrix <span class="o">=</span> <span class="kr">function</span> <span class="p">(</span>simpleTripletMatrix<span class="p">)</span> <span class="p">{</span>
-</span><span class="line">  retVal <span class="o">=</span> sparseMatrix<span class="p">(</span>i<span class="o">=</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;i&quot;</span><span class="p">]],</span>
-</span><span class="line">                        j<span class="o">=</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;j&quot;</span><span class="p">]],</span>
-</span><span class="line">                        x<span class="o">=</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;v&quot;</span><span class="p">]],</span>
-</span><span class="line">                        dims<span class="o">=</span><span class="kt">c</span><span class="p">(</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;nrow&quot;</span><span class="p">]],</span>
-</span><span class="line">                               simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;ncol&quot;</span><span class="p">]]))</span>
-</span><span class="line">  <span class="kr">if</span> <span class="p">(</span><span class="o">!</span><span class="kp">is.null</span><span class="p">(</span>simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;dimnames&quot;</span><span class="p">]]))</span>
-</span><span class="line">    <span class="kp">dimnames</span><span class="p">(</span>retVal<span class="p">)</span> <span class="o">=</span> simpleTripletMatrix<span class="p">[[</span><span class="s">&quot;dimnames&quot;</span><span class="p">]]</span>
-</span><span class="line">  <span class="kr">return</span><span class="p">(</span>retVal<span class="p">)</span>
-</span><span class="line"><span class="p">}</span>
-</span><span class="line">
-</span><span class="line">asMatrixCSR <span class="o">=</span> <span class="kr">function</span> <span class="p">(</span>sparseMatrix<span class="p">)</span> <span class="p">{</span>
-</span><span class="line">  <span class="kp">warning</span><span class="p">(</span><span class="s">&quot;Will lose dimnames!&quot;</span><span class="p">)</span>
-</span><span class="line">  as.matrix.csr<span class="p">(</span>new<span class="p">(</span><span class="s">&quot;matrix.csc&quot;</span><span class="p">,</span>
-</span><span class="line">                    ra<span class="o">=</span>sparseMatrix<span class="o">@</span>x<span class="p">,</span>
-</span><span class="line">                    ja<span class="o">=</span>sparseMatrix<span class="o">@</span>i <span class="o">+</span> <span class="m">1L</span><span class="p">,</span>
-</span><span class="line">                    ia<span class="o">=</span>sparseMatrix<span class="o">@</span>p <span class="o">+</span> <span class="m">1L</span><span class="p">,</span>
-</span><span class="line">                    dimension<span class="o">=</span>sparseMatrix<span class="o">@</span>Dim<span class="p">))</span>
-</span><span class="line"><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
 </div>
   
   
