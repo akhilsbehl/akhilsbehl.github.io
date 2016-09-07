@@ -54,7 +54,7 @@ Disclaimer: this answer is _inspired_ from [this discussion][so-discussion] on S
 ### Toggle function
 
 ```lisp
-(defun toggle-function ()
+(defun toggle-special-behavior ()
   (interactive)
   (let ((this-buffer (current-buffer)))
     (if (buffer-local-value inhibit-special-behavior this-buffer)
