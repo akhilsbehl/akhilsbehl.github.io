@@ -44,11 +44,11 @@ $$
 
 $$
 
-Note that rearranging this is equivalent to the defintion of $$p(x; \theta)$$ given above. However, what is more important for this discussion is to note that $$p(x; \theta)$$ can be written as a [function composition][func-comp] $$\sigma \bullet$$ applied on the input vector of covariates ($$x$$) and the parameter vector to be learned ($$\theta$$). Here $$\sigma$$ is the logistic function and $$\bullet$$ is the dot product of two vectors.
+Note that rearranging this is equivalent to the defintion of $$p(x; \theta)$$ given above. However, what is more important for this discussion is to note that $$p(x; \theta)$$ can be written as a [function composition][func-comp] -- $$\sigma \bullet$$ -- applied on the input vector of covariates ($$x$$) and the parameter vector to be learned ($$\theta$$). Here $$\sigma$$ is the [logistic function][logist-fun-wiki] and $$\bullet$$ is the dot product of two vectors.
 
 ### Using a log-linear model
 
-Another interpretation of a logistic regression is as a [log-linear][loglin-wiki] model. The difficulty is that the log-linear method is used to estimate outcomes which have support in $$[0, \infty)$$ whereas we need to model $$p$$ which is a probability distribution with support in [0, 1]. The trick to overcome this is to model $$\tilde{p}$$ -- an _un-normalized_ probability distribution for each of the binary outcomes as a log-linear model. The true probability distribution $$p$$ is then realized from $$\tilde{p}$$ by normalizing it over all outcomes.
+Another interpretation of a logistic regression is as a [log-linear][loglin-wiki] model. The difficulty is that the log-linear method is used to estimate outcomes which have support in $$[0, \infty)$$ whereas we need to model $$p$$ which is a probability distribution with support in [0, 1]. The trick to overcome this is to model $$\tilde{p}$$ -- an _un-normalized_ probability for each of the binary outcomes as a log-linear model. The true probability $$p$$ is then realized from $$\tilde{p}$$ by normalizing it over all possible outcomes.
 
 $$
 
@@ -80,7 +80,7 @@ $$
 
 This arises out of the fact that the log-linear formulation is [_over-identified_][par-ident-wiki] because if we know $$P[Y = 1 \mid X = x]$$, we automatically know $$P[Y = 0 \mid X = x]$$. The over-identification is resolved by setting $$\beta_0 = 0$$ which reconciles the two expressions above. See [the wiki][loglin-wiki] for an explanation.
 
-Once again, we notice that even this formulation of the logistic regression can be factorized into a function composition where $$P[Y = i \mid X = x] \equiv p_i(x; \theta) \equiv s \bullet$$ where $$s$$ is the [softmax][softmax-wiki] function and $$\bullet$$ is the dot product.
+Once again, we notice that even this formulation of the logistic regression can be factorized into a function composition where $$P[Y = i \mid X = x] \equiv p_i(x; \theta) \equiv (s \bullet)_i$$ where $$s$$ is the [softmax][softmax-wiki] function and $$\bullet$$ is the dot product.
 
 ##### Generalization to the multinomial case with the softmax function
 
@@ -94,7 +94,7 @@ $$
 
 ## NNs as function composition machinery
 
-The class of neural networks that we are going to use here is the simple feed-forward multi-layer perceptron ([MLP][mlp-wiki]). For a quick recap, a multi layer perceptron is a directed acyclical graph which has each layer fully-connected to the next layer. The simplest MLP will have at least three layers: the _input_ layer (to which the data is fed), an _output_ layer (which outputs the results) and one (or more for deeper architectures) _hidden_ layer. [Goodfellow et al.][goodfellow-book] (Ch. 1, p. 5) describe:
+The class of neural networks that we are going to use here is the simple feed-forward multi-layer perceptron ([MLP][mlp-wiki]). For a quick recap, a MLP is a directed acyclical graph which has each layer fully-connected to the next layer. The simplest MLP will have at least three layers: the _input_ layer (to which the data is fed), an _output_ layer (which outputs the results) and one (or more for deeper architectures) _hidden_ layer. [Goodfellow et al.][goodfellow-book] (Ch. 1, p. 5) describe:
 
 {% blockquote %}
 
@@ -104,7 +104,7 @@ A multilayer perceptron is just a mathematical function mapping some set of inpu
 
 Emphasis added.
 
-In fact, in Figure 1.3, the book provides the MLP graph that represents logistic regression (as the composition $$\sigma \bullet$$, further decomposing $$\bullet$$ into elementary operations $$\times$$ and $$+$$).
+In fact, in Figure 1.3, the book provides the MLP graph that represents the log-odds formulation of a logistic regression (as the composition $$\sigma \bullet$$, further decomposing $$\bullet$$ into elementary operations $$\times$$ and $$+$$).
 
 ### MLP design of a multinomial logit
 
@@ -137,3 +137,4 @@ This is the key insight that motivated this article: NNs are arbitrary function 
 [goodfellow-book]: http://www.deeplearningbook.org/
 [ftml-book]: http://www.iro.umontreal.ca/~bengioy/papers/ftml_book.pdf
 [freitas-lecture]: https://www.youtube.com/watch?v=FYgsztDxSvE
+[logist-fun-wiki]: https://en.wikipedia.org/wiki/Logistic_function
