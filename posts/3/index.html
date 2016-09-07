@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="I stumbled upon two different videos today while surfing the web both of which impressed me deeply. It was only later that I connected the dots &hellip;">
+  <meta name="description" content="A few days ago I built a very simple framework (bunch of vimscript commands really) to work with vim and IPython along the lines of the Vim-R-Plugin &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,41 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/17/send-python-commands-from-vim-to-ipython-via-tmux/">Send Python commands from Vim to IPython via tmux.</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-17T13:58:53+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:58 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>A few days ago I built a very simple framework (bunch of vimscript commands really) to work with <a href="http://en.wikipedia.org/wiki/Vim_%28text_editor%29">vim</a> and <a href="http://en.wikipedia.org/wiki/IPython">IPython</a> along the lines of the <a href="https://github.com/vim-scripts/Vim-R-plugin">Vim-R-Plugin</a>. In this post I show what I had to do to get this to work.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/17/send-python-commands-from-vim-to-ipython-via-tmux/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -372,50 +407,6 @@
 </span><span class="line">
 </span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">coprimep</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
 </span><span class="line">  <span class="p">(</span><span class="nb">=</span> <span class="p">(</span><span class="nv">eucgcd</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="mi">1</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/06/99-lisp-problems-problem-number-32/">99 LISP problems: Problem #32</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-06T01:43:25+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:43 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #32</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">eucgcd</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">or</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">m</span> <span class="mi">1</span><span class="p">)</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">))</span> <span class="no">nil</span><span class="p">)</span>
-</span><span class="line">        <span class="p">((</span><span class="nb">=</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="nv">m</span><span class="p">)</span>
-</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">gcd</span> <span class="p">(</span><span class="nb">-</span> <span class="p">(</span><span class="nb">max</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)))))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

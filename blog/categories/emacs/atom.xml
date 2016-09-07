@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: emacs | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/emacs/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-07T18:12:21+05:30</updated>
+  <updated>2016-09-07T19:23:42+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -12,6 +12,75 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Toggling buffer-level hooks in Emacs]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs/"/>
+    <updated>2016-09-07T18:19:05+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs</id>
+    <content type="html"><![CDATA[<p>One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing markdown, is to preview it in my browser as html. This can be done by exporting the markdown file to html each time the markdown buffer is written to. Now, I like this solution except when I don’t! To generalize the problem, one wants an action to be trigerred, perhaps for a major mode (or not), every time an event happens in a buffer. On the other hand, one also wants this behavior to be togglable at will. For example: convert all tabs to spaces, run a linter, compile a file etc every time an event occurs in the buffer.</p>
+
+<p>The first sub-problem – of triggering the action – is solved easily using Emacs’ various <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html">hooks</a>. The second problem is also easily solved using a little lisp. Here’s how.</p>
+
+<!--more-->
+
+<h2 id="triggering-an-event">Triggering an event</h2>
+
+<p>Let’s assume I have a lisp function called <code>special-behavior-function</code> handy that knows how to execute the special behavior on a buffer. I’d like to call this every time the even happens, say, I write to the buffer. Here’s how to do that:</p>
+
+<p><code>lisp
+(add-hook 'major-mode-hook ;; plug the appropriate major mode
+  (lambda ()
+    (add-hook 'special-event-hook ;; plug the appropriate hook
+      'special-behavior-function ;; plug the appropriate function
+      nil 'local)))
+</code></p>
+
+<p>The <code>'local</code> at the end makes sure that the hook is added local to the buffer. That’s usually a good thing. Change to <code>nil</code> if you don’t like it.</p>
+
+<p>Now, this should be enough to solve the first subproblem. However, what if, sometimes, you want to turn this behavior off? Or having turned it off, you want to turn it back on?</p>
+
+<h2 id="toggling-event-based-behavior">Toggling event-based behavior</h2>
+
+<p>To achieve this, we introduce a <em>variable</em> to save our preference, a <em>wrapper function</em> to check against our current preference. and a <em>toggle function</em> to toggle this preference. (All this goes into your <code>.emacs</code>, duh!) All of this is done local to a buffer. This way, you can control the behavior for each buffer separately.</p>
+
+<p>Disclaimer: this answer is <em>inspired</em> from <a href="http://stackoverflow.com/questions/14913398/in-emacs-how-do-i-save-without-running-save-hooks">this discussion</a> on SO. ;)</p>
+
+<h3 id="configuration-variable">Configuration variable</h3>
+
+<p><code>lisp
+(defvar inhibit-special-behavior t) ;; Change t to nil to keep on by default
+</code></p>
+
+<h3 id="wrapper-function">Wrapper function</h3>
+
+<p><code>lisp
+(defun wrap-special-behavior-function () ;; try &amp;rest with apply if you need args
+  (unless inhibit-special-behavior
+    (special-behavior-function)))
+</code></p>
+
+<h3 id="toggle-function">Toggle function</h3>
+
+<p><code>lisp
+(defun toggle-function ()
+  (interactive)
+  (let ((this-buffer (current-buffer)))
+    (if (buffer-local-value inhibit-special-behavior this-buffer)
+      (progn
+        (set (make-local-variable 'inhibit-special-behavior) nil)
+        (message "special behavior uninhibited."))
+      (progn
+        (set (make-local-variable 'inhibit-special-behavior) t)
+        (message "special behavior inhibited.")))))
+</code></p>
+
+<p>Now all you gotta do is either <code>M-x</code> this function when you need it or bind it to a key-sequence. See <a href="https://github.com/akhilsbehl/configs/blob/master/emacs#L642">this</a> and <a href="https://github.com/akhilsbehl/configs/blob/master/scripts/md2html">this</a> for the markdown export example that I’m personally using.</p>
+
+<!--links-->
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Inspecting objects at point with ESS]]></title>

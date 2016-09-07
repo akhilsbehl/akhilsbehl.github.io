@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Have you ever used a logistic regression? Would you like to be able to say you have used a neural network – perhaps in your next interview? Here’s &hellip;">
+  <meta name="description" content="One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,43 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs/">Toggling buffer-level hooks in Emacs</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-07T18:19:05+05:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:19 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing markdown, is to preview it in my browser as html. This can be done by exporting the markdown file to html each time the markdown buffer is written to. Now, I like this solution except when I don’t! To generalize the problem, one wants an action to be trigerred, perhaps for a major mode (or not), every time an event happens in a buffer. On the other hand, one also wants this behavior to be togglable at will. For example: convert all tabs to spaces, run a linter, compile a file etc every time an event occurs in the buffer.</p>
+
+<p>The first sub-problem – of triggering the action – is solved easily using Emacs’ various <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html">hooks</a>. The second problem is also easily solved using a little lisp. Here’s how.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -353,102 +390,6 @@
   <div class="entry-content"><p>I was recently introduced to a Boggle solver problem by a friend of mine. Put simply, given a boggle board of sixteen characters and a dictionary, the program needs to figure out how many words from the dictionary are possible on the boggle board. The one deviation from standard boggle is that adjacent moves restriction is relaxed, i.e. order is unimportant.</p>
 
 <p>My <a href="https://github.com/akhilsbehl/boggle-scrabble">repository</a> on Github discusses the problem and the two solutions implemented and their tradeoffs in much more detail along with presenting the code. Do visit.</p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/25/timeit-macro-for-sbcl/">`timeit` macro for SBCL</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-25T05:23:28+05:30'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>25</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:23 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I am the sort of person who really likes to know how much time code I have written takes to run. I believe that it is important to know what works in your language and what does not and what sort of efficiency trade offs need to be made for expressiveness and brevity. Since, I am learning common lisp a little seriously again, I have been interested in seeing how to profile code in it. Even though I haven’t reached <a href="http://t-b-o-g.blogspot.in/2009/12/brians-brain-on-common-lisp-take-3.html">this</a> far that I have started using the <a href="http://www.sbcl.org/1.0/manual/Statistical-Profiler.html">statistical CPU profiler</a> or the <a href="https://www.snellman.net/blog/archive/2006-05-14-statistical-allocation-profiler-for-sbcl.html">statistical allocation profiler</a>, I am starting out with simply being able to time code I write quickly.</p>
-
-<p>Since, writing macros in lisp is so easy and timing code is just the sort of thing macros are really useful for, I decided to practice some macro writing to write a <code>timeit</code> macro. Similar <a href="http://www-users.cs.umn.edu/~gini/lisp/profile.html">attempts</a> have been made in the past but I wanted to roll my own. After some <a href="http://stackoverflow.com/questions/27642626/lisp-defmacro-with-optional-and-body">struggle and a little nudge</a> I was able to write something satisfactory:</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defmacro</span> <span class="nv">timeit</span> <span class="p">((</span><span class="k">&amp;key</span>
-</span><span class="line">                    <span class="p">(</span><span class="nv">to-stream</span> <span class="vg">*standard-output*</span><span class="p">)</span>
-</span><span class="line">                    <span class="p">(</span><span class="nv">with-runs</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class="line">                  <span class="k">&amp;body</span> <span class="nv">body</span><span class="p">)</span>
-</span><span class="line">  <span class="s">&quot;Note that this function may barf if you are depending on a single evaluation</span>
-</span><span class="line"><span class="s">  and choose with-runs to be greater than one. But I guess that will be the</span>
-</span><span class="line"><span class="s">  caller&#39;s mistake instead.&quot;</span>
-</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">start-time</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
-</span><span class="line">        <span class="p">(</span><span class="nv">stop-time</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
-</span><span class="line">        <span class="p">(</span><span class="nv">temp</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
-</span><span class="line">        <span class="p">(</span><span class="nv">retval</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">))</span>
-</span><span class="line">        <span class="p">(</span><span class="nv">elapsed-time</span> <span class="p">(</span><span class="nb">gensym</span><span class="p">)))</span>
-</span><span class="line">    <span class="o">`</span><span class="p">(</span><span class="k">let*</span> <span class="p">((</span><span class="o">,</span><span class="nv">start-time</span> <span class="p">(</span><span class="nb">get-internal-run-time</span><span class="p">))</span>
-</span><span class="line">            <span class="p">(</span><span class="o">,</span><span class="nv">retval</span> <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="o">,</span><span class="nv">temp</span><span class="p">))</span>
-</span><span class="line">                       <span class="p">(</span><span class="nb">dotimes</span> <span class="p">(</span><span class="nv">i</span> <span class="o">,</span><span class="nv">with-runs</span> <span class="o">,</span><span class="nv">temp</span><span class="p">)</span>
-</span><span class="line">                         <span class="p">(</span><span class="nb">setf</span> <span class="o">,</span><span class="nv">temp</span> <span class="o">,@</span><span class="nv">body</span><span class="p">))))</span>
-</span><span class="line">            <span class="p">(</span><span class="o">,</span><span class="nv">stop-time</span> <span class="p">(</span><span class="nb">get-internal-run-time</span><span class="p">))</span>
-</span><span class="line">            <span class="p">(</span><span class="o">,</span><span class="nv">elapsed-time</span> <span class="p">(</span><span class="nb">/</span> <span class="p">(</span><span class="nb">-</span> <span class="o">,</span><span class="nv">stop-time</span> <span class="o">,</span><span class="nv">start-time</span><span class="p">)</span>
-</span><span class="line">                              <span class="nv">internal-time-units-per-second</span><span class="p">)))</span>
-</span><span class="line">       <span class="p">(</span><span class="nb">format</span> <span class="o">,</span><span class="nv">to-stream</span>
-</span><span class="line">               <span class="p">(</span><span class="nb">concatenate</span> <span class="ss">&#39;string</span>
-</span><span class="line">                            <span class="s">&quot;~CAverage (total) time spent in expression&quot;</span>
-</span><span class="line">                            <span class="s">&quot; over ~:d iterations: ~f (~f) seconds.~C&quot;</span><span class="p">)</span>
-</span><span class="line">               <span class="sc">#\linefeed</span>
-</span><span class="line">               <span class="o">,</span><span class="nv">with-runs</span>
-</span><span class="line">               <span class="o">,</span><span class="nv">elapsed-time</span>
-</span><span class="line">               <span class="p">(</span><span class="nb">/</span> <span class="o">,</span><span class="nv">elapsed-time</span> <span class="o">,</span><span class="nv">with-runs</span><span class="p">)</span>
-</span><span class="line">               <span class="sc">#\linefeed</span><span class="p">)</span>
-</span><span class="line">       <span class="o">,</span><span class="nv">retval</span><span class="p">)))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Hopefully, this is useful for someone not in the mood to write their own code to do this. This was definitely useful for me to write.</p>
 
 <!--links-->
 </div>

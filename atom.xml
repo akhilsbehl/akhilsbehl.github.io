@@ -4,7 +4,7 @@
   <title><![CDATA[asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-07T18:12:21+05:30</updated>
+  <updated>2016-09-07T19:23:42+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -12,6 +12,90 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Toggling buffer-level hooks in Emacs]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs/"/>
+    <updated>2016-09-07T18:19:05+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs</id>
+    <content type="html"><![CDATA[<p>One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing markdown, is to preview it in my browser as html. This can be done by exporting the markdown file to html each time the markdown buffer is written to. Now, I like this solution except when I don’t! To generalize the problem, one wants an action to be trigerred, perhaps for a major mode (or not), every time an event happens in a buffer. On the other hand, one also wants this behavior to be togglable at will. For example: convert all tabs to spaces, run a linter, compile a file etc every time an event occurs in the buffer.</p>
+
+<p>The first sub-problem – of triggering the action – is solved easily using Emacs’ various <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html">hooks</a>. The second problem is also easily solved using a little lisp. Here’s how.</p>
+
+<!--more-->
+
+<h2 id="triggering-an-event">Triggering an event</h2>
+
+<p>Let’s assume I have a lisp function called <code>special-behavior-function</code> handy that knows how to execute the special behavior on a buffer. I’d like to call this every time the even happens, say, I write to the buffer. Here’s how to do that:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;major-mode-hook</span> <span class="c1">;; plug the appropriate major mode</span>
+</span><span class="line">  <span class="p">(</span><span class="k">lambda</span> <span class="p">()</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;special-event-hook</span> <span class="c1">;; plug the appropriate hook</span>
+</span><span class="line">      <span class="ss">&#39;special-behavior-function</span> <span class="c1">;; plug the appropriate function</span>
+</span><span class="line">      <span class="no">nil</span> <span class="ss">&#39;local</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>The <code>'local</code> at the end makes sure that the hook is added local to the buffer. That’s usually a good thing. Change to <code>nil</code> if you don’t like it.</p>
+
+<p>Now, this should be enough to solve the first subproblem. However, what if, sometimes, you want to turn this behavior off? Or having turned it off, you want to turn it back on?</p>
+
+<h2 id="toggling-event-based-behavior">Toggling event-based behavior</h2>
+
+<p>To achieve this, we introduce a <em>variable</em> to save our preference, a <em>wrapper function</em> to check against our current preference. and a <em>toggle function</em> to toggle this preference. (All this goes into your <code>.emacs</code>, duh!) All of this is done local to a buffer. This way, you can control the behavior for each buffer separately.</p>
+
+<p>Disclaimer: this answer is <em>inspired</em> from <a href="http://stackoverflow.com/questions/14913398/in-emacs-how-do-i-save-without-running-save-hooks">this discussion</a> on SO. ;)</p>
+
+<h3 id="configuration-variable">Configuration variable</h3>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nb">defvar</span> <span class="nv">inhibit-special-behavior</span> <span class="no">t</span><span class="p">)</span> <span class="c1">;; Change t to nil to keep on by default</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h3 id="wrapper-function">Wrapper function</h3>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">wrap-special-behavior-function</span> <span class="p">()</span> <span class="c1">;; try &amp;rest with apply if you need args</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">unless</span> <span class="nv">inhibit-special-behavior</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">special-behavior-function</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<h3 id="toggle-function">Toggle function</h3>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">toggle-function</span> <span class="p">()</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">interactive</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">this-buffer</span> <span class="p">(</span><span class="nv">current-buffer</span><span class="p">)))</span>
+</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nv">buffer-local-value</span> <span class="nv">inhibit-special-behavior</span> <span class="nv">this-buffer</span><span class="p">)</span>
+</span><span class="line">      <span class="p">(</span><span class="k">progn</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">set</span> <span class="p">(</span><span class="nv">make-local-variable</span> <span class="ss">&#39;inhibit-special-behavior</span><span class="p">)</span> <span class="no">nil</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">message</span> <span class="s">&quot;special behavior uninhibited.&quot;</span><span class="p">))</span>
+</span><span class="line">      <span class="p">(</span><span class="k">progn</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">set</span> <span class="p">(</span><span class="nv">make-local-variable</span> <span class="ss">&#39;inhibit-special-behavior</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">message</span> <span class="s">&quot;special behavior inhibited.&quot;</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Now all you gotta do is either <code>M-x</code> this function when you need it or bind it to a key-sequence. See <a href="https://github.com/akhilsbehl/configs/blob/master/emacs#L642">this</a> and <a href="https://github.com/akhilsbehl/configs/blob/master/scripts/md2html">this</a> for the markdown export example that I’m personally using.</p>
+
+<!--links-->
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Why you have, in fact, used a neural network!]]></title>
@@ -1608,73 +1692,6 @@ As discussed earlier, the Fisherian setup employs a <em>null</em> hypothesis and
 </span><span class="line">    <span class="p">(</span><span class="nb">sort</span>
 </span><span class="line">      <span class="nv">alist</span> <span class="nf">#&#39;</span><span class="nb">&lt;</span>
 </span><span class="line">      <span class="ss">:key</span> <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nv">count-elem</span> <span class="nv">lengths</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">x</span><span class="p">))))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[99 LISP problems: Problem #25]]></title>
-    <link href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25/"/>
-    <updated>2014-06-28T15:54:32+05:30</updated>
-    <id>http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25</id>
-    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #25</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">element-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">      <span class="p">(</span><span class="nv">element-at</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">)))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">remove-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">i</span> <span class="mi">1</span><span class="p">))</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">mapcan</span>
-</span><span class="line">      <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span>
-</span><span class="line">        <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">j</span> <span class="nv">i</span><span class="p">))</span>
-</span><span class="line">          <span class="p">(</span><span class="nb">setf</span> <span class="nv">i</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">i</span><span class="p">))</span>
-</span><span class="line">          <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">j</span> <span class="nv">n</span><span class="p">)</span> <span class="no">nil</span> <span class="p">(</span><span class="nb">list</span> <span class="nv">x</span><span class="p">))))</span>
-</span><span class="line">      <span class="nv">alist</span><span class="p">)))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;=</span> <span class="nv">n</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">k</span> <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nb">random</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))))</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">append</span>
-</span><span class="line">        <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nv">element-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">))</span>
-</span><span class="line">        <span class="p">(</span><span class="nv">rnd-select</span> <span class="p">(</span><span class="nv">remove-at</span> <span class="nv">alist</span> <span class="nv">k</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">))))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">rnd-permu</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nv">rnd-select</span> <span class="nv">alist</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

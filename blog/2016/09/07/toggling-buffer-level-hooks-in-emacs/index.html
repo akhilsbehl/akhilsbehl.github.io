@@ -5,17 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>asb: head /dev/brain > /dev/www</title>
+  <title>Toggling buffer-level hooks in Emacs - asb: head /dev/brain > /dev/www</title>
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Solution to the 99 LISP Problems #5 1
-2
-3
-4
-5
-6
-(defun my-reverse (alist) (if (null alist) nil (append (my-reverse (cdr alist)) (list (car alist &hellip;">
+  <meta name="description" content="One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -24,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://akhilsbehl.github.io/posts/9">
+  <link rel="canonical" href="http://akhilsbehl.github.io/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="http://feeds.feedburner.com/github/Xmaq" rel="alternate" title="asb: head /dev/brain > /dev/www" type="application/atom+xml">
@@ -168,15 +162,14 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-5/">99 LISP problems: Problem #5</a></h1>
+      
+        <h1 class="entry-title">Toggling buffer-level hooks in Emacs</h1>
+      
     
     
       <p class="meta">
@@ -185,7 +178,7 @@
 
 
 
-<time class='entry-date' datetime='2014-06-20T00:50:19+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:50 am</span></time>
+<time class='entry-date' datetime='2016-09-07T18:19:05+05:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:19 pm</span></time>
         
         
       </p>
@@ -193,193 +186,55 @@
   </header>
 
 
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #5</p>
+<div class="entry-content"><p>One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing markdown, is to preview it in my browser as html. This can be done by exporting the markdown file to html each time the markdown buffer is written to. Now, I like this solution except when I don’t! To generalize the problem, one wants an action to be trigerred, perhaps for a major mode (or not), every time an event happens in a buffer. On the other hand, one also wants this behavior to be togglable at will. For example: convert all tabs to spaces, run a linter, compile a file etc every time an event occurs in the buffer.</p>
+
+<p>The first sub-problem – of triggering the action – is solved easily using Emacs’ various <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Standard-Hooks.html">hooks</a>. The second problem is also easily solved using a little lisp. Here’s how.</p>
+
+<!--more-->
+
+<h2 id="triggering-an-event">Triggering an event</h2>
+
+<p>Let’s assume I have a lisp function called <code>special-behavior-function</code> handy that knows how to execute the special behavior on a buffer. I’d like to call this every time the even happens, say, I write to the buffer. Here’s how to do that:</p>
 
 <figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 <span class="line-number">3</span>
 <span class="line-number">4</span>
 <span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-reverse</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">append</span>
-</span><span class="line">      <span class="p">(</span><span class="nv">my-reverse</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)))))</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;major-mode-hook</span> <span class="c1">;; plug the appropriate major mode</span>
+</span><span class="line">  <span class="p">(</span><span class="k">lambda</span> <span class="p">()</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">add-hook</span> <span class="ss">&#39;special-event-hook</span> <span class="c1">;; plug the appropriate hook</span>
+</span><span class="line">      <span class="ss">&#39;special-behavior-function</span> <span class="c1">;; plug the appropriate function</span>
+</span><span class="line">      <span class="no">nil</span> <span class="ss">&#39;local</span><span class="p">)))</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+<p>The <code>'local</code> at the end makes sure that the hook is added local to the buffer. That’s usually a good thing. Change to <code>nil</code> if you don’t like it.</p>
 
-<!--links-->
-</div>
-  
-  
+<p>Now, this should be enough to solve the first subproblem. However, what if, sometimes, you want to turn this behavior off? Or having turned it off, you want to turn it back on?</p>
 
+<h2 id="toggling-event-based-behavior">Toggling event-based behavior</h2>
 
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-4/">99 LISP problems: Problem #4</a></h1>
-    
-    
-      <p class="meta">
-        
+<p>To achieve this, we introduce a <em>variable</em> to save our preference, a <em>wrapper function</em> to check against our current preference. and a <em>toggle function</em> to toggle this preference. (All this goes into your <code>.emacs</code>, duh!) All of this is done local to a buffer. This way, you can control the behavior for each buffer separately.</p>
 
+<p>Disclaimer: this answer is <em>inspired</em> from <a href="http://stackoverflow.com/questions/14913398/in-emacs-how-do-i-save-without-running-save-hooks">this discussion</a> on SO. ;)</p>
 
+<h3 id="configuration-variable">Configuration variable</h3>
 
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nb">defvar</span> <span class="nv">inhibit-special-behavior</span> <span class="no">t</span><span class="p">)</span> <span class="c1">;; Change t to nil to keep on by default</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<time class='entry-date' datetime='2014-06-20T00:49:55+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:49 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #4</p>
+<h3 id="wrapper-function">Wrapper function</h3>
 
 <figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 <span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-len</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">    <span class="mi">0</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">1+</span> <span class="p">(</span><span class="nv">my-len</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)))))</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">wrap-special-behavior-function</span> <span class="p">()</span> <span class="c1">;; try &amp;rest with apply if you need args</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">unless</span> <span class="nv">inhibit-special-behavior</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">special-behavior-function</span><span class="p">)))</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-3/">99 LISP problems: Problem #3</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-20T00:22:17+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:22 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #3:</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">element-at</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">&lt;</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">      <span class="p">(</span><span class="nv">element-at</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-2/">99 LISP problems: Problem #2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-20T00:10:33+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:10 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #2:</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-but-last</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">&lt;=</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
-</span><span class="line">    <span class="nv">alist</span>
-</span><span class="line">    <span class="p">(</span><span class="nv">my-but-last</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-1/">99 LISP problems: Problem #1</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-20T00:03:21+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:03 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #1:</p>
+<h3 id="toggle-function">Toggle function</h3>
 
 <figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -389,41 +244,81 @@
 <span class="line-number">6</span>
 <span class="line-number">7</span>
 <span class="line-number">8</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-last</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">equalp</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="mi">0</span><span class="p">)</span>
-</span><span class="line">    <span class="no">nil</span>
-</span><span class="line">    <span class="p">(</span><span class="k">if</span>
-</span><span class="line">      <span class="p">(</span><span class="nb">equalp</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="mi">1</span><span class="p">)</span>
-</span><span class="line">      <span class="nv">alist</span>
-</span><span class="line">      <span class="p">(</span><span class="nv">my-last</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)))))</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="lisp"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">toggle-function</span> <span class="p">()</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">interactive</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">this-buffer</span> <span class="p">(</span><span class="nv">current-buffer</span><span class="p">)))</span>
+</span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nv">buffer-local-value</span> <span class="nv">inhibit-special-behavior</span> <span class="nv">this-buffer</span><span class="p">)</span>
+</span><span class="line">      <span class="p">(</span><span class="k">progn</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">set</span> <span class="p">(</span><span class="nv">make-local-variable</span> <span class="ss">&#39;inhibit-special-behavior</span><span class="p">)</span> <span class="no">nil</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">message</span> <span class="s">&quot;special behavior uninhibited.&quot;</span><span class="p">))</span>
+</span><span class="line">      <span class="p">(</span><span class="k">progn</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">set</span> <span class="p">(</span><span class="nv">make-local-variable</span> <span class="ss">&#39;inhibit-special-behavior</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">message</span> <span class="s">&quot;special behavior inhibited.&quot;</span><span class="p">)))))</span>
 </span></code></pre></td></tr></table></div></figure>
 
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+<p>Now all you gotta do is either <code>M-x</code> this function when you need it or bind it to a key-sequence. See <a href="https://github.com/akhilsbehl/configs/blob/master/emacs#L642">this</a> and <a href="https://github.com/akhilsbehl/configs/blob/master/scripts/md2html">this</a> for the markdown export example that I’m personally using.</p>
 
 <!--links-->
+
 </div>
-  
+
+
+  <footer>
+    <p class="meta">
+      
   
 
 
-    </article>
   
-  <div class="pagination">
+
+
+  <span class="byline author vcard">Authored by <span class="fn">
+  
+    <a href="https://plus.google.com/u/0/101609335408319028285" rel="author">Akhil S. Behl</a>
+  
+  </span></span>
+
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-09-07T18:19:05+05:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>6:19 pm</span></time>
+      
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/emacs/'>emacs</a>, <a class='category' href='/blog/categories/lisp/'>lisp</a>, <a class='category' href='/blog/categories/markdown/'>markdown</a>
+  
+</span>
+
+
+    </p>
     
-      <a class="prev" href="/posts/10">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/posts/8">Newer &rarr;</a>
-    
-  </div>
+      <div class="sharing">
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
 </div>
-<aside class="sidebar">
-  
+
     
-  
-</aside>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network/" title="Previous Post: Why you have, in fact, used a neural network!">&laquo; Why you have, in fact, used a neural network!</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+
+</div>
 
     </div>
   </div>
