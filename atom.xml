@@ -4,7 +4,7 @@
   <title><![CDATA[asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-07T19:36:24+05:30</updated>
+  <updated>2016-09-08T12:45:15+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -175,7 +175,7 @@ P[Y = 1 \mid X = x] = \frac{1}{Z}e^{x \bullet \beta_1} = \frac{e^{x \bullet \bet
 <ol>
   <li>Input layer of covariates.</li>
   <li>Fully connected hidden layer with n <em>linear units</em> (the <script type="math/tex">\bullet</script> function).</li>
-  <li>Fully connected output layer with n <em>softmax units</em> (the <script type="math/tex">s</script> function).</li>
+  <li>Fully connected output layer with a <em>softmax unit</em> (the <script type="math/tex">s</script> function).</li>
 </ol>
 
 <p>This here is the blueprint of your cheat code promised in the beginning of the post! ;) See this <a href="https://www.youtube.com/watch?v=FYgsztDxSvE">lecture</a> for a full exposition on this design.</p>
