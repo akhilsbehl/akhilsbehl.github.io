@@ -112,7 +112,7 @@ Similarly, the log-linear interpretation of the logistic regression model can be
 
 1. Input layer of covariates.
 2. Fully connected hidden layer with n _linear units_ (the $$\bullet$$ function).
-3. Fully connected output layer with n _softmax units_ (the $$s$$ function).
+3. Fully connected output layer with a _softmax unit_ (the $$s$$ function).
 
 This here is the blueprint of your cheat code promised in the beginning of the post! ;) See this [lecture][freitas-lecture] for a full exposition on this design.
 
