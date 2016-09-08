@@ -114,6 +114,8 @@ Similarly, the log-linear interpretation of the logistic regression model can be
 2. Fully connected hidden layer with n _linear units_ (the $$\bullet$$ function).
 3. Fully connected output layer with a _softmax unit_ (the $$s$$ function).
 
+* The cost function to be minimized under supervision is the [cross-entropy][cross-entropy-wiki], which it turns out ([Goodfellow et al.][goodfellow-book], Ch. 5, pp 131-132), is equivalent to maximizing likelihood of the observed sample.
+
 This here is the blueprint of your cheat code promised in the beginning of the post! ;) See this [lecture][freitas-lecture] for a full exposition on this design.
 
 ## tl;dr
@@ -138,3 +140,4 @@ This is the key insight that motivated this article: NNs are arbitrary function 
 [ftml-book]: http://www.iro.umontreal.ca/~bengioy/papers/ftml_book.pdf
 [freitas-lecture]: https://www.youtube.com/watch?v=FYgsztDxSvE
 [logist-fun-wiki]: https://en.wikipedia.org/wiki/Logistic_function
+[cross-entropy-wiki]: https://en.wikipedia.org/wiki/Cross_entropy
