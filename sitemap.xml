@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://akhilsbehl.github.io/blog/2016/09/19/training-with-large-files-in-torch7/</loc>
+<lastmod>2016-09-19T17:50:12+05:30</lastmod>
+</url>
+<url>
 <loc>http://akhilsbehl.github.io/blog/2016/09/07/toggling-buffer-level-hooks-in-emacs/</loc>
 <lastmod>2016-09-07T18:19:05+05:30</lastmod>
 </url>
@@ -469,5 +473,17 @@
 </url>
 <url>
 <loc>http://akhilsbehl.github.io/blog/categories/logistic-regression/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/torch/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/lua/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/io/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/big-data/</loc>
 </url>
 </urlset>

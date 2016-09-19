@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="A few days ago I built a very simple framework (bunch of vimscript commands really) to work with vim and IPython along the lines of the Vim-R-Plugin &hellip;">
+  <meta name="description" content="Lately, I have taken to maintaining most of my text in Markdown (desperately trying to avoid Emacs’ org-mode) and previewing it while editing in Vim &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,74 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/17/editing-markdown-in-vim-and-previewing-in-firefox/">Editing markdown in Vim and previewing in Firefox.</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-17T15:03:15+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>3:03 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately, I have taken to maintaining most of my text in Markdown (desperately trying to avoid Emacs’ org-mode) and previewing it while editing in Vim is something that is a nice to have. So I searched a little bit and found this nice little <a href="http://ellengummesson.com/blog/2013/01/27/markdown-preview-for-vim/">snippet</a> by Ellen Gummesson that I then adapted per my preferences as such:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line"><span class="c">&quot; Preview markdown in Firefox</span>
+</span><span class="line">
+</span><span class="line"><span class="k">function</span><span class="p">!</span> PreviewMarkdown<span class="p">()</span>
+</span><span class="line">  <span class="k">let</span> outFile <span class="p">=</span> expand<span class="p">(</span><span class="s1">&#39;%:r&#39;</span><span class="p">)</span> . <span class="s1">&#39;.html&#39;</span>
+</span><span class="line">  <span class="k">silent</span> execute <span class="s1">&#39;!cd %:p:h&#39;</span>
+</span><span class="line">  <span class="k">silent</span> execute <span class="s1">&#39;!python -m markdown % &gt;&#39;</span> . outFile
+</span><span class="line"><span class="c">  &quot; The screen will need to be redrawn. Dunno why! :\</span>
+</span><span class="line">  <span class="k">silent</span> execute <span class="s1">&#39;redraw!&#39;</span>
+</span><span class="line"><span class="k">endfunction</span>
+</span><span class="line">
+</span><span class="line">augroup markdown
+</span><span class="line">    <span class="k">au</span><span class="p">!</span>
+</span><span class="line">    <span class="k">au</span> <span class="nb">BufNewFile</span><span class="p">,</span><span class="nb">BufRead</span> *.md<span class="p">,</span>*.markdown <span class="k">setlocal</span> <span class="k">filetype</span><span class="p">=</span>ghmarkdown
+</span><span class="line">    <span class="k">au</span> <span class="nb">BufNewFile</span><span class="p">,</span><span class="nb">BufRead</span> *.md<span class="p">,</span>*.markdown <span class="k">setlocal</span> <span class="nb">textwidth</span><span class="p">=</span><span class="m">0</span>
+</span><span class="line">    <span class="k">autocmd</span> <span class="nb">FileType</span> ghmarkdown map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">p</span>
+</span><span class="line">          \ :<span class="k">call</span> PreviewMarkdown<span class="p">()&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">augroup END
+</span></code></pre></td></tr></table></div></figure>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -357,56 +425,6 @@
 </span><span class="line">  <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">mapcar</span>
 </span><span class="line">         <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">not</span> <span class="p">(</span><span class="nb">=</span> <span class="mi">0</span> <span class="p">(</span><span class="nb">mod</span> <span class="nv">n</span> <span class="nv">x</span><span class="p">))))</span>
 </span><span class="line">         <span class="p">(</span><span class="nv">range</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">isqrt</span> <span class="nv">n</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/06/99-lisp-problems-problem-number-33/">99 LISP problems: Problem #33</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-06T02:08:27+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:08 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #33</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">eucgcd</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">p</span> <span class="p">(</span><span class="nb">abs</span> <span class="nv">m</span><span class="p">))</span> <span class="p">(</span><span class="nv">q</span> <span class="p">(</span><span class="nb">abs</span> <span class="nv">n</span><span class="p">)))</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">=</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="nv">m</span><span class="p">)</span>
-</span><span class="line">    <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">gcd</span> <span class="p">(</span><span class="nb">-</span> <span class="p">(</span><span class="nb">max</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))</span> <span class="p">(</span><span class="nb">min</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">))))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">coprimep</span> <span class="p">(</span><span class="nv">m</span> <span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nb">=</span> <span class="p">(</span><span class="nv">eucgcd</span> <span class="nv">m</span> <span class="nv">n</span><span class="p">)</span> <span class="mi">1</span><span class="p">))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

@@ -9,9 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="R has had a perverse but technically valid model(s) of Object Oriented
-Programming (OOP) for a long time. ReferenceClasses, introduced by
-John &hellip;">
+  <meta name="description" content="Hadley Wickham, with Romain Francois and Dirk Eddelbuettel, has released a new package called dplyr. Once again Wickham has redesigned an important &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -172,6 +170,45 @@ John &hellip;">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/02/13/r-dplyr-vs-data-dot-table/">R: dplyr vs. data.table</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-02-13T15:10:51+05:30'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>3:10 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://had.co.nz">Hadley Wickham</a>, with <a href="http://romainfrancois.blog.free.fr/">Romain Francois</a> and <a href="http://dirk.eddelbuettel.com/">Dirk Eddelbuettel</a>, has released a new package called <a href="http://cran.r-project.org/web/packages/dplyr">dplyr</a>. Once again Wickham has redesigned an important component of what one does with R. The package is designed specifically for rectangular datasets which may live in memory or databases. With the new package, Hadley also convincingly closes the efficiency gap between <a href="http://cran.r-project.org/web/packages/plyr">plyr</a> and <a href="http://cran.r-project.org/web/packages/data.table">data.table</a>. This new efficiency comes largely from the various C++ injections into the performance critical branches of code in <code>dplyr</code> (thanks to Romain and Eddelbuettel).</p>
+
+<p>On the other hand <code>data.table</code>, a mature and popular project, started by <a href="http://stackoverflow.com/users/403310/matt-dowle">Matthew Dowle</a> has been the go-to for all performance-centric R programmers for some time now. While <code>dplyr</code> raises a serious contention to <code>data.table</code>’s claim to fame, both <code>data.table</code> and Dowle are old hands at such competition. There has long been (very healthy) competition between Hadley’s <code>plyr</code>, Dowle’s <code>data.table</code>, and <a href="http://blog.wesmckinney.com/">Wes McKinney</a>’s <code>pandas</code> (a data munging library for Python).</p>
+
+<p>In this post I add another data point to the set of benchmarks of the two packages. For the official take, see <a href="http://cran.r-project.org/web/packages/dplyr/vignettes/benchmark-baseball.html">this</a> and <a href="http://arunsrinivasan.github.io/dplyr_benchmark/">this</a>.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/13/r-dplyr-vs-data-dot-table/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/02/10/r-implementing-a-stack-in-referenceclasses/">R: Implementing a stack in ReferenceClasses</a></h1>
     
     
@@ -307,41 +344,6 @@ feelings about the site. Here are my thoughts in no relevant order.</p>
   
     <footer>
       <a rel="full-article" href="/blog/2013/07/17/mixed-feelings-stack-overflow/">Read full post &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/07/16/deprecate-logical-subsetting-in-R/">R: Deprecate logical subsetting?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-07-16T21:09:00+05:30'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>9:09 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Since I discovered it, I have found logical subsetting in R a very elegant idiom. Recently I’ve had a change of heart due to two observations. Here is why I propose staying away from it.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/16/deprecate-logical-subsetting-in-R/">Read full post &rarr;</a>
     </footer>
   
 

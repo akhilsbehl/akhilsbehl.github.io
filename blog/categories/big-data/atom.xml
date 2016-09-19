@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read more on: big-data | asb: head /dev/brain > /dev/www]]></title>
+  <link href="http://akhilsbehl.github.io/blog/categories/big-data/atom.xml" rel="self"/>
+  <link href="http://akhilsbehl.github.io/"/>
+  <updated>2016-09-19T20:06:51+05:30</updated>
+  <id>http://akhilsbehl.github.io/</id>
+  <author>
+    <name><![CDATA[Akhil S. Behl]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Training with large files in Torch]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/09/19/training-with-large-files-in-torch7/"/>
+    <updated>2016-09-19T17:50:12+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/09/19/training-with-large-files-in-torch7</id>
+    <content type="html"><![CDATA[<p>Datasets these days are getting larger and and so is hardware in keeping with <a href="https://en.wikipedia.org/wiki/Moore%27s_law">Moore’s law</a>. However, Moore’s law applies to population trends. For a given user, budget constraints create a situation where hardware resources increase as a step function. On the other hand, the growth function for datasizes can be approximated with a much smoother exponential. This keeps users typically chasing their own hyper-personal version of <a href="https://en.wikipedia.org/wiki/Big_data">big data</a>.</p>
+
+<p>I recently started using <a href="https://en.wikipedia.org/wiki/Lua_(programming_language)">lua</a> and <a href="http://torch.ch/">torch</a> to learn about neural networks. I wanted to start simple and build a classifier for a kaggle competition. However, the data for this competition is too <em>big</em> for my machine with a measly 16 gigs of RAM. [This used to be a luxury only half a decade ago.]</p>
+
+<p>So, after some digging around on github, I figured how to train with fairly large datasets with stock torch infrastructure and I’m gonna show you how and why it works.</p>
+
+<!--more-->
+
+<h1 id="how-did-you-do-that">How did you do that?</h1>
+
+<h2 id="hold-up-what-all-did-you-try">Hold up, what all did you try?</h2>
+
+<h3 id="csv2tensor">csv2tensor</h3>
+
+<p>The file that I have is 2 gigs on disk. So, my first attempt, obviously, was to throw caution to the wind and attempt to load the dataset anyway. To this end, I tried <a href="https://github.com/willkurt/csv2tensor">csv2tensor</a>. This was a no-go right from the get-go (you see what I did there?).</p>
+
+<p>This library converts the columns in the data into lua <code>tables</code> and then converts those <code>tables</code> to torch <code>Tensors</code>. The rub is that tables in lua are not allocated in user memory but in the compiler’s memory which has a small <a href="http://kvitajakub.github.io/2016/03/08/luajit-memory-limitations/">upper-bound</a> because in <a href="http://luajit.org/">luajit</a> that torch is typically compiled against. This means that using this library will blow up for any dataset which expands to a more than a gig or so.</p>
+
+<h3 id="csvigo">csvigo</h3>
+
+<p><a href="https://github.com/clementfarabet/lua---csv/"><code>csvigo</code></a> is the standard library for working with csv files in lua / torch7. Again, my first attempt was to read the whole data into memory with this package. I opened <code>top</code> in a split and proceeded to load the dataset. While this library did not run into the issue above (I think because it uses <code>Tensors</code> directly which are allocated in user-space), it quickly ate up all the available memory and a few gigs of swap before I killed the process. I tried to <code>setdefaulttensortype</code> to <code>torch.FloatTensor</code> which I killed after waiting for under a minute by when it had clocked 7 gigs.</p>
+
+<h2 id="the-solution-csvigo-with-emmodelargeem">The solution: csvigo with <em>mode=large</em></h2>
+
+<p>At this point, I looked at the csvigo documentation again and found the <a href="https://github.com/clementfarabet/lua---csv/#large-csv-mode">large-mode</a> option. I decided to try it and was able to successfully put together this solution:</p>
+
+<p>```lua</p>
+
+<p>local numericData = csvigo.load({
+      path = dataDir .. “numeric.csv”,
+      mode = ‘large’
+})</p>
+
+<p>– Use a level of indirection to get at the records
+local trainingData = {}</p>
+
+<p>– Discount 1 for the header row
+function trainingData:size() return #numericData - 1 end</p>
+
+<p>–[[
+<code>preprocess</code> is an arbitrary function that operates on a row of data.
+Implement it (or remove it) as per your requirements.
+Assumption: The response is at the last index in the record
+–]]
+setmetatable(trainingData,
+            {
+                __index = function (tbl, ind)
+                   local row = preprocess(numericData[ind + 1])
+                   local record = torch.Tensor(row)
+                   local response = record[-1]
+                   local penultimate = record:size(1) - 1
+                   local rest = record[{ {1, penultimate} }]
+                   return {rest, response}
+                end
+});</p>
+
+<h2 id="trainer">– Trainer</h2>
+
+<p>– Let <code>mlp</code> be our nn model</p>
+
+<p>local params, gradParams = mlp:getParameters()
+local optimState = {learningRate = 1}</p>
+
+<h2 id="training">– Training</h2>
+
+<p>local nCols = #(numericData[1]) - 1
+local nEpochs = 32
+local batchSize = 2048</p>
+
+<p>for epoch = 1, nEpochs do</p>
+
+<p>local shuffle = torch.randperm(trainingData:size())</p>
+
+<p>local batch = 1
+   for batchOffset = 1, trainingData:size(), batchSize do</p>
+
+<pre><code>  local batchInputs = torch.Tensor(batchSize, nCols)
+  local batchResponse = torch.Tensor(batchSize)
+  for i = 1, batchSize do
+     local thisRecord = trainingData[shuffle[batchOffset + i]]
+     batchInputs[i]:copy(thisRecord[1])
+     batchResponse[i] = thisRecord[2] + 1
+  end
+
+  local function evaluateBatch(params)
+     gradParams:zero()
+     local batchEstimate = mlp:forward(batchInputs)
+     local batchLoss = criterion:forward(batchEstimate, batchResponse)
+     local nablaLossOutput = criterion:backward(
+        batchEstimate, batchResponse)
+     mlp:backward(batchInputs, nablaLossOutput)
+     print('Finished epoch: ' .. epoch .. ', batch: ' ..
+              batch .. ', with loss: ' .. batchLoss)
+     return batchLoss, gradParams
+  end
+
+  optim.sgd(evaluateBatch, params, optimState)
+
+  batch = batch + 1
+  batchOffset = batchOffset + batchSize
+</code></pre>
+
+<p>end</p>
+
+<p>end
+```</p>
+
+<p>With this method I was able to use the dataset with only two gigs of memory allocated to the process. Perhaps, in another post I will benchmark the performance penalty for doing this when you do have sufficient RAM. I have also not figured out how this will need to be adapted to GPUs. But this is definitely better compared to the option of not using a moderately large dataset at all.</p>
+
+<h2 id="whats-the-magic-sauce-oo">What’s the magic sauce? o.O</h2>
+
+<p>Note how the <a href="https://github.com/clementfarabet/lua---csv/#large-csv-mode">documentation</a> modestly states that the efficiency is under the hood? Which is why we need to <a href="http://www.catb.org/jargon/html/U/UTSL.html"><em>use the source, Luke</em></a>. So, let’s look at this (incomplete) <a href="https://github.com/clementfarabet/lua---csv/blob/master/File.lua">code</a> snippet and comprehend:</p>
+
+<p>```
+function Csv:largereadall()
+    local ok = pcall(require, ‘torch’)
+    if not ok then
+        error(‘large mode needs the torch package’)
+    end
+    local libcsvigo = require ‘libcsvigo’
+    local ffi = require ‘ffi’
+    local path = self.filepath
+    local f = torch.DiskFile(path, ‘r’):binary()
+    f:seekEnd()
+    local length = f:position() - 1
+    f:seek(1)
+    local data = f:readChar(length)
+    f:close()</p>
+
+<pre><code>-- now that the ByteStorage is constructed,
+-- one has to make a dictionary of [offset, length] pairs of the row.
+-- for efficiency, do one pass to count number of rows,
+-- and another pass to create a LongTensor and fill it
+local lookup = libcsvigo.create_lookup(data)
+
+local out = {}
+local separator = self.separator
+
+local function index (tbl, i)
+    assert(i, 'index has to be given')
+    assert(i &gt; 0 and i &lt;= lookup:size(1), "index out of bounds: " ..  i)
+    local line = ffi.string(data:data() + lookup[i][1], lookup[i][2])
+    local entry = fromcsv(line, separator)
+    return entry
+end ```
+</code></pre>
+
+<ol>
+  <li>
+    <p><strong>Loading to ByteStorage</strong>: The first interesting thing that the code does is to load the file as raw bytes. This is the part of code spanning <code>torch.DiskFile(path, 'r'):binary()</code> to <code>f:close()</code>. The intermediate steps are only to calculate the length of the content in bytes. This makes the data take only as much space in memory as it does on the disk (remember how my 2GB file took only 2 gigs in RAM?).</p>
+  </li>
+  <li>
+    <p><strong>Calculating the byte offset and the byte length of each new record in the file</strong>: The <code>libcsvigo.create_lookup(data)</code> essentially scans the byte representation of the file and records at what offset from the beginning is the first byte of each record. Additionally, it also stores how many bytes are in each record – the byte length. These are stored as pairs in the <code>lookup</code> table.</p>
+  </li>
+  <li>
+    <p><strong>Accessing the <code>i</code>th record in the file</strong>: When it’s time to access the <code>i</code>th row in the file, the function <code>index</code> creates a string by reading in <code>lookup[i][2]</code> number of bytes starting from <code>lookup[i][1]</code>. The <code>fromcsv</code> function then splits this record string into a <code>table</code> by splitting it on the separator and returns it us.</p>
+  </li>
+</ol>
+
+<p>This allows us to load large datasets in memory employing only as much memory as is the size of the file on disk (in bytes) with the additional memory cost of creating the <code>LongTensor</code> lookup table. There is, obviously, the additional CPU cost of processing each record as many times as it is read.</p>
+
+<!--links-->
+]]></content>
+  </entry>
+  
+</feed>

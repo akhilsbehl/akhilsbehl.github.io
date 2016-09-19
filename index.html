@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="One of the formats that I like to edit is markdown (yeah, yeah, I know about org-mode, shush!). Another thing that I like to do, when editing &hellip;">
+  <meta name="description" content="Datasets these days are getting larger and and so is hardware in keeping with Moore’s law. However, Moore’s law applies to population trends. For a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,45 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/09/19/training-with-large-files-in-torch7/">Training with large files in Torch</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-19T17:50:12+05:30'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:50 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Datasets these days are getting larger and and so is hardware in keeping with <a href="https://en.wikipedia.org/wiki/Moore%27s_law">Moore’s law</a>. However, Moore’s law applies to population trends. For a given user, budget constraints create a situation where hardware resources increase as a step function. On the other hand, the growth function for datasizes can be approximated with a much smoother exponential. This keeps users typically chasing their own hyper-personal version of <a href="https://en.wikipedia.org/wiki/Big_data">big data</a>.</p>
+
+<p>I recently started using <a href="https://en.wikipedia.org/wiki/Lua_(programming_language)">lua</a> and <a href="http://torch.ch/">torch</a> to learn about neural networks. I wanted to start simple and build a classifier for a kaggle competition. However, the data for this competition is too <em>big</em> for my machine with a measly 16 gigs of RAM. [This used to be a luxury only half a decade ago.]</p>
+
+<p>So, after some digging around on github, I figured how to train with fairly large datasets with stock torch infrastructure and I’m gonna show you how and why it works.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/09/19/training-with-large-files-in-torch7/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -360,40 +399,6 @@
     <footer>
       <a rel="full-article" href="/blog/2016/05/19/pythons-ast-module-bringing-a-gun-to-a-knife-fight/">Read full post &rarr;</a>
     </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/02/14/boggle-solver-linear-and-recursive-search/">Boggle solver: Linear and recursive search</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-02-14T15:03:17+05:30'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>3:03 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I was recently introduced to a Boggle solver problem by a friend of mine. Put simply, given a boggle board of sixteen characters and a dictionary, the program needs to figure out how many words from the dictionary are possible on the boggle board. The one deviation from standard boggle is that adjacent moves restriction is relaxed, i.e. order is unimportant.</p>
-
-<p>My <a href="https://github.com/akhilsbehl/boggle-scrabble">repository</a> on Github discusses the problem and the two solutions implemented and their tradeoffs in much more detail along with presenting the code. Do visit.</p>
-
-<!--links-->
-</div>
-  
   
 
 

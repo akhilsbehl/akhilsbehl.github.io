@@ -4,7 +4,7 @@
   <title><![CDATA[asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-08T16:25:24+05:30</updated>
+  <updated>2016-09-19T20:06:51+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -12,6 +12,283 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Training with large files in Torch]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/09/19/training-with-large-files-in-torch7/"/>
+    <updated>2016-09-19T17:50:12+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/09/19/training-with-large-files-in-torch7</id>
+    <content type="html"><![CDATA[<p>Datasets these days are getting larger and and so is hardware in keeping with <a href="https://en.wikipedia.org/wiki/Moore%27s_law">Moore’s law</a>. However, Moore’s law applies to population trends. For a given user, budget constraints create a situation where hardware resources increase as a step function. On the other hand, the growth function for datasizes can be approximated with a much smoother exponential. This keeps users typically chasing their own hyper-personal version of <a href="https://en.wikipedia.org/wiki/Big_data">big data</a>.</p>
+
+<p>I recently started using <a href="https://en.wikipedia.org/wiki/Lua_(programming_language)">lua</a> and <a href="http://torch.ch/">torch</a> to learn about neural networks. I wanted to start simple and build a classifier for a kaggle competition. However, the data for this competition is too <em>big</em> for my machine with a measly 16 gigs of RAM. [This used to be a luxury only half a decade ago.]</p>
+
+<p>So, after some digging around on github, I figured how to train with fairly large datasets with stock torch infrastructure and I’m gonna show you how and why it works.</p>
+
+<!--more-->
+
+<h1 id="how-did-you-do-that">How did you do that?</h1>
+
+<h2 id="hold-up-what-all-did-you-try">Hold up, what all did you try?</h2>
+
+<h3 id="csv2tensor">csv2tensor</h3>
+
+<p>The file that I have is 2 gigs on disk. So, my first attempt, obviously, was to throw caution to the wind and attempt to load the dataset anyway. To this end, I tried <a href="https://github.com/willkurt/csv2tensor">csv2tensor</a>. This was a no-go right from the get-go (you see what I did there?).</p>
+
+<p>This library converts the columns in the data into lua <code>tables</code> and then converts those <code>tables</code> to torch <code>Tensors</code>. The rub is that tables in lua are not allocated in user memory but in the compiler’s memory which has a small <a href="http://kvitajakub.github.io/2016/03/08/luajit-memory-limitations/">upper-bound</a> because in <a href="http://luajit.org/">luajit</a> that torch is typically compiled against. This means that using this library will blow up for any dataset which expands to a more than a gig or so.</p>
+
+<h3 id="csvigo">csvigo</h3>
+
+<p><a href="https://github.com/clementfarabet/lua---csv/"><code>csvigo</code></a> is the standard library for working with csv files in lua / torch7. Again, my first attempt was to read the whole data into memory with this package. I opened <code>top</code> in a split and proceeded to load the dataset. While this library did not run into the issue above (I think because it uses <code>Tensors</code> directly which are allocated in user-space), it quickly ate up all the available memory and a few gigs of swap before I killed the process. I tried to <code>setdefaulttensortype</code> to <code>torch.FloatTensor</code> which I killed after waiting for under a minute by when it had clocked 7 gigs.</p>
+
+<h2 id="the-solution-csvigo-with-emmodelargeem">The solution: csvigo with <em>mode=large</em></h2>
+
+<p>At this point, I looked at the csvigo documentation again and found the <a href="https://github.com/clementfarabet/lua---csv/#large-csv-mode">large-mode</a> option. I decided to try it and was able to successfully put together this solution:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+</pre></td><td class="code"><pre><code class="lua"><span class="line"><span class="kd">local</span> <span class="n">numericData</span> <span class="o">=</span> <span class="n">csvigo</span><span class="p">.</span><span class="n">load</span><span class="p">({</span>
+</span><span class="line">      <span class="n">path</span> <span class="o">=</span> <span class="n">dataDir</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="s">numeric.csv&quot;</span><span class="p">,</span>
+</span><span class="line">      <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="s">large&#39;</span>
+</span><span class="line"><span class="p">})</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">-- Use a level of indirection to get at the records</span>
+</span><span class="line"><span class="kd">local</span> <span class="n">trainingData</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">-- Discount 1 for the header row</span>
+</span><span class="line"><span class="k">function</span> <span class="nf">trainingData</span><span class="p">:</span><span class="n">size</span><span class="p">()</span> <span class="k">return</span> <span class="o">#</span><span class="n">numericData</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="cm">--[[</span>
+</span><span class="line"><span class="cm">`preprocess` is an arbitrary function that operates on a row of data.</span>
+</span><span class="line"><span class="cm">Implement it (or remove it) as per your requirements.</span>
+</span><span class="line"><span class="cm">Assumption: The response is at the last index in the record</span>
+</span><span class="line"><span class="cm">--]]</span>
+</span><span class="line"><span class="nb">setmetatable</span><span class="p">(</span><span class="n">trainingData</span><span class="p">,</span>
+</span><span class="line">            <span class="p">{</span>
+</span><span class="line">                <span class="n">__index</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>
+</span><span class="line">                   <span class="kd">local</span> <span class="n">row</span> <span class="o">=</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">numericData</span><span class="p">[</span><span class="n">ind</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+</span><span class="line">                   <span class="kd">local</span> <span class="n">record</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</span><span class="line">                   <span class="kd">local</span> <span class="n">response</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line">                   <span class="kd">local</span> <span class="n">penultimate</span> <span class="o">=</span> <span class="n">record</span><span class="p">:</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class="line">                   <span class="kd">local</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">record</span><span class="p">[{</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="n">penultimate</span><span class="p">}</span> <span class="p">}]</span>
+</span><span class="line">                   <span class="k">return</span> <span class="p">{</span><span class="n">rest</span><span class="p">,</span> <span class="n">response</span><span class="p">}</span>
+</span><span class="line">                <span class="k">end</span>
+</span><span class="line"><span class="p">});</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">-- Trainer</span>
+</span><span class="line"><span class="c1">----------</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">-- Let `mlp` be our nn model</span>
+</span><span class="line">
+</span><span class="line"><span class="kd">local</span> <span class="n">params</span><span class="p">,</span> <span class="n">gradParams</span> <span class="o">=</span> <span class="n">mlp</span><span class="p">:</span><span class="n">getParameters</span><span class="p">()</span>
+</span><span class="line"><span class="kd">local</span> <span class="n">optimState</span> <span class="o">=</span> <span class="p">{</span><span class="n">learningRate</span> <span class="o">=</span> <span class="mi">1</span><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="c1">-- Training</span>
+</span><span class="line"><span class="c1">-----------</span>
+</span><span class="line">
+</span><span class="line"><span class="kd">local</span> <span class="n">nCols</span> <span class="o">=</span> <span class="o">#</span><span class="p">(</span><span class="n">numericData</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class="line"><span class="kd">local</span> <span class="n">nEpochs</span> <span class="o">=</span> <span class="mi">32</span>
+</span><span class="line"><span class="kd">local</span> <span class="n">batchSize</span> <span class="o">=</span> <span class="mi">2048</span>
+</span><span class="line">
+</span><span class="line"><span class="k">for</span> <span class="n">epoch</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nEpochs</span> <span class="k">do</span>
+</span><span class="line">
+</span><span class="line">   <span class="kd">local</span> <span class="n">shuffle</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">trainingData</span><span class="p">:</span><span class="n">size</span><span class="p">())</span>
+</span><span class="line">
+</span><span class="line">   <span class="kd">local</span> <span class="n">batch</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class="line">   <span class="k">for</span> <span class="n">batchOffset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">trainingData</span><span class="p">:</span><span class="n">size</span><span class="p">(),</span> <span class="n">batchSize</span> <span class="k">do</span>
+</span><span class="line">
+</span><span class="line">      <span class="kd">local</span> <span class="n">batchInputs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">batchSize</span><span class="p">,</span> <span class="n">nCols</span><span class="p">)</span>
+</span><span class="line">      <span class="kd">local</span> <span class="n">batchResponse</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">batchSize</span><span class="p">)</span>
+</span><span class="line">      <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">batchSize</span> <span class="k">do</span>
+</span><span class="line">         <span class="kd">local</span> <span class="n">thisRecord</span> <span class="o">=</span> <span class="n">trainingData</span><span class="p">[</span><span class="n">shuffle</span><span class="p">[</span><span class="n">batchOffset</span> <span class="o">+</span> <span class="n">i</span><span class="p">]]</span>
+</span><span class="line">         <span class="n">batchInputs</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">copy</span><span class="p">(</span><span class="n">thisRecord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class="line">         <span class="n">batchResponse</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">thisRecord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">      <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">      <span class="kd">local</span> <span class="k">function</span> <span class="nf">evaluateBatch</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+</span><span class="line">         <span class="n">gradParams</span><span class="p">:</span><span class="n">zero</span><span class="p">()</span>
+</span><span class="line">         <span class="kd">local</span> <span class="n">batchEstimate</span> <span class="o">=</span> <span class="n">mlp</span><span class="p">:</span><span class="n">forward</span><span class="p">(</span><span class="n">batchInputs</span><span class="p">)</span>
+</span><span class="line">         <span class="kd">local</span> <span class="n">batchLoss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">:</span><span class="n">forward</span><span class="p">(</span><span class="n">batchEstimate</span><span class="p">,</span> <span class="n">batchResponse</span><span class="p">)</span>
+</span><span class="line">         <span class="kd">local</span> <span class="n">nablaLossOutput</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">:</span><span class="n">backward</span><span class="p">(</span>
+</span><span class="line">            <span class="n">batchEstimate</span><span class="p">,</span> <span class="n">batchResponse</span><span class="p">)</span>
+</span><span class="line">         <span class="n">mlp</span><span class="p">:</span><span class="n">backward</span><span class="p">(</span><span class="n">batchInputs</span><span class="p">,</span> <span class="n">nablaLossOutput</span><span class="p">)</span>
+</span><span class="line">         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">Finished epoch: &#39;</span> <span class="o">..</span> <span class="n">epoch</span> <span class="o">..</span> <span class="s1">&#39;</span><span class="s">, batch: &#39;</span> <span class="o">..</span>
+</span><span class="line">                  <span class="n">batch</span> <span class="o">..</span> <span class="s1">&#39;</span><span class="s">, with loss: &#39;</span> <span class="o">..</span> <span class="n">batchLoss</span><span class="p">)</span>
+</span><span class="line">         <span class="k">return</span> <span class="n">batchLoss</span><span class="p">,</span> <span class="n">gradParams</span>
+</span><span class="line">      <span class="k">end</span>
+</span><span class="line">
+</span><span class="line">      <span class="n">optim</span><span class="p">.</span><span class="n">sgd</span><span class="p">(</span><span class="n">evaluateBatch</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">optimState</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">      <span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line">      <span class="n">batchOffset</span> <span class="o">=</span> <span class="n">batchOffset</span> <span class="o">+</span> <span class="n">batchSize</span>
+</span><span class="line">
+</span><span class="line">   <span class="k">end</span>
+</span><span class="line">
+</span><span class="line"><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>With this method I was able to use the dataset with only two gigs of memory allocated to the process. Perhaps, in another post I will benchmark the performance penalty for doing this when you do have sufficient RAM. I have also not figured out how this will need to be adapted to GPUs. But this is definitely better compared to the option of not using a moderately large dataset at all.</p>
+
+<h2 id="whats-the-magic-sauce-oo">What’s the magic sauce? o.O</h2>
+
+<p>Note how the <a href="https://github.com/clementfarabet/lua---csv/#large-csv-mode">documentation</a> modestly states that the efficiency is under the hood? Which is why we need to <a href="http://www.catb.org/jargon/html/U/UTSL.html"><em>use the source, Luke</em></a>. So, let’s look at this (incomplete) <a href="https://github.com/clementfarabet/lua---csv/blob/master/File.lua">code</a> snippet and comprehend:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="lua"><span class="line"><span class="k">function</span> <span class="nf">Csv</span><span class="p">:</span><span class="n">largereadall</span><span class="p">()</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">ok</span> <span class="o">=</span> <span class="nb">pcall</span><span class="p">(</span><span class="nb">require</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s">torch&#39;</span><span class="p">)</span>
+</span><span class="line">    <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="k">then</span>
+</span><span class="line">        <span class="nb">error</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">large mode needs the torch package&#39;</span><span class="p">)</span>
+</span><span class="line">    <span class="k">end</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">libcsvigo</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">&#39;</span><span class="s">libcsvigo&#39;</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">ffi</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">&#39;</span><span class="s">ffi&#39;</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">path</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">filepath</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">f</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">DiskFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s">r&#39;</span><span class="p">):</span><span class="n">binary</span><span class="p">()</span>
+</span><span class="line">    <span class="n">f</span><span class="p">:</span><span class="n">seekEnd</span><span class="p">()</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">length</span> <span class="o">=</span> <span class="n">f</span><span class="p">:</span><span class="n">position</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+</span><span class="line">    <span class="n">f</span><span class="p">:</span><span class="n">seek</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="p">:</span><span class="n">readChar</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+</span><span class="line">    <span class="n">f</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="c1">-- now that the ByteStorage is constructed,</span>
+</span><span class="line">    <span class="c1">-- one has to make a dictionary of [offset, length] pairs of the row.</span>
+</span><span class="line">    <span class="c1">-- for efficiency, do one pass to count number of rows,</span>
+</span><span class="line">    <span class="c1">-- and another pass to create a LongTensor and fill it</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">lookup</span> <span class="o">=</span> <span class="n">libcsvigo</span><span class="p">.</span><span class="n">create_lookup</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class="line">    <span class="kd">local</span> <span class="n">separator</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">separator</span>
+</span><span class="line">
+</span><span class="line">    <span class="kd">local</span> <span class="k">function</span> <span class="nf">index</span> <span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+</span><span class="line">        <span class="nb">assert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;</span><span class="s">index has to be given&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="nb">assert</span><span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">lookup</span><span class="p">:</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;</span><span class="s">index out of bounds: &quot;</span> <span class="o">..</span>  <span class="n">i</span><span class="p">)</span>
+</span><span class="line">        <span class="kd">local</span> <span class="n">line</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">string</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="n">data</span><span class="p">()</span> <span class="o">+</span> <span class="n">lookup</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">lookup</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
+</span><span class="line">        <span class="kd">local</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">fromcsv</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">separator</span><span class="p">)</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">entry</span>
+</span><span class="line">    <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<ol>
+  <li>
+    <p><strong>Loading to ByteStorage</strong>: The first interesting thing that the code does is to load the file as raw bytes. This is the part of code spanning <code>torch.DiskFile(path, 'r'):binary()</code> to <code>f:close()</code>. The intermediate steps are only to calculate the length of the content in bytes. This makes the data take only as much space in memory as it does on the disk (remember how my 2GB file took only 2 gigs in RAM?).</p>
+  </li>
+  <li>
+    <p><strong>Calculating the byte offset and the byte length of each new record in the file</strong>: The <code>libcsvigo.create_lookup(data)</code> essentially scans the byte representation of the file and records at what offset from the beginning is the first byte of each record. Additionally, it also stores how many bytes are in each record – the byte length. These are stored as pairs in the <code>lookup</code> table.</p>
+  </li>
+  <li>
+    <p><strong>Accessing the <code>i</code>th record in the file</strong>: When it’s time to access the <code>i</code>th row in the file, the function <code>index</code> creates a string by reading in <code>lookup[i][2]</code> number of bytes starting from <code>lookup[i][1]</code>. The <code>fromcsv</code> function then splits this record string into a <code>table</code> by splitting it on the separator and returns it us.</p>
+  </li>
+</ol>
+
+<p>This allows us to load large datasets in memory employing only as much memory as is the size of the file on disk (in bytes) with the additional memory cost of creating the <code>LongTensor</code> lookup table. There is, obviously, the additional CPU cost of processing each record as many times as it is read.</p>
+
+<!--links-->
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Toggling buffer-level hooks in Emacs]]></title>
@@ -1642,63 +1919,6 @@ As discussed earlier, the Fisherian setup employs a <em>null</em> hypothesis and
     <content type="html"><![CDATA[<p>So, I am rereading the <a href="http://www.cs.cmu.edu/~dst/LispBook/book.pdf">book</a> <em>Gentle Introduction to Symbolic Computing</em> by Touretzky. I highly recommend the book to people who are new to both lisp and programming. Today’s post is simply a quote from the book that I want to preserve as a note to self on the origins of the two fundamental lisp functions: <code>car</code> and <code>cdr</code>.</p>
 
 <blockquote><p>These names are relics from the early days of computing, when Lisp first ran on a machine called the IBM 704. The 704 was so primitive it didn't even have transistors -- it used vacuum tubes. Each of its 'registers' was divided into several components, two of which were the address portion and the decrement portion. Back then, the name CAR stood for Contents of Address portion of Register, and CDR stood for Contents of Decrement portion of Register.</p></blockquote>
-
-<!--links-->
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[99 LISP problems: Problem #28]]></title>
-    <link href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-28/"/>
-    <updated>2014-06-28T15:54:32+05:30</updated>
-    <id>http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-28</id>
-    <content type="html"><![CDATA[<p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #28</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="c1">;;; Part a)</span>
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">lsort</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nb">sort</span>
-</span><span class="line">    <span class="nv">alist</span>
-</span><span class="line">    <span class="nf">#&#39;</span><span class="nb">&lt;</span>
-</span><span class="line">    <span class="ss">:key</span> <span class="nf">#&#39;</span><span class="nb">length</span><span class="p">))</span>
-</span><span class="line">
-</span><span class="line"><span class="c1">;;; Part b)</span>
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">count-elem</span> <span class="p">(</span><span class="nv">alist</span> <span class="nv">elem</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nb">apply</span>
-</span><span class="line">    <span class="nf">#&#39;</span><span class="nb">+</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">mapcar</span>
-</span><span class="line">      <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span>
-</span><span class="line">        <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">equalp</span> <span class="nv">x</span> <span class="nv">elem</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">))</span>
-</span><span class="line">      <span class="nv">alist</span><span class="p">)))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">lfsort</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">lengths</span> <span class="p">(</span><span class="nb">mapcar</span> <span class="nf">#&#39;</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)))</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">sort</span>
-</span><span class="line">      <span class="nv">alist</span> <span class="nf">#&#39;</span><span class="nb">&lt;</span>
-</span><span class="line">      <span class="ss">:key</span> <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nv">count-elem</span> <span class="nv">lengths</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">x</span><span class="p">))))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
 
 <!--links-->
 ]]></content>
