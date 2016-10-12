@@ -4,7 +4,7 @@
   <title><![CDATA[asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-19T20:06:51+05:30</updated>
+  <updated>2016-10-12T14:55:43+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -12,6 +12,119 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[HackerRank: Implementing a queue using two stacks.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks/"/>
+    <updated>2016-10-12T14:48:40+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks</id>
+    <content type="html"><![CDATA[<p>The <a href="http://stackoverflow.com/questions/69192/how-to-implement-a-queue-using-two-stacks">idea</a> is to keep an inbox and outbox using stacks. Here is a simple implementation.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Queue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_inbox</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">_refill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="p">:</span>
+</span><span class="line">            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inbox</span><span class="p">:</span>
+</span><span class="line">                <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inbox</span><span class="o">.</span><span class="n">pop</span><span class="p">())</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">peek</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_refill</span><span class="p">()</span>
+</span><span class="line">        <span class="k">try</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="o">.</span><span class="n">peek</span><span class="p">()</span>
+</span><span class="line">        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+</span><span class="line">            <span class="k">raise</span> <span class="n">EmptyQueueError</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_refill</span><span class="p">()</span>
+</span><span class="line">        <span class="k">try</span><span class="p">:</span>
+</span><span class="line">            <span class="n">retval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outbox</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+</span><span class="line">            <span class="k">raise</span> <span class="n">EmptyQueueError</span><span class="p">()</span>
+</span><span class="line">        <span class="k">else</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">retval</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_inbox</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">Stack</span><span class="p">():</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">iterable</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">peek</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class="line">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">EmptyQueueError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+</span><span class="line">    <span class="k">pass</span>
+</span></code></pre></td></tr></table></div></figure>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Training with large files in Torch]]></title>
@@ -1906,19 +2019,6 @@ As discussed earlier, the Fisherian setup employs a <em>null</em> hypothesis and
 <p>Let’s consider the example of a linear model where a researcher wishes to establish that an exogenous variable, say IQ, has a statistically significant and positive impact on a dependent variable, say income. One will set this up in a modern test as <em>null</em> hypothesis of <script type="math/tex">\beta_{\mathrm{iq}} = 0</script> against an alternative hypothesis of <script type="math/tex">\beta_{\mathrm{iq}} > 0</script>. Now, even though we pre-specify a level of significance, say 95%, and an alternative hypothesis we still rely on the post-data p-value to decide whether our results are useful (even publishable) or not. In a strictly NP sense, inferences on both sides of the critical value are equally valid and still I remember being taught that ‘one only rejects the null but never accepts it.’ Recall that falsificationist inference is purely Fisherian. This confusion, I believe, results from the fact that most students are taught by professors who are themselves unaware of the roots of these rules of thumb.</p>
 
 <p>However, awareness of the philosophies underlying the two approaches can help one move beyond the rules of thumb and choose one of the two paradigms (or others such as confidence intervals and bayesian methods etc) suitable to the problem at hand. For example, situations where the cost of a false positive far exceeds the cost of a false negative one may readily resort to Fisher’s falsificationist agenda. In situations where there are clear – theoretically identified – dichotomies in the event space and / or the costs for the two types of errors are similar one may choose a suitably fashioned NP test. This <a href="http://stats.stackexchange.com/questions/23142/when-to-use-fisher-and-neyman-pearson-framework">discussion</a> on stack exchange elicits some interesting insights into the choice between the two methods.</p>
-
-<!--links-->
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Note to self: Origins of 'car' and 'cdr']]></title>
-    <link href="http://akhilsbehl.github.io/blog/2014/07/07/note-to-self-origins-of-car-and-cdr/"/>
-    <updated>2014-07-07T13:27:32+05:30</updated>
-    <id>http://akhilsbehl.github.io/blog/2014/07/07/note-to-self-origins-of-car-and-cdr</id>
-    <content type="html"><![CDATA[<p>So, I am rereading the <a href="http://www.cs.cmu.edu/~dst/LispBook/book.pdf">book</a> <em>Gentle Introduction to Symbolic Computing</em> by Touretzky. I highly recommend the book to people who are new to both lisp and programming. Today’s post is simply a quote from the book that I want to preserve as a note to self on the origins of the two fundamental lisp functions: <code>car</code> and <code>cdr</code>.</p>
-
-<blockquote><p>These names are relics from the early days of computing, when Lisp first ran on a machine called the IBM 704. The 704 was so primitive it didn't even have transistors -- it used vacuum tubes. Each of its 'registers' was divided into several components, two of which were the address portion and the decrement portion. Back then, the name CAR stood for Contents of Address portion of Register, and CDR stood for Contents of Decrement portion of Register.</p></blockquote>
 
 <!--links-->
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: algorithms | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/algorithms/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-09-19T20:06:51+05:30</updated>
+  <updated>2016-10-12T14:55:43+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -12,6 +12,69 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[HackerRank: Implementing a queue using two stacks.]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks/"/>
+    <updated>2016-10-12T14:48:40+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks</id>
+    <content type="html"><![CDATA[<p>The <a href="http://stackoverflow.com/questions/69192/how-to-implement-a-queue-using-two-stacks">idea</a> is to keep an inbox and outbox using stacks. Here is a simple implementation.</p>
+
+<p>```python
+class Queue(object):</p>
+
+<pre><code>def __init__(self):
+    self._inbox = Stack()
+    self._outbox = Stack()
+
+def _refill(self):
+    if not self._outbox:
+        while self._inbox:
+            self._outbox.push(self._inbox.pop())
+
+def peek(self):
+    self._refill()
+    try:
+        return self._outbox.peek()
+    except IndexError:
+        raise EmptyQueueError()
+
+def pop(self):
+    self._refill()
+    try:
+        retval = self._outbox.pop()
+    except IndexError:
+        raise EmptyQueueError()
+    else:
+        return retval
+
+def push(self, value):
+    self._inbox.push(value)
+</code></pre>
+
+<p>class Stack():</p>
+
+<pre><code>def __init__(self, iterable=None):
+    self._data = [] if iterable is None else list(iterable)
+
+def __bool__(self):
+    return bool(self._data)
+
+def peek(self):
+    return self._data[-1]
+
+def pop(self):
+    return self._data.pop()
+
+def push(self, value):
+    self._data.append(value)
+</code></pre>
+
+<p>class EmptyQueueError(BaseException):
+    pass
+```</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Knuth-Fisher-Yates shuffling algorithm]]></title>

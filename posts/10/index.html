@@ -9,15 +9,12 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Solution to the 99 LISP Problems #1: 1
+  <meta name="description" content="Solution to the 99 LISP Problems #2: 1
 2
 3
 4
 5
-6
-7
-8
-(defun my-last (alist) (if (equalp (length alist) 0) nil (if (equalp (length alist) 1) alist (my &hellip;">
+(defun my-but-last (alist) (if (&lt;= (length alist) 2) alist (my-but-last (cdr alist)))) Lisp dialect &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -172,6 +169,52 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-2/">99 LISP problems: Problem #2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-20T00:10:33+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:10 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #2:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-but-last</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">&lt;=</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class="line">    <span class="nv">alist</span>
+</span><span class="line">    <span class="p">(</span><span class="nv">my-but-last</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -344,57 +387,6 @@ the answer was even more useful. Plus, I picked up two new functions today:
 <!--links-->
 </div>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/05/islr-notes-chapter-2/">ISLR: Notes - Chapter 2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-05T10:56:30+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:56 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-  <li>
-    <p>Non-parametric methods seek an estimate of $f$ that gets as close to the data
-points as possible without being too <em>rough or wiggly</em>. Non-parametric
-approaches completely avoid the danger of the chosen functional form being
-too far from the true $f$. The disadvantage of non-parametric methods is that
-they need a large set of observations to obtain an accurate estimate of $f$.
-Therefore, the informational requirements of non-parametric methods are
-larger.</p>
-
-    <p>Contrast this to parametric methods. Parametric methods essentially
-extrapolate information from one region of the domain to another. This is
-because global regularities are assumed in the functional form. A
-non-parametric method however has to trace the surface $f$ in all regions of
-the domain to be valid.</p>
-  </li>
-</ul>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/05/islr-notes-chapter-2/">Read full post &rarr;</a>
-    </footer>
   
 
 

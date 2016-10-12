@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Lately, I have taken to maintaining most of my text in Markdown (desperately trying to avoid Emacs’ org-mode) and previewing it while editing in Vim &hellip;">
+  <meta name="description" content="So, yesterday, I was sent this article by a friend. Articles titled X every developer should know sort of titles pique my interest very much. So, I &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,48 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/18/knuth-fisher-yates-shuffling-algorithm/">Knuth-Fisher-Yates shuffling algorithm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-18T21:41:08+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:41 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So, yesterday, I was sent this <a href="http://spin.atomicobject.com/2014/08/11/fisher-yates-shuffle-randomization-algorithm/">article</a> by a friend. Articles titled <em>X every developer should know</em> sort of titles pique my interest very much. So, I headed over to this article only to find myself too confused. What I found more confusing is that the article links to <a href="http://blog.codinghorror.com/the-danger-of-naivete/">one</a> of Jeff Atwood’s blogposts that discusses the same concept.</p>
+
+<p>The central idea of the post is to correct a <em>naive</em> implementation of a shuffling algorithm. My confusion arose from the fact that after reading the article, I could only think that the algorithm was blatantly incorrect and not naive. The differences between the two algorithms – the naive one and the one ascribed to Knuth, Fisher, &amp; Yates is what, in sampling 101, is between sampling <em>with replacement</em> and sampling <em>without replacement</em>. This quote essentially highlights the naivete indeed:</p>
+
+<blockquote><p>How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.</p></blockquote>
+
+<p>Some shuffling does not mean a random permutation at all. This is akin to saying a naive implementation of a queue sometimes inserts incoming items at the head of the queue.</p>
+
+<h2 id="another-shuffling-algorithm">Another shuffling algorithm?</h2>
+
+<p>On the other hand, what was fruitful was that the article reminded me of a shuffling algorithm I recently wrote to solve <a href="http://akhilsbehl.github.io/blog/2014/06/28/99-lisp-problems-problem-number-25/">problem number 25</a> of <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 Lisp Problems</a>. The minor difference between the two algorithms is that the lisp algorithm pops an element from the original array per turn and collects it in a new array which becomes a random permutation (shuffle) of the original array at the end. The KFY algorithm instead swaps two elements at each turn. It can be worked out that, mathematically, the two algorithms are identical. But the KFY algorithm saves you making a copy. Therefore, yes, KFY is an algorithm that every programmer <em>should</em> know. Additionally, every programmer should also know the standard library of their language.</p>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -363,68 +405,6 @@
 </span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">apply</span> <span class="nf">#&#39;</span><span class="nb">+</span> <span class="p">(</span><span class="nb">mapcar</span>
 </span><span class="line">                        <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nv">coprimep</span> <span class="nv">m</span> <span class="nv">x</span><span class="p">)</span> <span class="mi">1</span> <span class="mi">0</span><span class="p">))</span>
 </span><span class="line">                        <span class="p">(</span><span class="nv">range</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">m</span><span class="p">)))))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/06/99-lisp-problems-problem-number-31/">99 LISP problems: Problem #31</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-06T02:11:59+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:11 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #31</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">range</span> <span class="p">(</span><span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">&gt;</span> <span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span> <span class="no">nil</span><span class="p">)</span>
-</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">cons</span> <span class="nv">lo</span> <span class="p">(</span><span class="nv">range</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">lo</span><span class="p">)</span> <span class="nv">hi</span><span class="p">)))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">all</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
-</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">and</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">                <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))))))</span>
-</span><span class="line">
-</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">primep</span> <span class="p">(</span><span class="nv">n</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">mapcar</span>
-</span><span class="line">         <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">not</span> <span class="p">(</span><span class="nb">=</span> <span class="mi">0</span> <span class="p">(</span><span class="nb">mod</span> <span class="nv">n</span> <span class="nv">x</span><span class="p">))))</span>
-</span><span class="line">         <span class="p">(</span><span class="nv">range</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">isqrt</span> <span class="nv">n</span><span class="p">)))))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

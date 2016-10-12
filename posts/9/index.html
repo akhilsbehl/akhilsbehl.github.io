@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Solution to the 99 LISP Problems #6 1
+  <meta name="description" content="Solution to the 99 LISP Problems #7 1
 2
 3
 4
@@ -17,8 +17,7 @@
 6
 7
 8
-9
-(defun my-reverse (alist) (if (null alist) nil (append (my-reverse (cdr alist)) (list (car &hellip;">
+(defun my-flatten (alist) (if (null alist) nil (append (if (listp (car alist)) (my-flatten (car &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -173,6 +172,58 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-7/">99 LISP problems: Problem #7</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-20T01:18:21+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:18 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #7</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-flatten</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">    <span class="no">nil</span>
+</span><span class="line">    <span class="p">(</span><span class="nb">append</span>
+</span><span class="line">      <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">listp</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nv">my-flatten</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">))</span>
+</span><span class="line">        <span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)))</span>
+</span><span class="line">      <span class="p">(</span><span class="nv">my-flatten</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -356,52 +407,6 @@
 </span><span class="line">    <span class="p">(</span><span class="k">if</span> <span class="p">(</span><span class="nb">=</span> <span class="nv">n</span> <span class="mi">1</span><span class="p">)</span>
 </span><span class="line">      <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
 </span><span class="line">      <span class="p">(</span><span class="nv">element-at</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">)</span> <span class="p">(</span><span class="nb">1-</span> <span class="nv">n</span><span class="p">)))))</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
-
-<!--links-->
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/06/20/99-lisp-problems-problem-number-2/">99 LISP problems: Problem #2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-06-20T00:10:33+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:10 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #2:</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">my-but-last</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
-</span><span class="line">  <span class="p">(</span><span class="k">if</span>
-</span><span class="line">    <span class="p">(</span><span class="nb">&lt;=</span> <span class="p">(</span><span class="nb">length</span> <span class="nv">alist</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
-</span><span class="line">    <span class="nv">alist</span>
-</span><span class="line">    <span class="p">(</span><span class="nv">my-but-last</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))))</span>
 </span></code></pre></td></tr></table></div></figure>
 
 <p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>

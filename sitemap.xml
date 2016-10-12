@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks/</loc>
+<lastmod>2016-10-12T14:48:40+05:30</lastmod>
+</url>
+<url>
 <loc>http://akhilsbehl.github.io/blog/2016/09/19/training-with-large-files-in-torch7/</loc>
 <lastmod>2016-09-19T17:50:12+05:30</lastmod>
 </url>
@@ -485,5 +489,14 @@
 </url>
 <url>
 <loc>http://akhilsbehl.github.io/blog/categories/big-data/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/hackerrank/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/queue/</loc>
+</url>
+<url>
+<loc>http://akhilsbehl.github.io/blog/categories/data-structures/</loc>
 </url>
 </urlset>

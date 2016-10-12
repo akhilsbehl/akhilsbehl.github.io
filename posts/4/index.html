@@ -9,14 +9,20 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Solution to the 99 LISP Problems #33 1
+  <meta name="description" content="Solution to the 99 LISP Problems #31 1
 2
 3
 4
 5
 6
 7
-(defun eucgcd (m n) (let ((p (abs m)) (q (abs n))) (cond ((= m n) m) (t (gcd (- (max m n) (min m n &hellip;">
+8
+9
+10
+11
+12
+13
+(defun range (lo hi) (cond ((&gt; lo hi) nil) (t (cons lo (range (1+ lo) hi))))) ( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -177,6 +183,68 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/08/06/99-lisp-problems-problem-number-31/">99 LISP problems: Problem #31</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-08-06T02:11:59+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:11 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Solution to the <a href="http://www.ic.unicamp.br/~meidanis/courses/mc336/2006s2/funcional/L-99_Ninety-Nine_Lisp_Problems.html">99 LISP Problems</a> #31</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="cl"><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">range</span> <span class="p">(</span><span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">&gt;</span> <span class="nv">lo</span> <span class="nv">hi</span><span class="p">)</span> <span class="no">nil</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">cons</span> <span class="nv">lo</span> <span class="p">(</span><span class="nv">range</span> <span class="p">(</span><span class="nb">1+</span> <span class="nv">lo</span><span class="p">)</span> <span class="nv">hi</span><span class="p">)))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">all</span> <span class="p">(</span><span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nb">cond</span> <span class="p">((</span><span class="nb">null</span> <span class="nv">alist</span><span class="p">)</span> <span class="no">t</span><span class="p">)</span>
+</span><span class="line">        <span class="p">(</span><span class="no">t</span> <span class="p">(</span><span class="nb">and</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">alist</span><span class="p">)</span>
+</span><span class="line">                <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">alist</span><span class="p">))))))</span>
+</span><span class="line">
+</span><span class="line"><span class="p">(</span><span class="nb">defun</span> <span class="nv">primep</span> <span class="p">(</span><span class="nv">n</span><span class="p">)</span>
+</span><span class="line">  <span class="p">(</span><span class="nv">all</span> <span class="p">(</span><span class="nb">mapcar</span>
+</span><span class="line">         <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">x</span><span class="p">)</span> <span class="p">(</span><span class="nb">not</span> <span class="p">(</span><span class="nb">=</span> <span class="mi">0</span> <span class="p">(</span><span class="nb">mod</span> <span class="nv">n</span> <span class="nv">x</span><span class="p">))))</span>
+</span><span class="line">         <span class="p">(</span><span class="nv">range</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">isqrt</span> <span class="nv">n</span><span class="p">)))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>Lisp dialect: <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a></p>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/08/06/99-lisp-problems-problem-number-33/">99 LISP problems: Problem #33</a></h1>
     
     
@@ -331,40 +399,6 @@
     <footer>
       <a rel="full-article" href="/blog/2014/07/11/the-modern-paradigm-for-hypothesis-testing/">Read full post &rarr;</a>
     </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/07/07/note-to-self-origins-of-car-and-cdr/">Note to self: Origins of 'car' and 'cdr'</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-07-07T13:27:32+05:30'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:27 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>So, I am rereading the <a href="http://www.cs.cmu.edu/~dst/LispBook/book.pdf">book</a> <em>Gentle Introduction to Symbolic Computing</em> by Touretzky. I highly recommend the book to people who are new to both lisp and programming. Today’s post is simply a quote from the book that I want to preserve as a note to self on the origins of the two fundamental lisp functions: <code>car</code> and <code>cdr</code>.</p>
-
-<blockquote><p>These names are relics from the early days of computing, when Lisp first ran on a machine called the IBM 704. The 704 was so primitive it didn't even have transistors -- it used vacuum tubes. Each of its 'registers' was divided into several components, two of which were the address portion and the decrement portion. Back then, the name CAR stood for Contents of Address portion of Register, and CDR stood for Contents of Decrement portion of Register.</p></blockquote>
-
-<!--links-->
-</div>
-  
   
 
 
