@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: bash | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/bash/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -58,7 +58,14 @@ This is an unquoted foo bar baz</p>
 
 <p>```</p>
 
-<p>Surround your pullquote like this {" text to be quoted "}</p>
+<p>{% pullquote %}
+{“The seeming lack of difference between the partial quoting and lack of
+quoting has been my favorite pet-peeve with bash. I call it a ‘favorite’
+because I believe that peeves such as these build a programmer’s character.
+“} Either that, or I am a masochist. (Another language I code often in is R.
+One of the most popular references for this language is called the
+<a href="http://www.burns-stat.com/documents/books/the-r-inferno">RInferno</a>.)
+{% endpullquote %}</p>
 
 <p>Essentially, these minor differences force a programmer to burn coffee at a
 faster rate; learn to pay more attention; exercise anger-management etc.

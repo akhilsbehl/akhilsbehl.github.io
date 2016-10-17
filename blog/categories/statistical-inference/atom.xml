@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: statistical-inference | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/statistical-inference/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -24,7 +24,13 @@
 
 <h2 id="background">Background</h2>
 
-<p>Surround your pullquote like this {" text to be quoted "}</p>
+<p>{% pullquote %}
+As discussed earlier, the Fisherian setup employs a <em>null</em> hypothesis and a <em>post-data</em> test statistic as evidence against the null hypothesis. Fisher leaves the setup and inference from a test upto the researcher with some guidelines. <a href="http://www.stat.ualberta.ca/~wiens/stat665/TAS%20-%20testing.pdf">Christensen</a> quotes From Fisher (1956, pp 50): ‘In choosing the grounds upon which a general hypothesis should be rejected, personal judgement may and should properly be exercised. The experimenter will rightly consider all points on which, in light of current knowledge, the hypothesis may be imperfectly accurate, and will selects tests, so far as possible, sensitive to these faults, rather than to others.’</p>
+
+<p>The Neyman-Pearson setup, on the other hand, employs two competing hypotheses, with a pre-data test-statistic chosen on grounds of optimal power. NP reject Fisher’s <em>subjective</em> approach and lean towards pre-specified long run error rates. Their method is essentially an objective decision theoretic framework when faced with uncertainty.</p>
+
+<p><a href="www.nyu.edu/classes/nbeck/q2/gill.pdf">Gill</a> further underlines these philosophical differences in their attitudes to hypothesis testing: ‘{“ Fisher objected to the preselection of significance level as well as the mandatory two outcome decision process. Neyman and Pearson disagreed with interpreting p-values (or worse yet, ranges of p-values indicated by “stars”) as the probability of Type I errors since they do not constitute a long-range probability of rejection. Neyman and Pearson also considered the interpretation of data derived p-values to be subjective and futile.”}’
+{% endpullquote %}</p>
 
 <h2 id="the-modern-paradigm-for-hypothesis-testing">The modern paradigm for hypothesis testing</h2>
 <p>Hypothesis testing, as taught in a modern graduate school, is a pragmatic straddling of both these approaches with wilful ignorance of the philosophical differences between the pioneers’ approach. In a typical hypothesis test set up, one employs two competing hypothesis of which one is set up as a <em>null</em> hypothesis and the other as an <em>alternative</em>. Again, even though these test specify a pre-specified significance level, it is the p-values instead that are used as evidence in favor of or against the null hypothesis. Therefore, such a test conveniently incorporates an alternative hypothesis sidestepping the search of a powerful test.</p>
@@ -53,7 +59,9 @@ elicit the differences between the two.</p>
 technique (although they ascribe it to the mathematician <a href="http://en.wikipedia.org/wiki/Joseph_Louis_Fran%C3%A7ois_Bertrand">Bertrand</a>)
 in this <a href="http://www.stats.org.uk/statistical-inference/NeymanPearson1933.pdf">paper</a>. To quote their primary objections:</p>
 
-<p><blockquote><p>… however small be the probability that a particular grouping of a number of stars is due to “chance,” does this in itself provide any evidence of another “cause” for the grouping but “chance?” [snip] Indeed, if $x$ is a continuous variable  – as for example is the angular distance between two stars – then any value of $x$ is a singularity of relative probability equal to zero. We are inclined to think that as far as a particular hypothesis is concerned no test based upon the theory of probability can by itself provide any valuable evidence of the truth or falsehood of that hypothesis.</p></blockquote></p>
+<p>{% blockquote %}
+… however small be the probability that a particular grouping of a number of stars is due to “chance,” does this in itself provide any evidence of another “cause” for the grouping but “chance?” [snip] Indeed, if $x$ is a continuous variable  – as for example is the angular distance between two stars – then any value of $x$ is a singularity of relative probability equal to zero. We are inclined to think that as far as a particular hypothesis is concerned no test based upon the theory of probability can by itself provide any valuable evidence of the truth or falsehood of that hypothesis.
+{% endblockquote %}</p>
 
 <h3 id="long-run-error-probabilities">Long run error probabilities</h3>
 
@@ -63,7 +71,9 @@ for truth. Fixing the rate of errors of acceptance (Type 1 error rate) and the
 rate of errors of rejection (Type 2 error rate) allows one to make objective
 decisions that minimize <em>expected</em> loss. NP motivate this thus:</p>
 
-<p><blockquote><p>… we may search for rules to govern our behavior with regard to them, in following which we insure that, in the long run of experience, we shall not be too often wrong. Here, for example, would be such a “rule of behavior”: to decide whether a hypothesis, H, of a given type be rejected or not, calculate a specified character, $x$ of the observed facts; if $x \gt x_0$ reject H, if $x \le x_0$ accept H. Such a rule tells us nothing as to whether in a particular case H is true when $x \le x_0$ or false when $x \gt x_0$. But it may often be proved that if we behave according to such a rule, then in the long run we shall reject H when it is true not more, say, than once in a hundred times, and in addition we may have evidence that we shall reject H sufficiently often when it is false.</p></blockquote></p>
+<p>{% blockquote %}
+… we may search for rules to govern our behavior with regard to them, in following which we insure that, in the long run of experience, we shall not be too often wrong. Here, for example, would be such a “rule of behavior”: to decide whether a hypothesis, H, of a given type be rejected or not, calculate a specified character, $x$ of the observed facts; if $x \gt x_0$ reject H, if $x \le x_0$ accept H. Such a rule tells us nothing as to whether in a particular case H is true when $x \le x_0$ or false when $x \gt x_0$. But it may often be proved that if we behave according to such a rule, then in the long run we shall reject H when it is true not more, say, than once in a hundred times, and in addition we may have evidence that we shall reject H sufficiently often when it is false.
+{% endblockquote %}</p>
 
 <p>While Fisher used an <em>achieved level of significance</em> (p-value) which is a
 post-data statistic, NP used the idea of fixing long run error probabilities
@@ -224,7 +234,17 @@ conventional wisdom based on a sample of data.</p>
 <p>The nuance in this test becomes clearer when we consider that it is, in fact, a
 <strong>double negative</strong>. For example:</p>
 
-<p>Surround your pullquote like this {" text to be quoted "}</p>
+<p>{% pullquote %}
+Suppose, we want to test if a new drug increases the longevity of cancer
+patients. Conventional wisdom (or probability of chancing across such a drug)
+posits that it does not, and we set up a null hypothesis to this effect. Note
+that the null is in itself a negative statement. (Mathematically, we may set
+this up as the difference in mean survival of subjects treated with the drug
+against those treated with a placebo from the beginning of the treatment.) {“If
+we can falsify the null we can infer that the new drug does not “not increase
+the longevity of cancer patients”. If we fail to falsify the null, we are none
+the wiser.”}
+{% endpullquote %}</p>
 
 <h3 id="collecting-evidence-against-the-null-hypothesis">Collecting evidence against the null hypothesis</h3>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: algorithms | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/algorithms/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -14,13 +14,56 @@
 
   
   <entry>
+    <title type="html"><![CDATA[HackerRank: Detecting cycles in a linked list]]></title>
+    <link href="http://akhilsbehl.github.io/blog/2016/10/17/hackerrank-detecting-cycles-in-a-linked-list/"/>
+    <updated>2016-10-17T11:08:42+05:30</updated>
+    <id>http://akhilsbehl.github.io/blog/2016/10/17/hackerrank-detecting-cycles-in-a-linked-list</id>
+    <content type="html"><![CDATA[<p>The idea is to keep a slow traverser (the tortoise) and a fast traverser (the hare). If there are no cycles, eventually, the hare should hit the end of the list. However, if there are cycles, eventually the hare will see something that the tortoise has too which is enough for us to stop traversing.</p>
+
+<p>``` python
+class Node(object):</p>
+
+<pre><code>def __init__(self, data = None, next_node = None):
+    self.data = data
+    self.next = next_node
+</code></pre>
+
+<p>def traverser(head, step):
+    at = head
+    try:
+        for i in range(1, step):
+            at = at.next
+    except AttributeError:
+        raise StopIteration
+    if at.next is None:
+        raise StopIteration
+    yield at.next</p>
+
+<p>def has_cycle(head):
+    tortoise = traverser(head, 1)
+    hare = traverser(head, 2)
+    seen_by_tortoise = set()
+    while True:
+        try:
+            seen_by_tortoise.add(next(tortoise))
+            hare_test = next(hare)
+        except StopIteration:
+            return False
+        else:
+            if hare_test in seen_by_tortoise:
+                return True
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[HackerRank: Implementing a queue using two stacks.]]></title>
     <link href="http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks/"/>
     <updated>2016-10-12T14:48:40+05:30</updated>
     <id>http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks</id>
     <content type="html"><![CDATA[<p>The <a href="http://stackoverflow.com/questions/69192/how-to-implement-a-queue-using-two-stacks">idea</a> is to keep an inbox and outbox using stacks. Here is a simple implementation.</p>
 
-<p>```python
+<p>``` python
 class Queue(object):</p>
 
 <pre><code>def __init__(self):
@@ -85,7 +128,9 @@ def push(self, value):
 
 <p>The central idea of the post is to correct a <em>naive</em> implementation of a shuffling algorithm. My confusion arose from the fact that after reading the article, I could only think that the algorithm was blatantly incorrect and not naive. The differences between the two algorithms – the naive one and the one ascribed to Knuth, Fisher, &amp; Yates is what, in sampling 101, is between sampling <em>with replacement</em> and sampling <em>without replacement</em>. This quote essentially highlights the naivete indeed:</p>
 
-<p><blockquote><p>How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.</p></blockquote></p>
+<p>{% blockquote %}
+How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.
+{% endblockquote %}</p>
 
 <p>Some shuffling does not mean a random permutation at all. This is akin to saying a naive implementation of a queue sometimes inserts incoming items at the head of the queue.</p>
 

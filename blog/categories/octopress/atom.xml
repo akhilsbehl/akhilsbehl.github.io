@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: octopress | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -50,7 +50,9 @@
 
 <p>Let Octopress and / or <a href="http://jekyllrb.com/">Jekyll</a> disappear tomorrow. Let people make newer, crazier, and fancier tools. I can rest assured that markdown and pure HTML will always be good enough to serve my publishing needs. And I can be sure that someone will keep writing good software on top of these primitives. At least, I can be sure that I can write it for myself if and when the need arises. If github shuts down tomorrow, I will take my pages wherever I can afford to publish them eventually.</p>
 
-<p>Surround your pullquote like this {" text to be quoted "}</p>
+<p>{% pullquote %}
+I need not worry about Google’s sudden evil intentions. I need not lock my data in closed formats. I need not worry about processors not getting faster to serve fattening websites. {“ I may be proved wrong by the future – one often is – but for now I’m confident and happy. And this is why I wanted to write this post and say ‘thank you!’ “}
+{% endpullquote %}</p>
 
 <h3 id="how-to-get-one-for-yourself">How to get one for yourself</h3>
 

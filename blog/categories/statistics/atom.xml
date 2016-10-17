@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: statistics | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/statistics/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -78,7 +78,11 @@ P[Y = 1 \mid X = x] = \frac{1}{Z}e^{x \bullet \beta_1} = \frac{e^{x \bullet \bet
 
 <p>The class of neural networks that we are going to use here is the simple feed-forward multi-layer perceptron (<a href="https://en.wikipedia.org/wiki/Multilayer_perceptron">MLP</a>). For a quick recap, a MLP is a directed acyclical graph which has each layer fully-connected to the next layer. The simplest MLP will have at least three layers: the <em>input</em> layer (to which the data is fed), an <em>output</em> layer (which outputs the results) and one (or more for deeper architectures) <em>hidden</em> layer. <a href="http://www.deeplearningbook.org/">Goodfellow et al.</a> (Ch. 1, p. 5) describe:</p>
 
-<p><blockquote><p></p></p><p><p>A multilayer perceptron is just a mathematical function mapping some set of input values to output values. The function is formed by <strong>composing many simpler functions</strong>. We can think of each application of a diﬀerent mathematical function as providing a new representation of the input.</p></p><p><p></p></blockquote></p>
+<p>{% blockquote %}</p>
+
+<p>A multilayer perceptron is just a mathematical function mapping some set of input values to output values. The function is formed by <strong>composing many simpler functions</strong>. We can think of each application of a diﬀerent mathematical function as providing a new representation of the input.</p>
+
+<p>{% endblockquote %}</p>
 
 <p>Emphasis added.</p>
 
@@ -119,7 +123,13 @@ P[Y = 1 \mid X = x] = \frac{1}{Z}e^{x \bullet \beta_1} = \frac{e^{x \bullet \bet
 
 <h2 id="background">Background</h2>
 
-<p>Surround your pullquote like this {" text to be quoted "}</p>
+<p>{% pullquote %}
+As discussed earlier, the Fisherian setup employs a <em>null</em> hypothesis and a <em>post-data</em> test statistic as evidence against the null hypothesis. Fisher leaves the setup and inference from a test upto the researcher with some guidelines. <a href="http://www.stat.ualberta.ca/~wiens/stat665/TAS%20-%20testing.pdf">Christensen</a> quotes From Fisher (1956, pp 50): ‘In choosing the grounds upon which a general hypothesis should be rejected, personal judgement may and should properly be exercised. The experimenter will rightly consider all points on which, in light of current knowledge, the hypothesis may be imperfectly accurate, and will selects tests, so far as possible, sensitive to these faults, rather than to others.’</p>
+
+<p>The Neyman-Pearson setup, on the other hand, employs two competing hypotheses, with a pre-data test-statistic chosen on grounds of optimal power. NP reject Fisher’s <em>subjective</em> approach and lean towards pre-specified long run error rates. Their method is essentially an objective decision theoretic framework when faced with uncertainty.</p>
+
+<p><a href="www.nyu.edu/classes/nbeck/q2/gill.pdf">Gill</a> further underlines these philosophical differences in their attitudes to hypothesis testing: ‘{“ Fisher objected to the preselection of significance level as well as the mandatory two outcome decision process. Neyman and Pearson disagreed with interpreting p-values (or worse yet, ranges of p-values indicated by “stars”) as the probability of Type I errors since they do not constitute a long-range probability of rejection. Neyman and Pearson also considered the interpretation of data derived p-values to be subjective and futile.”}’
+{% endpullquote %}</p>
 
 <h2 id="the-modern-paradigm-for-hypothesis-testing">The modern paradigm for hypothesis testing</h2>
 <p>Hypothesis testing, as taught in a modern graduate school, is a pragmatic straddling of both these approaches with wilful ignorance of the philosophical differences between the pioneers’ approach. In a typical hypothesis test set up, one employs two competing hypothesis of which one is set up as a <em>null</em> hypothesis and the other as an <em>alternative</em>. Again, even though these test specify a pre-specified significance level, it is the p-values instead that are used as evidence in favor of or against the null hypothesis. Therefore, such a test conveniently incorporates an alternative hypothesis sidestepping the search of a powerful test.</p>
@@ -148,7 +158,9 @@ elicit the differences between the two.</p>
 technique (although they ascribe it to the mathematician <a href="http://en.wikipedia.org/wiki/Joseph_Louis_Fran%C3%A7ois_Bertrand">Bertrand</a>)
 in this <a href="http://www.stats.org.uk/statistical-inference/NeymanPearson1933.pdf">paper</a>. To quote their primary objections:</p>
 
-<p><blockquote><p>… however small be the probability that a particular grouping of a number of stars is due to “chance,” does this in itself provide any evidence of another “cause” for the grouping but “chance?” [snip] Indeed, if $x$ is a continuous variable  – as for example is the angular distance between two stars – then any value of $x$ is a singularity of relative probability equal to zero. We are inclined to think that as far as a particular hypothesis is concerned no test based upon the theory of probability can by itself provide any valuable evidence of the truth or falsehood of that hypothesis.</p></blockquote></p>
+<p>{% blockquote %}
+… however small be the probability that a particular grouping of a number of stars is due to “chance,” does this in itself provide any evidence of another “cause” for the grouping but “chance?” [snip] Indeed, if $x$ is a continuous variable  – as for example is the angular distance between two stars – then any value of $x$ is a singularity of relative probability equal to zero. We are inclined to think that as far as a particular hypothesis is concerned no test based upon the theory of probability can by itself provide any valuable evidence of the truth or falsehood of that hypothesis.
+{% endblockquote %}</p>
 
 <h3 id="long-run-error-probabilities">Long run error probabilities</h3>
 
@@ -158,7 +170,9 @@ for truth. Fixing the rate of errors of acceptance (Type 1 error rate) and the
 rate of errors of rejection (Type 2 error rate) allows one to make objective
 decisions that minimize <em>expected</em> loss. NP motivate this thus:</p>
 
-<p><blockquote><p>… we may search for rules to govern our behavior with regard to them, in following which we insure that, in the long run of experience, we shall not be too often wrong. Here, for example, would be such a “rule of behavior”: to decide whether a hypothesis, H, of a given type be rejected or not, calculate a specified character, $x$ of the observed facts; if $x \gt x_0$ reject H, if $x \le x_0$ accept H. Such a rule tells us nothing as to whether in a particular case H is true when $x \le x_0$ or false when $x \gt x_0$. But it may often be proved that if we behave according to such a rule, then in the long run we shall reject H when it is true not more, say, than once in a hundred times, and in addition we may have evidence that we shall reject H sufficiently often when it is false.</p></blockquote></p>
+<p>{% blockquote %}
+… we may search for rules to govern our behavior with regard to them, in following which we insure that, in the long run of experience, we shall not be too often wrong. Here, for example, would be such a “rule of behavior”: to decide whether a hypothesis, H, of a given type be rejected or not, calculate a specified character, $x$ of the observed facts; if $x \gt x_0$ reject H, if $x \le x_0$ accept H. Such a rule tells us nothing as to whether in a particular case H is true when $x \le x_0$ or false when $x \gt x_0$. But it may often be proved that if we behave according to such a rule, then in the long run we shall reject H when it is true not more, say, than once in a hundred times, and in addition we may have evidence that we shall reject H sufficiently often when it is false.
+{% endblockquote %}</p>
 
 <p>While Fisher used an <em>achieved level of significance</em> (p-value) which is a
 post-data statistic, NP used the idea of fixing long run error probabilities
@@ -319,7 +333,17 @@ conventional wisdom based on a sample of data.</p>
 <p>The nuance in this test becomes clearer when we consider that it is, in fact, a
 <strong>double negative</strong>. For example:</p>
 
-<p>Surround your pullquote like this {" text to be quoted "}</p>
+<p>{% pullquote %}
+Suppose, we want to test if a new drug increases the longevity of cancer
+patients. Conventional wisdom (or probability of chancing across such a drug)
+posits that it does not, and we set up a null hypothesis to this effect. Note
+that the null is in itself a negative statement. (Mathematically, we may set
+this up as the difference in mean survival of subjects treated with the drug
+against those treated with a placebo from the beginning of the treatment.) {“If
+we can falsify the null we can infer that the new drug does not “not increase
+the longevity of cancer patients”. If we fail to falsify the null, we are none
+the wiser.”}
+{% endpullquote %}</p>
 
 <h3 id="collecting-evidence-against-the-null-hypothesis">Collecting evidence against the null hypothesis</h3>
 
@@ -406,7 +430,38 @@ recommended correction) for finite samples. Here is a quick copy-paste from
 
 <!--more-->
 
-<p><blockquote><p>AICc is AIC with a correction for finite sample sizes:</p></p><p><script type="math/tex; mode=display">AICc = AIC + \frac{2k(k + 1)}{n - k - 1}</script></p><p><p>where n denotes the sample size. Thus, AICc is AIC with a greater penalty for<br/>extra parameters.</p></p><p><p>Burnham &amp; Anderson (2002) strongly recommend using AICc, rather than AIC, if n<br/>is small or k is large. Since AICc converges to AIC as n gets large, AICc<br/>generally should be employed regardless. Using AIC, instead of AICc, when n is<br/>not many times larger than k2, increases the probability of selecting models<br/>that have too many parameters, i.e. of overfitting. The probability of AIC<br/>overfitting can be substantial, in some cases.</p></p><p><p>Brockwell &amp; Davis (1991, p. 273) advise using AICc as the primary criterion in<br/>selecting the orders of an ARMA model for time series. McQuarrie &amp; Tsai (1998)<br/>ground their high opinion of AICc on extensive simulation work with regression<br/>and time series.</p></p><p><p>AICc was first proposed by Hurvich &amp; Tsai (1989). Different derivations of it<br/>are given by Brockwell &amp; Davis (1991), Burnham &amp; Anderson, and Cavanaugh<br/>(1997). All the derivations assume a univariate linear model with normally<br/>distributed errors (conditional upon regressors); if that assumption does not<br/>hold, then the formula for AICc will usually change. Further discussion of<br/>this, with examples of other assumptions, is given by Burnham &amp; Anderson (2002,<br/>ch. 7). In particular, bootstrap estimation is usually feasible.</p></p><p><p>Note that when all the models in the candidate set have the same k, then AICc<br/>and AIC will give identical (relative) valuations. In that situation, then, AIC<br/>can always be used.</p></blockquote></p>
+<p>{% blockquote %}
+AICc is AIC with a correction for finite sample sizes:</p>
+
+<script type="math/tex; mode=display">AICc = AIC + \frac{2k(k + 1)}{n - k - 1}</script>
+
+<p>where n denotes the sample size. Thus, AICc is AIC with a greater penalty for
+extra parameters.</p>
+
+<p>Burnham &amp; Anderson (2002) strongly recommend using AICc, rather than AIC, if n
+is small or k is large. Since AICc converges to AIC as n gets large, AICc
+generally should be employed regardless. Using AIC, instead of AICc, when n is
+not many times larger than k2, increases the probability of selecting models
+that have too many parameters, i.e. of overfitting. The probability of AIC
+overfitting can be substantial, in some cases.</p>
+
+<p>Brockwell &amp; Davis (1991, p. 273) advise using AICc as the primary criterion in
+selecting the orders of an ARMA model for time series. McQuarrie &amp; Tsai (1998)
+ground their high opinion of AICc on extensive simulation work with regression
+and time series.</p>
+
+<p>AICc was first proposed by Hurvich &amp; Tsai (1989). Different derivations of it
+are given by Brockwell &amp; Davis (1991), Burnham &amp; Anderson, and Cavanaugh
+(1997). All the derivations assume a univariate linear model with normally
+distributed errors (conditional upon regressors); if that assumption does not
+hold, then the formula for AICc will usually change. Further discussion of
+this, with examples of other assumptions, is given by Burnham &amp; Anderson (2002,
+ch. 7). In particular, bootstrap estimation is usually feasible.</p>
+
+<p>Note that when all the models in the candidate set have the same k, then AICc
+and AIC will give identical (relative) valuations. In that situation, then, AIC
+can always be used.
+{% endblockquote %}</p>
 
 <p>It should be trivial to write this correction oneself in any language. <a href="http://www.inside-r.org/packages/cran/sme/docs/AICc">Here</a> and
 <a href="http://www.awblocker.com/R/AICc.R">here</a> are a couple of such examples in R.</p>

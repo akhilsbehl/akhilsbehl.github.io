@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: apple | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/apple/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -33,7 +33,14 @@ on when compiling my software. I always thought that <code>-Wall</code> was enou
   <li><strong>Test. Test. Test.</strong> As <a href="http://www.slate.com/articles/technology/bitwise/2014/02/apple_security_bug_a_critical_flaw_was_extraordinarily_simple.html">Auerbach</a> concludes:</li>
 </ul>
 
-<p><blockquote><p></p></p><p><p>The people who wrote it knew what they were doing. The bug is indeed the result<br/>of negligence, but the sad and scary thing is that, for software developers,<br/>this is not a ‘What were they thinking?’ moment. It’s an ‘Oh my God, that could<br/>have been me’ moment.</p></p><p><p></p></blockquote></p>
+<p>{% blockquote %}</p>
+
+<p>The people who wrote it knew what they were doing. The bug is indeed the result
+of negligence, but the sad and scary thing is that, for software developers,
+this is not a ‘What were they thinking?’ moment. It’s an ‘Oh my God, that could
+have been me’ moment.</p>
+
+<p>{% endblockquote %}</p>
 
 <!--links-->
 ]]></content>

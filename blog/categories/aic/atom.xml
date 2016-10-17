@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: aic | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/aic/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-12T14:55:43+05:30</updated>
+  <updated>2016-10-17T11:26:38+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -25,7 +25,38 @@ recommended correction) for finite samples. Here is a quick copy-paste from
 
 <!--more-->
 
-<p><blockquote><p>AICc is AIC with a correction for finite sample sizes:</p></p><p><script type="math/tex; mode=display">AICc = AIC + \frac{2k(k + 1)}{n - k - 1}</script></p><p><p>where n denotes the sample size. Thus, AICc is AIC with a greater penalty for<br/>extra parameters.</p></p><p><p>Burnham &amp; Anderson (2002) strongly recommend using AICc, rather than AIC, if n<br/>is small or k is large. Since AICc converges to AIC as n gets large, AICc<br/>generally should be employed regardless. Using AIC, instead of AICc, when n is<br/>not many times larger than k2, increases the probability of selecting models<br/>that have too many parameters, i.e. of overfitting. The probability of AIC<br/>overfitting can be substantial, in some cases.</p></p><p><p>Brockwell &amp; Davis (1991, p. 273) advise using AICc as the primary criterion in<br/>selecting the orders of an ARMA model for time series. McQuarrie &amp; Tsai (1998)<br/>ground their high opinion of AICc on extensive simulation work with regression<br/>and time series.</p></p><p><p>AICc was first proposed by Hurvich &amp; Tsai (1989). Different derivations of it<br/>are given by Brockwell &amp; Davis (1991), Burnham &amp; Anderson, and Cavanaugh<br/>(1997). All the derivations assume a univariate linear model with normally<br/>distributed errors (conditional upon regressors); if that assumption does not<br/>hold, then the formula for AICc will usually change. Further discussion of<br/>this, with examples of other assumptions, is given by Burnham &amp; Anderson (2002,<br/>ch. 7). In particular, bootstrap estimation is usually feasible.</p></p><p><p>Note that when all the models in the candidate set have the same k, then AICc<br/>and AIC will give identical (relative) valuations. In that situation, then, AIC<br/>can always be used.</p></blockquote></p>
+<p>{% blockquote %}
+AICc is AIC with a correction for finite sample sizes:</p>
+
+<script type="math/tex; mode=display">AICc = AIC + \frac{2k(k + 1)}{n - k - 1}</script>
+
+<p>where n denotes the sample size. Thus, AICc is AIC with a greater penalty for
+extra parameters.</p>
+
+<p>Burnham &amp; Anderson (2002) strongly recommend using AICc, rather than AIC, if n
+is small or k is large. Since AICc converges to AIC as n gets large, AICc
+generally should be employed regardless. Using AIC, instead of AICc, when n is
+not many times larger than k2, increases the probability of selecting models
+that have too many parameters, i.e. of overfitting. The probability of AIC
+overfitting can be substantial, in some cases.</p>
+
+<p>Brockwell &amp; Davis (1991, p. 273) advise using AICc as the primary criterion in
+selecting the orders of an ARMA model for time series. McQuarrie &amp; Tsai (1998)
+ground their high opinion of AICc on extensive simulation work with regression
+and time series.</p>
+
+<p>AICc was first proposed by Hurvich &amp; Tsai (1989). Different derivations of it
+are given by Brockwell &amp; Davis (1991), Burnham &amp; Anderson, and Cavanaugh
+(1997). All the derivations assume a univariate linear model with normally
+distributed errors (conditional upon regressors); if that assumption does not
+hold, then the formula for AICc will usually change. Further discussion of
+this, with examples of other assumptions, is given by Burnham &amp; Anderson (2002,
+ch. 7). In particular, bootstrap estimation is usually feasible.</p>
+
+<p>Note that when all the models in the candidate set have the same k, then AICc
+and AIC will give identical (relative) valuations. In that situation, then, AIC
+can always be used.
+{% endblockquote %}</p>
 
 <p>It should be trivial to write this correction oneself in any language. <a href="http://www.inside-r.org/packages/cran/sme/docs/AICc">Here</a> and
 <a href="http://www.awblocker.com/R/AICc.R">here</a> are a couple of such examples in R.</p>
