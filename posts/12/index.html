@@ -9,8 +9,11 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Just ran across this and was marveling at how aptly the idiom is
-named. People have already put this on a tshirt. ">
+  <meta name="description" content="If you spot the bug in the following piece of code, never mind reading further.
+Otherwise, go on. 1
+2
+3
+list_of_archives=$(find ./archives -type f &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -171,6 +174,50 @@ named. People have already put this on a tshirt. ">
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2014/03/03/bash-quoting-variables-to-be-or-not-to-be/">bash: quoting variables - to be or not to be</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-03-03T14:44:16+05:30'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>2:44 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you spot the bug in the following piece of code, never mind reading further.
+Otherwise, go on.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="sh"><span class="line"><span class="nv">list_of_archives</span><span class="o">=</span><span class="k">$(</span>find ./archives -type f <span class="se">\</span>
+</span><span class="line">  -name <span class="s1">&#39;*.lzo&#39;</span> -or -name <span class="s1">&#39;*.gz&#39;</span> -or -name <span class="s1">&#39;*.bz2&#39;</span><span class="k">)</span>
+</span><span class="line"><span class="nv">list_of_gzips</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$list_of_archives</span> <span class="p">|</span> grep <span class="s2">&quot;*.gz$&quot;</span><span class="k">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/03/03/bash-quoting-variables-to-be-or-not-to-be/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2014/03/03/goto-fail/">goto fail;</a></h1>
     
     
@@ -309,41 +356,6 @@ OOP.</p>
   
     <footer>
       <a rel="full-article" href="/blog/2014/02/09/r-textconnections-for-string-io/">Read full post &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/07/r-converting-a-factor-variable-to-a-matrix-of-dummies/">R: Converting a factor variable to a matrix of dummies</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-02-07T07:16:00+05:30'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>7:16 am</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I have often needed to do this: split a factor variable into a set of dummies. For example, when randomForest will not let you use a factor with more than 32 levels, you may want to take this route. Or if you are like me and don’t like to rely too much on R’s <code>formula</code> interface it may help you choose your base category for a factor or supress intercept easily.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/02/07/r-converting-a-factor-variable-to-a-matrix-of-dummies/">Read full post &rarr;</a>
     </footer>
   
 

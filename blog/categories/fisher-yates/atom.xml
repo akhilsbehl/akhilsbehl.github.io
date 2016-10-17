@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: fisher-yates | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/fisher-yates/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -22,9 +22,7 @@
 
 <p>The central idea of the post is to correct a <em>naive</em> implementation of a shuffling algorithm. My confusion arose from the fact that after reading the article, I could only think that the algorithm was blatantly incorrect and not naive. The differences between the two algorithms – the naive one and the one ascribed to Knuth, Fisher, &amp; Yates is what, in sampling 101, is between sampling <em>with replacement</em> and sampling <em>without replacement</em>. This quote essentially highlights the naivete indeed:</p>
 
-<p>{% blockquote %}
-How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.
-{% endblockquote %}</p>
+<p><blockquote><p>How do we know that that above algorithm is biased? On the surface it seems reasonable, and certainly does some shuffling of the items.</p></blockquote></p>
 
 <p>Some shuffling does not mean a random permutation at all. This is akin to saying a naive implementation of a queue sometimes inserts incoming items at the head of the queue.</p>
 

@@ -9,8 +9,9 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="Non-parametric methods seek an estimate of $f$ that gets as close to the data
-points as possible without being too rough or wiggly. Non-parametric &hellip;">
+  <meta name="description" content="So continuing with the beautiful plots in ISLR, here is a
+discussion I had on SO today about hot to plot decision boundaries or arbitrary
+non-linear &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -165,6 +166,44 @@ points as possible without being too rough or wiggly. Non-parametric &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r/">EDA: Plotting non linear decision boundaries in R</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-06-05T13:22:53+05:30'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>1:22 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img class="center" src="http://i.stack.imgur.com/UCJol.png" title="'Figure 2.13, ISLR'" /></p>
+
+<p>So continuing with the beautiful plots in ISLR, <a href="http://stackoverflow.com/questions/24052643/r-how-to-plot-non-linear-decision-boundaries-with-a-grid-in-r">here</a> is a
+discussion I had on SO today about hot to plot decision boundaries or arbitrary
+non-linear curves. The <a href="http://stats.stackexchange.com/questions/21572/how-to-plot-decision-boundary-of-a-k-nearest-neighbor-classifier-from-elements-o">discussion</a> on SE that was linked to in
+the answer was even more useful. Plus, I picked up two new functions today:
+<code>curve</code> and <code>contour</code>.</p>
+
+<!--links-->
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -334,50 +373,6 @@ recommended correction) for finite samples. Here is a quick copy-paste from
   
     <footer>
       <a rel="full-article" href="/blog/2014/03/22/the-corrected-aic/">Read full post &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/03/03/bash-quoting-variables-to-be-or-not-to-be/">bash: quoting variables - to be or not to be</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-03-03T14:44:16+05:30'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>2:44 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>If you spot the bug in the following piece of code, never mind reading further.
-Otherwise, go on.</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class="sh"><span class="line"><span class="nv">list_of_archives</span><span class="o">=</span><span class="k">$(</span>find ./archives -type f <span class="se">\</span>
-</span><span class="line">  -name <span class="s1">&#39;*.lzo&#39;</span> -or -name <span class="s1">&#39;*.gz&#39;</span> -or -name <span class="s1">&#39;*.bz2&#39;</span><span class="k">)</span>
-</span><span class="line"><span class="nv">list_of_gzips</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$list_of_archives</span> <span class="p">|</span> grep <span class="s2">&quot;*.gz$&quot;</span><span class="k">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/03/bash-quoting-variables-to-be-or-not-to-be/">Read full post &rarr;</a>
     </footer>
   
 

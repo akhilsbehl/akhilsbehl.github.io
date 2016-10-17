@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: stackoverflow | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/stackoverflow/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -47,11 +47,7 @@ only ones that earn majority eyeballs and answers. One of the questions I
 scored highly on myself was one where I had just mentioned to a user to use
 the <code>names</code> function in R to get names of a list. Some other answers that I
 personally felt were more challenging were left in the cold.
-{% pullquote %}</li>
-  <li>{“ Personally I am wondering if time I spend on stackoverflow is better spent
-on books and blogs and open courseware that will push me in areas of weakness
-such as test driven development and low-level and systems programming. “}
-{% endpullquote %}</li>
+Surround your pullquote like this {" text to be quoted "}</li>
 </ul>
 
 <p>This is a nebulous mess of ideas in my head. I have not been able to decide if

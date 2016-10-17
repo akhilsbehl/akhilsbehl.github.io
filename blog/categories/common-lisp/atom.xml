@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: common-lisp | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/common-lisp/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -20,9 +20,7 @@
     <id>http://akhilsbehl.github.io/blog/2014/07/07/note-to-self-origins-of-car-and-cdr</id>
     <content type="html"><![CDATA[<p>So, I am rereading the <a href="http://www.cs.cmu.edu/~dst/LispBook/book.pdf">book</a> <em>Gentle Introduction to Symbolic Computing</em> by Touretzky. I highly recommend the book to people who are new to both lisp and programming. Today’s post is simply a quote from the book that I want to preserve as a note to self on the origins of the two fundamental lisp functions: <code>car</code> and <code>cdr</code>.</p>
 
-<p>{% blockquote %}
-These names are relics from the early days of computing, when Lisp first ran on a machine called the IBM 704. The 704 was so primitive it didn’t even have transistors – it used vacuum tubes. Each of its ‘registers’ was divided into several components, two of which were the address portion and the decrement portion. Back then, the name CAR stood for Contents of Address portion of Register, and CDR stood for Contents of Decrement portion of Register.
-{% endblockquote %}</p>
+<p><blockquote><p>These names are relics from the early days of computing, when Lisp first ran on a machine called the IBM 704. The 704 was so primitive it didn’t even have transistors – it used vacuum tubes. Each of its ‘registers’ was divided into several components, two of which were the address portion and the decrement portion. Back then, the name CAR stood for Contents of Address portion of Register, and CDR stood for Contents of Decrement portion of Register.</p></blockquote></p>
 
 <!--links-->
 ]]></content>

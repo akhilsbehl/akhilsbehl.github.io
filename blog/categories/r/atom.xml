@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: r | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/r/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -186,7 +186,7 @@ dt2array(dat, c(“f1”, “f2”, “f3”), c(“d1”, “d2”, “d3”))<
     <link href="http://akhilsbehl.github.io/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r/"/>
     <updated>2014-06-05T13:22:53+05:30</updated>
     <id>http://akhilsbehl.github.io/blog/2014/06/05/eda-plotting-non-linear-decision-boundaries-in-r</id>
-    <content type="html"><![CDATA[<p>{% img center http://i.stack.imgur.com/UCJol.png ‘Figure 2.13, ISLR’ %}</p>
+    <content type="html"><![CDATA[<p><img class="center" src="http://i.stack.imgur.com/UCJol.png" title="‘Figure 2.13, ISLR’" ></p>
 
 <p>So continuing with the beautiful plots in ISLR, <a href="http://stackoverflow.com/questions/24052643/r-how-to-plot-non-linear-decision-boundaries-with-a-grid-in-r">here</a> is a
 discussion I had on SO today about hot to plot decision boundaries or arbitrary

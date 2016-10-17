@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: python | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/python/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -63,20 +63,29 @@ xx = pd.np.random.random(17)</p>
 
 AssertionError: 
 
-```
-
-<!--more-->
-
-{% pullquote %}
-Now, this is not that annoying unless you wanna do this for complicated data structures such as dicts of lists of floats etc. and you want to use the assertion goodness that comes with `py.test`. And I had exactly this situation at hand. {" Disclaimer: Don't try this at work! Even though I did. "}
-{% endpullquote %}
-
-I was thinking that it'd be easy as pie to do this in a lisp by traversing the structure with a lambda that will round all the floats. And then I figured that Python can do this for me using the [`AST`][ast] module. There is a good introduction to the module [here][ast-intro] and a discussion on _appropriate things to do with ASTs_ [here][ast-uses].
-
-So, here is what I ended up implementing (this is miles away from being safe to use) to solve the problem.
-
-
-```python
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>&lt;!--more--&gt;
+</span><span class='line'>
+</span><span class='line'><span class='pullquote-right' data-pullquote='Disclaimer: Don’t try this at work! Even though I did.'>
+</span><span class='line'>Now, this is not that annoying unless you wanna do this for complicated data structures such as dicts of lists of floats etc. and you want to use the assertion goodness that comes with `py.test`. And I had exactly this situation at hand. Disclaimer: Don't try this at work! Even though I did.
+</span><span class='line'></span>
+</span><span class='line'>
+</span><span class='line'>I was thinking that it'd be easy as pie to do this in a lisp by traversing the structure with a lambda that will round all the floats. And then I figured that Python can do this for me using the [`AST`][ast] module. There is a good introduction to the module [here][ast-intro] and a discussion on _appropriate things to do with ASTs_ [here][ast-uses].
+</span><span class='line'>
+</span><span class='line'>So, here is what I ended up implementing (this is miles away from being safe to use) to solve the problem.
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>python
 
 import ast
 import codegen
@@ -100,13 +109,15 @@ def round_numbers_in(literal, digits=2):
     rewritten_literal = ast.literal_eval(rewritten_source)
     return rewritten_literal
 
-```
-
-
-And voila!
-
-
-```python
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>
+</span><span class='line'>And voila!
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>python
 
 &gt;&gt;&gt; sample_complicated_literal = {
     'a': {

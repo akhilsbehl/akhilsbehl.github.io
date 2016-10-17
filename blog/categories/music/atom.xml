@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: music | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/music/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -20,8 +20,8 @@
     <id>http://akhilsbehl.github.io/blog/2014/08/17/machines-that-make-music-and-steal-jobs</id>
     <content type="html"><![CDATA[<p>I stumbled upon two different videos today while surfing the web both of which impressed me deeply. It was only later that I connected the dots between the two. The first is a breathtaking example of what human ingenuity and creativity can achieve with machines; the other a luddite damnation of the same phenomenon. I will put these here and refrain from any comments.</p>
 
-<p>{% youtube yY1FSsUV-8c %}
-{% youtube 7Pq-S557XQU %}</p>
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/yY1FSsUV-8c" allowfullscreen></iframe></div>
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/7Pq-S557XQU" allowfullscreen></iframe></div></p>
 
 <p><a href="http://www.digitopoly.org/2014/08/16/the-ownership-of-machines/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=the-ownership-of-machines">Digitopoly</a> provides a counter-arguments to the conclusions of the second video which I, personally, found unconvincing in their depth of analysis.</p>
 

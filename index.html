@@ -9,30 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="The idea is to keep an inbox and outbox using stacks. Here is a simple implementation. 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24 &hellip;">
+  <meta name="description" content="The idea is to keep a slow traverser (the tortoise) and a fast traverser (the hare). If there are no cycles, eventually, the hare should hit the end &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -187,6 +164,102 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/10/17/hackerrank-detecting-cycles-in-a-linked-list/">HackerRank: Detecting cycles in a linked list</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-10-17T11:08:42+05:30'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>11:08 am</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The idea is to keep a slow traverser (the tortoise) and a fast traverser (the hare). If there are no cycles, eventually, the hare should hit the end of the list. However, if there are cycles, eventually the hare will see something that the tortoise has too which is enough for us to stop traversing.</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">next_node</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+</span><span class="line">        <span class="bp">self</span><span class="o">.</span><span class="n">next</span> <span class="o">=</span> <span class="n">next_node</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">traverser</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+</span><span class="line">    <span class="n">at</span> <span class="o">=</span> <span class="n">head</span>
+</span><span class="line">    <span class="k">try</span><span class="p">:</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+</span><span class="line">            <span class="n">at</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">next</span>
+</span><span class="line">    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+</span><span class="line">        <span class="k">raise</span> <span class="ne">StopIteration</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">at</span><span class="o">.</span><span class="n">next</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class="line">        <span class="k">raise</span> <span class="ne">StopIteration</span>
+</span><span class="line">    <span class="k">yield</span> <span class="n">at</span><span class="o">.</span><span class="n">next</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">has_cycle</span><span class="p">(</span><span class="n">head</span><span class="p">):</span>
+</span><span class="line">    <span class="n">tortoise</span> <span class="o">=</span> <span class="n">traverser</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line">    <span class="n">hare</span> <span class="o">=</span> <span class="n">traverser</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class="line">    <span class="n">seen_by_tortoise</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span class="line">    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class="line">        <span class="k">try</span><span class="p">:</span>
+</span><span class="line">            <span class="n">seen_by_tortoise</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">tortoise</span><span class="p">))</span>
+</span><span class="line">            <span class="n">hare_test</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">hare</span><span class="p">)</span>
+</span><span class="line">        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+</span><span class="line">            <span class="k">return</span> <span class="bp">False</span>
+</span><span class="line">        <span class="k">else</span><span class="p">:</span>
+</span><span class="line">            <span class="k">if</span> <span class="n">hare_test</span> <span class="ow">in</span> <span class="n">seen_by_tortoise</span><span class="p">:</span>
+</span><span class="line">                <span class="k">return</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -429,63 +502,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2016/09/06/why-you-have-in-fact-used-a-neural-network/">Read full post &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2016/05/30/inspecting-objects-at-point-with-ess/">Inspecting objects at point with ESS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2016-05-30T13:34:32+05:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>1:34 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Somewhere in the second half of last year I switched my primary text editor from <a href="http://www.vim.org/">Vim</a> to <a href="https://www.gnu.org/software/emacs/">Emacs</a>. Calm down! I use <a href="https://www.emacswiki.org/emacs/Evil">Evil</a>. So, one of my primary languages is R and I was in love with this <a href="https://github.com/vim-scripts/Vim-R-plugin">plugin</a> in Vim. A snippet of my vim config that I used to rely heavily on in Vim was:</p>
-
-<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-</pre></td><td class="code"><pre><code class="vim"><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nr :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;rownames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nc :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;colnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>n2 :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nn :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dimnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nd :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dim&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nh :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nt :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;tail&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nl :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;length&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">cc</span> :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-<p>These commands were invented by me after looking at a similar usage pattern in the plugin’s manuals. Being able to inspect objects at point without switching from my editor to the R prompt made me much more productive than when I could not do this. After I switched to Emacs and the mighty <a href="http://ess.r-project.org/">ESS</a> for programming in R, replicating this was an explicit TODO in my ESS configuration. Ladies &amp; gentlemen, today I bring you the solution. <em>Drumroll!</em></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2016/05/30/inspecting-objects-at-point-with-ess/">Read full post &rarr;</a>
     </footer>
   
 

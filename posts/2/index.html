@@ -9,7 +9,7 @@
   <meta name="author" content="Akhil S. Behl">
 
   
-  <meta name="description" content="So, I’ve been writing unit tests for some statistical code using py.test. One of the sweet things about py.test is that it gives you some cute &hellip;">
+  <meta name="description" content="Somewhere in the second half of last year I switched my primary text editor from Vim to Emacs. Calm down! I use Evil. So, one of my primary languages &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -164,6 +164,63 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/05/30/inspecting-objects-at-point-with-ess/">Inspecting objects at point with ESS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-05-30T13:34:32+05:30'><span class='date'><span class='date-month'>May</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>1:34 pm</span></time>
+        
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Somewhere in the second half of last year I switched my primary text editor from <a href="http://www.vim.org/">Vim</a> to <a href="https://www.gnu.org/software/emacs/">Emacs</a>. Calm down! I use <a href="https://www.emacswiki.org/emacs/Evil">Evil</a>. So, one of my primary languages is R and I was in love with this <a href="https://github.com/vim-scripts/Vim-R-plugin">plugin</a> in Vim. A snippet of my vim config that I used to rely heavily on in Vim was:</p>
+
+<figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="vim"><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nr :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;rownames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nc :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;colnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>n2 :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nn :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dimnames&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nd :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;dim&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nh :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nt :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;tail&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span>nl :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;length&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span><span class="line">map <span class="p">&lt;</span>LocalLeader<span class="p">&gt;</span><span class="k">cc</span> :<span class="k">call</span> RAction<span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)&lt;</span>CR<span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+<p>These commands were invented by me after looking at a similar usage pattern in the plugin’s manuals. Being able to inspect objects at point without switching from my editor to the R prompt made me much more productive than when I could not do this. After I switched to Emacs and the mighty <a href="http://ess.r-project.org/">ESS</a> for programming in R, replicating this was an explicit TODO in my ESS configuration. Ladies &amp; gentlemen, today I bring you the solution. <em>Drumroll!</em></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/05/30/inspecting-objects-at-point-with-ess/">Read full post &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -430,43 +487,6 @@
 
 </div>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube/">R: Converting a data.table to a multi way array (cube)</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-08-20T15:42:00+05:30'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>3:42 pm</span></time>
-        
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This post discusses the problem of converting a <code>data.table</code> to the <code>array</code> data structure in R. The idea is analogous to converting a denormalized dataset that presents both dimensions and facts in a table as columns of the table to a completely normalized fact cube along the dimensions of the dataset.</p>
-
-<p>The problem can be solved in multiple ways in R with attending constraints of these approaches – e.g. <code>plyr::daply</code>, <code>xtabs</code>, <code>by</code> or a manual home-brewn set of split and lapply routine. Without discussing the constraints I observed with the existing techniques, I am presenting an alternative approach here that depends on unrolling the rectangular data structure into a linear structure and then reshaping it by manually counting the facts and dimension sizes (think strides). The choice of using a <code>data.table</code> was purely for efficiency reasons but the same idea can be implemented with a <code>data.frame</code> with little changes to the code.</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/08/20/r-converting-a-data-dot-table-to-a-multi-way-array-cube/">Read full post &rarr;</a>
-    </footer>
   
 
 

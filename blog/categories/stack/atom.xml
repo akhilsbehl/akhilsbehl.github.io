@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: stack | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/stack/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -20,8 +20,9 @@
     <id>http://akhilsbehl.github.io/blog/2016/10/12/hackerrank-implementing-a-queue-using-two-stacks</id>
     <content type="html"><![CDATA[<p>The <a href="http://stackoverflow.com/questions/69192/how-to-implement-a-queue-using-two-stacks">idea</a> is to keep an inbox and outbox using stacks. Here is a simple implementation.</p>
 
-<p>``` python
-class Queue(object):</p>
+<p>```python</p>
+
+<p>class Queue(object):</p>
 
 <pre><code>def __init__(self):
     self._inbox = Stack()
@@ -71,8 +72,9 @@ def push(self, value):
 </code></pre>
 
 <p>class EmptyQueueError(BaseException):
-    pass
-```</p>
+    pass</p>
+
+<p>```</p>
 ]]></content>
   </entry>
   

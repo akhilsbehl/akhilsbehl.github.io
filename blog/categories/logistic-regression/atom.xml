@@ -4,7 +4,7 @@
   <title><![CDATA[Read more on: logistic-regression | asb: head /dev/brain > /dev/www]]></title>
   <link href="http://akhilsbehl.github.io/blog/categories/logistic-regression/atom.xml" rel="self"/>
   <link href="http://akhilsbehl.github.io/"/>
-  <updated>2016-10-17T11:26:38+05:30</updated>
+  <updated>2016-10-17T12:01:33+05:30</updated>
   <id>http://akhilsbehl.github.io/</id>
   <author>
     <name><![CDATA[Akhil S. Behl]]></name>
@@ -78,11 +78,7 @@ P[Y = 1 \mid X = x] = \frac{1}{Z}e^{x \bullet \beta_1} = \frac{e^{x \bullet \bet
 
 <p>The class of neural networks that we are going to use here is the simple feed-forward multi-layer perceptron (<a href="https://en.wikipedia.org/wiki/Multilayer_perceptron">MLP</a>). For a quick recap, a MLP is a directed acyclical graph which has each layer fully-connected to the next layer. The simplest MLP will have at least three layers: the <em>input</em> layer (to which the data is fed), an <em>output</em> layer (which outputs the results) and one (or more for deeper architectures) <em>hidden</em> layer. <a href="http://www.deeplearningbook.org/">Goodfellow et al.</a> (Ch. 1, p. 5) describe:</p>
 
-<p>{% blockquote %}</p>
-
-<p>A multilayer perceptron is just a mathematical function mapping some set of input values to output values. The function is formed by <strong>composing many simpler functions</strong>. We can think of each application of a diﬀerent mathematical function as providing a new representation of the input.</p>
-
-<p>{% endblockquote %}</p>
+<p><blockquote><p></p></p><p><p>A multilayer perceptron is just a mathematical function mapping some set of input values to output values. The function is formed by <strong>composing many simpler functions</strong>. We can think of each application of a diﬀerent mathematical function as providing a new representation of the input.</p></p><p><p></p></blockquote></p>
 
 <p>Emphasis added.</p>
 
